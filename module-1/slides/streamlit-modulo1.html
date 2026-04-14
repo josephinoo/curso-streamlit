@@ -1,0 +1,2021 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<script src="streamlit-modulo1_files/libs/clipboard/clipboard.min.js"></script>
+<script src="streamlit-modulo1_files/libs/quarto-html/tabby.min.js"></script>
+<script src="streamlit-modulo1_files/libs/quarto-html/popper.min.js"></script>
+<script src="streamlit-modulo1_files/libs/quarto-html/tippy.umd.min.js"></script>
+<link href="streamlit-modulo1_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="streamlit-modulo1_files/libs/quarto-html/light-border.css" rel="stylesheet">
+<link href="streamlit-modulo1_files/libs/quarto-html/quarto-syntax-highlighting-dark-29a29eae8fe046d865b2a1d8bad8a0f3.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
+  <meta name="generator" content="quarto-1.9.35">
+
+  <meta name="author" content="@josephinoo">
+  <meta name="dcterms.date" content="2026-04-13">
+  <title>Streamlit — Módulo 1</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="streamlit-modulo1_files/libs/revealjs/dist/reset.css">
+  <link rel="stylesheet" href="streamlit-modulo1_files/libs/revealjs/dist/reveal.css">
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+      vertical-align: middle;
+    }
+  </style>
+  <link rel="stylesheet" href="streamlit-modulo1_files/libs/revealjs/dist/theme/quarto-141c1c9c3120ac6f8ed8a3cbc6fa96d8.css">
+  <link href="streamlit-modulo1_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
+  <link href="streamlit-modulo1_files/libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
+  <link href="streamlit-modulo1_files/libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
+  <link href="streamlit-modulo1_files/libs/revealjs/plugin/quarto-support/footer.css" rel="stylesheet">
+  <style type="text/css">
+    .reveal div.sourceCode {
+      margin: 0;
+      overflow: auto;
+    }
+    .reveal div.hanging-indent {
+      margin-left: 1em;
+      text-indent: -1em;
+    }
+    .reveal .slide:not(.center) {
+      height: 100%;
+    }
+    .reveal .slide.scrollable {
+      overflow-y: auto;
+    }
+    .reveal .footnotes {
+      height: 100%;
+      overflow-y: auto;
+    }
+    .reveal .slide .absolute {
+      position: absolute;
+      display: block;
+    }
+    .reveal .footnotes ol {
+      counter-reset: ol;
+      list-style-type: none; 
+      margin-left: 0;
+    }
+    .reveal .footnotes ol li:before {
+      counter-increment: ol;
+      content: counter(ol) ". "; 
+    }
+    .reveal .footnotes ol li > p:first-child {
+      display: inline-block;
+    }
+    .reveal .slide ul,
+    .reveal .slide ol {
+      margin-bottom: 0.5em;
+    }
+    .reveal .slide ul li,
+    .reveal .slide ol li {
+      margin-top: 0.4em;
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide ul[role="tablist"] li {
+      margin-bottom: 0;
+    }
+    .reveal .slide ul li > *:first-child,
+    .reveal .slide ol li > *:first-child {
+      margin-block-start: 0;
+    }
+    .reveal .slide ul li > *:last-child,
+    .reveal .slide ol li > *:last-child {
+      margin-block-end: 0;
+    }
+    .reveal .slide .columns:nth-child(3) {
+      margin-block-start: 0.8em;
+    }
+    .reveal blockquote {
+      box-shadow: none;
+    }
+    .reveal .tippy-content>* {
+      margin-top: 0.2em;
+      margin-bottom: 0.7em;
+    }
+    .reveal .tippy-content>*:last-child {
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide > img.stretch.quarto-figure-center,
+    .reveal .slide > img.r-stretch.quarto-figure-center {
+      display: block;
+      margin-left: auto;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-left,
+    .reveal .slide > img.r-stretch.quarto-figure-left  {
+      display: block;
+      margin-left: 0;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-right,
+    .reveal .slide > img.r-stretch.quarto-figure-right  {
+      display: block;
+      margin-left: auto;
+      margin-right: 0; 
+    }
+  </style>
+</head>
+<body class="quarto-dark">
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide" data-background-color="#0d0d0d" class="quarto-title-block center">
+  <h1 class="title">Streamlit — Módulo 1</h1>
+  <p class="subtitle">Introducción y entorno de trabajo</p>
+
+<div class="quarto-title-authors">
+<div class="quarto-title-author">
+<div class="quarto-title-author-name">
+<span class="citation" data-cites="josephinoo">@josephinoo</span> 
+</div>
+</div>
+</div>
+
+  <p class="date">2026-04-13</p>
+</section>
+<section id="section" class="slide level2 center" data-background-color="#0d0d0d">
+<h2></h2>
+<div style="text-align: center; margin-top: 1em;">
+  <div style="width: 220px; height: 220px; margin: 0 auto; border-radius: 50%; border: 3px solid #FF4B4B; overflow: hidden; background: #1e1e1e; display:flex; align-items:center; justify-content:center;">
+    <span style="font-size:5em;">🎈</span>
+  </div>
+  <h2 style="color: #ffffff; font-size: 2em; font-weight: bold; margin-top: 0.8em; letter-spacing: -0.02em;">Módulo 1</h2>
+  <p style="color:#FF4B4B; font-size:1.2em; font-weight:600;">Introducción y Entorno de Trabajo</p>
+</div>
+<aside class="notes">
+<p>Bienvenida al módulo 1 del curso de Streamlit. “Hoy vamos a entender qué es Streamlit, cómo instalarlo y, lo más importante, cómo funciona internamente su modelo de ejecución — el scripting flow. Al final de la clase tendrás una app corriendo en tu máquina.”</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section>
+<section id="qué-es-streamlit" class="title-slide slide level1 center" data-background-color="#0d0d0d">
+<h1>¿Qué es Streamlit?</h1>
+
+</section>
+<section id="la-promesa-de-streamlit" class="slide level2 center">
+<h2>La promesa de Streamlit</h2>
+<div class="r-fit-text">
+<p>Python → App Web 🚀</p>
+</div>
+<aside class="notes">
+<p>Pregunta retórica para romper el hielo: “¿Cuántos han intentado mostrar un análisis de datos a alguien no técnico? ¿Cómo lo hicieron?” Streamlit resuelve exactamente ese dolor.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="qué-problema-resuelve" class="slide level2" data-auto-animate="true">
+<h2 data-id="quarto-animate-title">¿Qué problema resuelve?</h2>
+<div class="problem-cols">
+  <div class="prob-col fade-item" style="animation-delay:0.1s">
+    <div class="prob-icon">😩</div>
+    <div class="prob-title">Sin Streamlit</div>
+    <div class="prob-items">
+      <div class="prob-item bad">Aprender HTML/CSS/JS</div>
+      <div class="prob-item bad">Frameworks web complejos</div>
+      <div class="prob-item bad">Backend + Frontend separados</div>
+      <div class="prob-item bad">Despliegue complicado</div>
+      <div class="prob-item bad">Semanas de trabajo</div>
+    </div>
+  </div>
+  <div class="prob-divider fade-item" style="animation-delay:0.5s">VS</div>
+  <div class="prob-col fade-item" style="animation-delay:0.9s">
+    <div class="prob-icon">😍</div>
+    <div class="prob-title">Con Streamlit</div>
+    <div class="prob-items">
+      <div class="prob-item good">Solo Python</div>
+      <div class="prob-item good">Un solo archivo .py</div>
+      <div class="prob-item good">App lista al instante</div>
+      <div class="prob-item good">Deploy en 1 click</div>
+      <div class="prob-item good">Horas, no semanas</div>
+    </div>
+  </div>
+</div>
+<aside class="notes">
+<p>“Streamlit convierte tu script de Python directamente en una app web interactiva. Sin conocer HTML, sin servidores, sin nada extra. Es la herramienta favorita de Data Scientists y analistas para compartir su trabajo.”</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="quién-usa-streamlit" class="slide level2" data-auto-animate="true">
+<h2 data-id="quarto-animate-title">Quién usa Streamlit</h2>
+<div class="users-grid">
+  <div class="user-card fade-item" style="animation-delay:0.1s">
+    <div class="uc-icon">🔬</div>
+    <div class="uc-title">Data Scientists</div>
+    <div class="uc-desc">Modelos de ML en producción sin ingeniería web</div>
+  </div>
+  <div class="user-card fade-item" style="animation-delay:0.3s">
+    <div class="uc-icon">📊</div>
+    <div class="uc-title">Analistas</div>
+    <div class="uc-desc">Dashboards interactivos desde pandas y matplotlib</div>
+  </div>
+  <div class="user-card fade-item" style="animation-delay:0.5s">
+    <div class="uc-icon">🎓</div>
+    <div class="uc-title">Estudiantes</div>
+    <div class="uc-desc">Proyectos finales con interfaz profesional</div>
+  </div>
+  <div class="user-card fade-item" style="animation-delay:0.7s">
+    <div class="uc-icon">🏢</div>
+    <div class="uc-title">Empresas</div>
+    <div class="uc-desc">Prototipos rápidos y herramientas internas</div>
+  </div>
+</div>
+<div class="fragment fade-up">
+<div class="box-accent">
+<p>🏆 Más de <strong>30 millones</strong> de apps creadas · Usado por Google, Airbnb, Uber, NASA</p>
+</div>
+</div>
+<aside class="notes">
+<p>“Streamlit no es un juguete — es usado en producción por empresas Fortune 500. Pero su curva de aprendizaje es tan suave que un principiante puede tener algo corriendo en 5 minutos.”</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section></section>
+<section>
+<section id="instalación-y-primer-arranque" class="title-slide slide level1 center" data-background-color="#0d0d0d">
+<h1>Instalación y primer arranque</h1>
+
+</section>
+<section id="requisitos-previos" class="slide level2" data-auto-animate="true">
+<h2 data-id="quarto-animate-title">Requisitos previos</h2>
+<div class="req-list">
+  <div class="req-item fade-item" style="animation-delay:0.1s">
+    <div class="req-check">✅</div>
+    <div class="req-content">
+      <div class="req-title">Python 3.8+</div>
+      <div class="req-cmd">python --version</div>
+    </div>
+  </div>
+  <div class="req-item fade-item" style="animation-delay:0.4s">
+    <div class="req-check">✅</div>
+    <div class="req-content">
+      <div class="req-title">pip (viene con Python)</div>
+      <div class="req-cmd">pip --version</div>
+    </div>
+  </div>
+  <div class="req-item fade-item" style="animation-delay:0.7s">
+    <div class="req-check">✅</div>
+    <div class="req-content">
+      <div class="req-title">Un terminal / VS Code</div>
+      <div class="req-cmd">cualquier editor de texto sirve</div>
+    </div>
+  </div>
+</div>
+<div class="fragment fade-up">
+<div class="box-muted">
+<p>💡 <strong>Recomendado:</strong> Crea un entorno virtual primero → <code>python -m venv venv</code> → <code>source venv/bin/activate</code></p>
+</div>
+</div>
+<aside class="notes">
+<p>“Antes de instalar Streamlit, necesitamos Python instalado. Si tienen Anaconda o Miniconda también funciona perfecto. Les recomiendo entornos virtuales para mantener los proyectos aislados — buena práctica desde el primer día.”</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="instalación-1-solo-comando" class="slide level2" data-auto-animate="true">
+<h2 data-id="quarto-animate-title">Instalación — 1 solo comando</h2>
+<div class="install-scene">
+  <div class="terminal-window">
+    <div class="terminal-bar">
+      <span class="t-dot" style="background:#ff5f56"></span>
+      <span class="t-dot" style="background:#ffbd2e"></span>
+      <span class="t-dot" style="background:#27c93f"></span>
+      <span class="t-title">Terminal</span>
+    </div>
+    <div class="terminal-body" id="term-body">
+      <div class="t-line"><span class="t-prompt">$</span> <span class="t-cmd" id="install-cmd">pip install streamlit</span></div>
+      <div class="t-output" id="install-out" style="display:none">
+        <div class="t-line dim">Collecting streamlit...</div>
+        <div class="t-line dim">Downloading streamlit-1.x.x...</div>
+        <div class="t-line dim">Installing collected packages: streamlit</div>
+        <div class="t-line ok">✓ Successfully installed streamlit</div>
+      </div>
+    </div>
+  </div>
+  <div class="btn-row" style="margin-top:0.8em">
+    <button class="demo-btn" onclick="runInstall()">▶ Ejecutar</button>
+    <button class="demo-btn demo-btn-ghost" onclick="resetInstall()">↺ Reiniciar</button>
+  </div>
+</div>
+
+<script>
+function runInstall() {
+  var out = document.getElementById('install-out');
+  out.style.display = 'block';
+  out.querySelectorAll('.t-line').forEach(function(el, i) {
+    el.style.opacity = 0;
+    setTimeout(function(){ el.style.transition='opacity 0.4s'; el.style.opacity=1; }, i * 350);
+  });
+}
+function resetInstall() {
+  var out = document.getElementById('install-out');
+  out.style.display = 'none';
+}
+</script>
+<div class="fragment fade-up">
+<div class="box-accent">
+<p>Luego verificar: <code>streamlit --version</code> → debería mostrar la versión instalada</p>
+</div>
+</div>
+<aside class="notes">
+<p>“Un solo comando. pip descarga Streamlit y todas sus dependencias automáticamente. El proceso tarda 30-60 segundos dependiendo de la conexión. Después verificamos con <code>streamlit --version</code> que todo quedó bien.”</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="tu-primera-app-hello.py" class="slide level2" data-auto-animate="true">
+<h2 data-id="quarto-animate-title">Tu primera app — hello.py</h2>
+<div class="file-create-scene">
+  <div class="file-tab">📄 hello.py</div>
+  <div class="code-window">
+    <pre><code class="language-python" id="hello-code">import streamlit as st
+
+st.title("¡Hola, Streamlit! 🎈")
+st.write("Mi primera app en Python.")</code></pre>
+  </div>
+  <div class="run-row fade-item" style="animation-delay:0.5s">
+    <div class="terminal-mini">
+      <span class="t-prompt">$</span>
+      <span class="t-cmd">streamlit run hello.py</span>
+    </div>
+  </div>
+</div>
+<div class="fragment fade-up">
+<div class="browser-preview">
+  <div class="bp-bar">
+    <div class="bp-url">🌐 localhost:8501</div>
+  </div>
+  <div class="bp-content">
+    <div class="bp-title">¡Hola, Streamlit! 🎈</div>
+    <div class="bp-text">Mi primera app en Python.</div>
+  </div>
+</div>
+</div>
+<aside class="notes">
+<p>“Eso es todo. 3 líneas de Python y tienes una app web. <code>streamlit run hello.py</code> abre automáticamente el navegador en localhost:8501. Cada vez que guardes el archivo, la app se recarga automáticamente.”</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="anatomía-del-comando-streamlit-run" class="slide level2" data-auto-animate="true">
+<h2 data-id="quarto-animate-title">Anatomía del comando <code>streamlit run</code></h2>
+<div class="cmd-anatomy">
+  <div class="cmd-parts">
+    <div class="cmd-part fade-item" style="animation-delay:0.1s">
+      <div class="cp-word">streamlit</div>
+      <div class="cp-arrow">↓</div>
+      <div class="cp-desc">El programa principal</div>
+    </div>
+    <div class="cmd-part fade-item" style="animation-delay:0.4s">
+      <div class="cp-word accent">run</div>
+      <div class="cp-arrow">↓</div>
+      <div class="cp-desc">Subcomando: ejecutar una app</div>
+    </div>
+    <div class="cmd-part fade-item" style="animation-delay:0.7s">
+      <div class="cp-word green">hello.py</div>
+      <div class="cp-arrow">↓</div>
+      <div class="cp-desc">Tu script de Python</div>
+    </div>
+  </div>
+  <div class="cmd-extras fade-item" style="animation-delay:1.1s">
+    <div class="ce-title">Opciones útiles:</div>
+    <div class="ce-item"><code>--server.port 8502</code> — cambiar el puerto</div>
+    <div class="ce-item"><code>--server.headless true</code> — no abrir el browser</div>
+    <div class="ce-item"><code>--logger.level debug</code> — ver más logs</div>
+  </div>
+</div>
+<aside class="notes">
+<p>“El comando <code>streamlit run</code> es todo lo que necesitas para el 99% de los casos. Streamlit levanta un servidor web local, sirve tu app en el puerto 8501 por defecto, y mantiene un watcher para recargar cuando detecta cambios en el archivo.”</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section></section>
+<section>
+<section id="el-scripting-flow-el-corazón-de-streamlit" class="title-slide slide level1 center" data-background-color="#0d0d0d">
+<h1>El Scripting Flow — el corazón de Streamlit 🧠</h1>
+
+</section>
+<section id="cómo-ejecuta-streamlit-tu-código" class="slide level2 center">
+<h2>¿Cómo ejecuta Streamlit tu código?</h2>
+<div class="r-fit-text">
+<p>De arriba → abajo, siempre 🔄</p>
+</div>
+<aside class="notes">
+<p>“Este es el concepto más importante de todo el módulo. Entender el scripting flow te va a evitar el 80% de los bugs y confusiones que tienen los principiantes. Presta mucha atención aquí.”</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="el-flujo-paso-a-paso" class="slide level2" data-auto-animate="true">
+<h2 data-id="quarto-animate-title">El flujo paso a paso</h2>
+<div class="flow-steps" id="flow-steps">
+  <div class="fs-step fade-item" style="animation-delay:0.1s">
+    <div class="fs-num">1</div>
+    <div class="fs-content">
+      <div class="fs-title">Usuario abre la app</div>
+      <div class="fs-desc">Streamlit ejecuta el script completo de arriba a abajo</div>
+    </div>
+  </div>
+  <div class="fs-arrow fade-item" style="animation-delay:0.4s">↓</div>
+  <div class="fs-step fade-item" style="animation-delay:0.7s">
+    <div class="fs-num">2</div>
+    <div class="fs-content">
+      <div class="fs-title">Usuario interactúa (click, slider, input...)</div>
+      <div class="fs-desc">Streamlit vuelve a ejecutar TODO el script desde cero</div>
+    </div>
+  </div>
+  <div class="fs-arrow fade-item" style="animation-delay:1.0s">↓</div>
+  <div class="fs-step fade-item" style="animation-delay:1.3s">
+    <div class="fs-num">3</div>
+    <div class="fs-content">
+      <div class="fs-title">Streamlit compara el resultado</div>
+      <div class="fs-desc">Solo actualiza en pantalla lo que cambió (DOM diffing)</div>
+    </div>
+  </div>
+  <div class="fs-arrow fade-item" style="animation-delay:1.6s">↓</div>
+  <div class="fs-step fade-item" style="animation-delay:1.9s">
+    <div class="fs-num">4</div>
+    <div class="fs-content">
+      <div class="fs-title">Pantalla actualizada ✅</div>
+      <div class="fs-desc">El usuario ve el nuevo resultado al instante</div>
+    </div>
+  </div>
+</div>
+<aside class="notes">
+<p>“Cada vez que alguien hace clic en un botón, mueve un slider o escribe en un campo de texto, Streamlit re-ejecuta tu script completo de arriba a abajo. Esto suena ineficiente pero en la práctica es increíblemente simple y predecible. No hay estado oculto, no hay callbacks complejos.”</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="demo-del-scripting-flow" class="slide level2" data-auto-animate="true">
+<h2 data-id="quarto-animate-title">Demo del Scripting Flow</h2>
+<div class="sf-demo">
+  <div class="sf-code">
+    <div class="sfc-bar">📄 app.py</div>
+    <div class="sfc-body" id="sfc-body">
+      <div class="sfc-line" id="sfl-1">import streamlit as st</div>
+      <div class="sfc-line" id="sfl-2">st.title("Demo")</div>
+      <div class="sfc-line" id="sfl-3">nombre = st.text_input("Tu nombre")</div>
+      <div class="sfc-line" id="sfl-4">if nombre:</div>
+      <div class="sfc-line" id="sfl-5">    st.write(f"¡Hola, {nombre}! 👋")</div>
+    </div>
+  </div>
+
+  <div class="sf-arrow-col">
+    <div class="sf-big-arrow" id="sf-exec-arrow">▶</div>
+  </div>
+
+  <div class="sf-preview">
+    <div class="sfp-bar">🌐 localhost:8501</div>
+    <div class="sfp-body">
+      <div class="sfp-title">Demo</div>
+      <input id="sfp-input" class="sfp-input" placeholder="Tu nombre" oninput="sfUpdate(this.value)">
+      <div id="sfp-output" class="sfp-output"></div>
+    </div>
+  </div>
+</div>
+
+<div class="sf-log-area">
+  <div class="sfl-header">🔄 Ejecuciones del script:</div>
+  <div id="sf-log" class="sf-log"></div>
+</div>
+
+<script>
+var sfCount = 0;
+function sfUpdate(val) {
+  sfCount++;
+  // highlight lines
+  var lines = document.querySelectorAll('.sfc-line');
+  var delay = 0;
+  lines.forEach(function(l, i) {
+    l.classList.remove('sfc-active');
+    setTimeout((function(el){ return function(){ el.classList.add('sfc-active'); }; })(l), delay);
+    delay += 120;
+  });
+  setTimeout(function(){
+    document.querySelectorAll('.sfc-line').forEach(function(l){ l.classList.remove('sfc-active'); });
+  }, delay + 300);
+
+  // update output
+  var out = document.getElementById('sfp-output');
+  if (val.trim()) {
+    out.textContent = '¡Hola, ' + val + '! 👋';
+    out.style.opacity = 1;
+  } else {
+    out.textContent = '';
+  }
+
+  // log
+  var log = document.getElementById('sf-log');
+  var entry = document.createElement('div');
+  entry.className = 'sf-log-entry';
+  entry.textContent = '▶ Ejecución #' + sfCount + ' — input: "' + val + '"';
+  log.appendChild(entry);
+  log.scrollTop = log.scrollHeight;
+}
+</script>
+<aside class="notes">
+<p>“Escriban algo en el input y observen el log de la derecha — cada keystroke dispara una re-ejecución completa del script. Las líneas se iluminan de arriba a abajo para que vean el flujo. Así es exactamente como funciona Streamlit.”</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="la-regla-de-oro" class="slide level2 center">
+<h2>La regla de oro 🥇</h2>
+<div class="golden-rule">
+  <div class="gr-box fade-item" style="animation-delay:0.1s">
+    <div class="gr-icon">🔄</div>
+    <div class="gr-text">
+      <strong>Cada interacción del usuario = re-ejecución completa del script</strong>
+    </div>
+  </div>
+  <div class="gr-consequence fade-item" style="animation-delay:0.6s">
+    <div class="grc-item">
+      <span class="grc-icon">✅</span>
+      <span>El orden del código <strong>importa</strong> — lo que está arriba se ejecuta primero</span>
+    </div>
+    <div class="grc-item">
+      <span class="grc-icon">✅</span>
+      <span>Las variables <strong>no persisten</strong> entre ejecuciones (a menos que uses <code>st.session_state</code>)</span>
+    </div>
+    <div class="grc-item">
+      <span class="grc-icon">✅</span>
+      <span>El código Python normal funciona <strong>exactamente igual</strong> — Streamlit solo agrega widgets</span>
+    </div>
+  </div>
+</div>
+<aside class="notes">
+<p>“Graben esto en la memoria: cada vez que el usuario hace algo, el script corre de nuevo de arriba a abajo. Las variables se reinician. Los cálculos se repiten. Esto se puede optimizar con <code>@st.cache_data</code> (módulo 3), pero por ahora lo importante es entender el modelo.”</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section></section>
+<section>
+<section id="widgets-de-texto-y-títulos" class="title-slide slide level1 center" data-background-color="#0d0d0d">
+<h1>Widgets de Texto y Títulos 📝</h1>
+
+</section>
+<section id="st.title-st.header-st.subheader" class="slide level2" data-auto-animate="true">
+<h2 data-id="quarto-animate-title"><code>st.title()</code> · <code>st.header()</code> · <code>st.subheader()</code></h2>
+<div class="widget-split">
+  <div class="ws-code">
+    <div class="ws-bar">📄 código</div>
+    <pre><code class="language-python">import streamlit as st
+
+st.title("Título Principal")
+# Argumento: texto (str)
+# Nivel H1 — el más grande
+
+st.header("Sección")
+# Argumento: texto (str)
+# Nivel H2 — para secciones
+
+st.subheader("Subsección")
+# Argumento: texto (str)
+# Nivel H3 — para subsecciones</code></pre>
+  </div>
+  <div class="ws-preview">
+    <div class="ws-bar">🌐 resultado</div>
+    <div class="ws-pview">
+      <div class="wsp-title">Título Principal</div>
+      <div class="wsp-header">Sección</div>
+      <div class="wsp-subheader">Subsección</div>
+    </div>
+  </div>
+</div>
+<div class="fragment fade-up">
+<div class="box-muted">
+<p>Los tres aceptan <strong>anchor</strong> (para links internos) y <strong>help</strong> (tooltip). Ej: <code>st.title("App", anchor="inicio")</code></p>
+</div>
+</div>
+<aside class="notes">
+<p>“title, header y subheader son equivalentes a H1, H2 y H3 en HTML. El argumento principal es siempre el texto. Opcionalmente puedes pasar <code>anchor</code> para crear IDs en el HTML y <code>help</code> para mostrar un tooltip de interrogante.”</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="st.write-el-comando-todo-en-uno" class="slide level2" data-auto-animate="true">
+<h2 data-id="quarto-animate-title"><code>st.write()</code> — el comando todo-en-uno</h2>
+<div class="write-demo">
+  <div class="wd-title">st.write() acepta casi cualquier cosa:</div>
+  <div class="wd-grid">
+    <div class="wd-item fade-item" style="animation-delay:0.1s">
+      <div class="wdi-code">st.write("Texto normal")</div>
+      <div class="wdi-result">Texto normal</div>
+    </div>
+    <div class="wd-item fade-item" style="animation-delay:0.3s">
+      <div class="wdi-code">st.write("**Negrita** y *cursiva*")</div>
+      <div class="wdi-result"><strong>Negrita</strong> y <em>cursiva</em></div>
+    </div>
+    <div class="wd-item fade-item" style="animation-delay:0.5s">
+      <div class="wdi-code">st.write(42)</div>
+      <div class="wdi-result">42</div>
+    </div>
+    <div class="wd-item fade-item" style="animation-delay:0.7s">
+      <div class="wdi-code">st.write({"a": 1, "b": 2})</div>
+      <div class="wdi-result">{ "a": 1, "b": 2 }</div>
+    </div>
+    <div class="wd-item fade-item" style="animation-delay:0.9s">
+      <div class="wdi-code">st.write(df)</div>
+      <div class="wdi-result">📊 tabla interactiva</div>
+    </div>
+    <div class="wd-item fade-item" style="animation-delay:1.1s">
+      <div class="wdi-code">st.write(figura)</div>
+      <div class="wdi-result">📈 gráfico</div>
+    </div>
+  </div>
+</div>
+<aside class="notes">
+<p>“st.write es el navaja suiza de Streamlit. Detecta automáticamente qué tipo de dato le estás pasando y lo renderiza de la forma más apropiada. Texto → markdown. Número → número. DataFrame → tabla. Gráfico de matplotlib → imagen. Es perfecto para prototipado rápido.”</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="st.text-st.markdown-st.caption" class="slide level2" data-auto-animate="true">
+<h2 data-id="quarto-animate-title"><code>st.text()</code> · <code>st.markdown()</code> · <code>st.caption()</code></h2>
+<div class="widget-split">
+  <div class="ws-code">
+    <div class="ws-bar">📄 código</div>
+    <pre><code class="language-python">st.text("Texto plano sin formato.")
+# Argumento: body (str)
+# Sin markdown — literal
+
+st.markdown("**Negrita**, *cursiva*, `código`")
+# Argumento: body (str)
+# unsafe_allow_html=True → HTML directo
+
+st.caption("Nota al pie o aclaración")
+# Argumento: body (str)
+# Texto pequeño y gris — ideal para
+# fuentes, notas y aclaraciones</code></pre>
+  </div>
+  <div class="ws-preview">
+    <div class="ws-bar">🌐 resultado</div>
+    <div class="ws-pview">
+      <div class="wsp-text">Texto plano sin formato.</div>
+      <div class="wsp-md"><strong>Negrita</strong>, <em>cursiva</em>, <code>código</code></div>
+      <div class="wsp-caption">Nota al pie o aclaración</div>
+    </div>
+  </div>
+</div>
+<aside class="notes">
+<p>“st.text es para texto sin procesar, literalmente lo que escribes. st.markdown es el más poderoso — acepta Markdown completo e incluso HTML si activas <code>unsafe_allow_html</code>. st.caption es ideal para footnotes, créditos o aclaraciones secundarias — sale en gris y pequeño.”</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="st.code-st.divider" class="slide level2" data-auto-animate="true">
+<h2 data-id="quarto-animate-title"><code>st.code()</code> · <code>st.divider()</code></h2>
+<div class="widget-split">
+  <div class="ws-code">
+    <div class="ws-bar">📄 código</div>
+    <pre><code class="language-python">st.code("""
+def saludar(nombre):
+    return f"Hola, {nombre}!"
+""", language="python")
+# language: "python","sql","bash","json"...
+# line_numbers=True → muestra nros de línea
+
+st.divider()
+# Sin argumentos
+# Solo dibuja una línea separadora
+# Equivalente a st.markdown("---")</code></pre>
+  </div>
+  <div class="ws-preview">
+    <div class="ws-bar">🌐 resultado</div>
+    <div class="ws-pview">
+      <div class="wsp-code-block">
+        <span class="cb-kw">def</span> <span class="cb-fn">saludar</span>(nombre):<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="cb-kw">return</span> <span class="cb-str">f"Hola, {nombre}!"</span>
+      </div>
+      <div class="wsp-divider"></div>
+    </div>
+  </div>
+</div>
+<aside class="notes">
+<p>“st.code muestra bloques de código con syntax highlighting. El argumento <code>language</code> acepta cualquier lenguaje que soporte Prism.js. Con <code>line_numbers=True</code> agrega números de línea — muy útil para tutoriales. st.divider es simplemente una línea horizontal para separar secciones visualmente.”</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section></section>
+<section>
+<section id="inputs-simples-el-usuario-habla" class="title-slide slide level1 center" data-background-color="#0d0d0d">
+<h1>Inputs Simples — El Usuario Habla 🎛️</h1>
+
+</section>
+<section id="st.button" class="slide level2" data-auto-animate="true">
+<h2 data-id="quarto-animate-title"><code>st.button()</code></h2>
+<div class="widget-full">
+  <div class="wf-code">
+    <pre><code class="language-python">clicked = st.button(
+    label="Haz clic aquí",  # texto del botón (str) *obligatorio*
+    key="mi_boton",         # ID único (str) — necesario si hay varios
+    help="Tooltip al hover",# texto de ayuda (str)
+    type="primary",         # "primary" (azul) o "secondary" (gris)
+    disabled=False,         # deshabilitar (bool)
+    use_container_width=True# ancho completo (bool)
+)
+
+if clicked:
+    st.write("¡Botón presionado! 🎉")</code></pre>
+  </div>
+  <div class="wf-note">
+    <div class="wfn-title">⚠️ Comportamiento clave:</div>
+    <div class="wfn-items">
+      <div class="wfn-item">Devuelve <code>True</code> solo en la ejecución inmediatamente posterior al click</div>
+      <div class="wfn-item">En la siguiente re-ejecución vuelve a <code>False</code></div>
+      <div class="wfn-item">Para estado persistente → <code>st.session_state</code></div>
+    </div>
+  </div>
+</div>
+<aside class="notes">
+<p>“st.button devuelve True solo una vez — en la re-ejecución del script inmediatamente después del click. Si el usuario no vuelve a hacer clic, en la próxima ejecución devuelve False. Esto confunde a muchos principiantes. Es por el scripting flow: cada ejecución es un nuevo mundo.”</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="st.checkbox-st.text_input" class="slide level2" data-auto-animate="true">
+<h2 data-id="quarto-animate-title"><code>st.checkbox()</code> · <code>st.text_input()</code></h2>
+<div class="double-widget">
+  <div class="dw-col">
+    <div class="dw-title">st.checkbox()</div>
+    <pre><code class="language-python">activo = st.checkbox(
+    label="Activar opción",
+    value=False,    # estado inicial (bool)
+    key="check1",   # ID único
+    help="Ayuda",   # tooltip
+    disabled=False  # deshabilitar
+)
+# Devuelve True/False</code></pre>
+    <div class="dw-preview">
+      <label class="fake-check">
+        <input type="checkbox" id="demo-check" onchange="checkUpdate(this)">
+        <span>Activar opción</span>
+      </label>
+      <div id="check-out" class="dw-out"></div>
+    </div>
+  </div>
+  <div class="dw-col">
+    <div class="dw-title">st.text_input()</div>
+    <pre><code class="language-python">texto = st.text_input(
+    label="Escribe algo",
+    value="",         # valor inicial (str)
+    max_chars=100,    # máx caracteres (int)
+    key="input1",     # ID único
+    type="default",   # "default" o "password"
+    placeholder="..."  # texto fantasma
+)
+# Devuelve el string escrito</code></pre>
+    <div class="dw-preview">
+      <input id="demo-ti" class="fake-input" placeholder="Escribe algo..." oninput="tiUpdate(this.value)">
+      <div id="ti-out" class="dw-out"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+function checkUpdate(el) {
+  document.getElementById('check-out').textContent = 'Valor: ' + el.checked;
+}
+function tiUpdate(val) {
+  document.getElementById('ti-out').textContent = val ? 'Texto: "' + val + '"' : '';
+}
+</script>
+<aside class="notes">
+<p>“checkbox devuelve True o False. Es perfecto para mostrar/ocultar secciones condicionales con if. text_input devuelve el string que escribió el usuario. El <code>type='password'</code> oculta los caracteres — muy útil para tokens y contraseñas.”</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="st.number_input-st.slider" class="slide level2" data-auto-animate="true">
+<h2 data-id="quarto-animate-title"><code>st.number_input()</code> · <code>st.slider()</code></h2>
+<div class="double-widget">
+  <div class="dw-col">
+    <div class="dw-title">st.number_input()</div>
+    <pre><code class="language-python">num = st.number_input(
+    label="Edad",
+    min_value=0,    # mínimo (int/float)
+    max_value=120,  # máximo (int/float)
+    value=25,       # valor inicial
+    step=1,         # incremento
+    format="%d",    # formato de display
+    key="num1"
+)
+# Devuelve int o float</code></pre>
+    <div class="dw-preview" style="font-size:0.8em; color:#ccc;">
+      <div>Resultado: <code id="num-out">25</code></div>
+      <div style="margin-top:0.3em; display:flex; gap:0.3em; align-items:center;">
+        <button class="small-btn" onclick="adjNum(-1)">−</button>
+        <span id="num-val">25</span>
+        <button class="small-btn" onclick="adjNum(1)">+</button>
+      </div>
+    </div>
+  </div>
+  <div class="dw-col">
+    <div class="dw-title">st.slider()</div>
+    <pre><code class="language-python">val = st.slider(
+    label="Temperatura",
+    min_value=0,    # mínimo
+    max_value=100,  # máximo
+    value=50,       # inicial (o tupla para rango)
+    step=1,         # paso
+    format="%d°C",  # formato del label
+    key="slider1"
+)
+# value=(20,80) → slider de rango</code></pre>
+    <div class="dw-preview" style="font-size:0.8em; color:#ccc;">
+      <input type="range" id="demo-slider" min="0" max="100" value="50" oninput="slideUpdate(this.value)" class="fake-slider">
+      <div>Valor: <code id="slider-out">50</code>°C</div>
+    </div>
+  </div>
+</div>
+
+<script>
+var numVal = 25;
+function adjNum(d) {
+  numVal = Math.max(0, Math.min(120, numVal + d));
+  document.getElementById('num-val').textContent = numVal;
+  document.getElementById('num-out').textContent = numVal;
+}
+function slideUpdate(v) {
+  document.getElementById('slider-out').textContent = v;
+}
+</script>
+<aside class="notes">
+<p>“number_input es ideal para valores exactos con flechas de incremento. slider es mejor para rangos visuales donde la precisión exacta no es crítica. El slider puede retornar una tupla si le das <code>value=(20,80)</code> para crear un selector de rango — muy útil para filtros de fecha o precio.”</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section></section>
+<section>
+<section id="feedback-visual-la-app-habla" class="title-slide slide level1 center" data-background-color="#0d0d0d">
+<h1>Feedback Visual — La App Habla 💬</h1>
+
+</section>
+<section id="los-mensajes-de-estado" class="slide level2" data-auto-animate="true">
+<h2 data-id="quarto-animate-title">Los mensajes de estado</h2>
+<div class="status-demo">
+  <div class="sd-grid">
+    <div class="sd-item fade-item" style="animation-delay:0.1s">
+      <div class="sd-code"><code>st.success("Operación exitosa ✅")</code></div>
+      <div class="sd-msg success-msg">✅ Operación exitosa</div>
+    </div>
+    <div class="sd-item fade-item" style="animation-delay:0.4s">
+      <div class="sd-code"><code>st.error("Algo salió mal ❌")</code></div>
+      <div class="sd-msg error-msg">❌ Algo salió mal</div>
+    </div>
+    <div class="sd-item fade-item" style="animation-delay:0.7s">
+      <div class="sd-code"><code>st.warning("Cuidado ⚠️")</code></div>
+      <div class="sd-msg warning-msg">⚠️ Cuidado con esto</div>
+    </div>
+    <div class="sd-item fade-item" style="animation-delay:1.0s">
+      <div class="sd-code"><code>st.info("Para tu información 💡")</code></div>
+      <div class="sd-msg info-msg">💡 Para tu información</div>
+    </div>
+  </div>
+  <div class="sd-args fade-item" style="animation-delay:1.4s">
+    <div class="sda-title">Todos comparten los mismos argumentos:</div>
+    <div class="sda-items">
+      <code>body</code> (str) — el mensaje
+      &nbsp;·&nbsp;
+      <code>icon</code> (str) — emoji o None
+      &nbsp;·&nbsp;
+      <code>expanded</code> (bool) — colapsable si es largo
+    </div>
+  </div>
+</div>
+<aside class="notes">
+<p>“Los cuatro mensajes de estado tienen la misma firma de función. El único argumento obligatorio es el texto. El color y el ícono izquierdo se determinan automáticamente según el tipo. Puedes pasar <code>icon</code> para personalizar el emoji que aparece a la izquierda.”</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="st.balloons-st.spinner" class="slide level2" data-auto-animate="true">
+<h2 data-id="quarto-animate-title"><code>st.balloons()</code> · <code>st.spinner()</code></h2>
+<div class="fun-widgets">
+  <div class="fw-col">
+    <div class="fw-title">🎈 st.balloons()</div>
+    <pre><code class="language-python">if st.button("Celebrar"):
+    st.balloons()
+# Sin argumentos
+# Lanza una animación de globos
+# Perfecto para onboarding y logros</code></pre>
+    <div class="fw-preview">
+      <button class="demo-btn" onclick="launchBalloons()">🎈 Lanzar globos</button>
+      <div id="balloon-area" style="font-size:2em; text-align:center; min-height:40px;"></div>
+    </div>
+  </div>
+  <div class="fw-col">
+    <div class="fw-title">⏳ st.spinner()</div>
+    <pre><code class="language-python">with st.spinner("Procesando..."):
+    time.sleep(2)      # simulación
+    resultado = calcular()
+# text (str): mensaje del spinner
+# Se usa como context manager (with)
+# Mientras dura el bloque → spinner activo</code></pre>
+    <div class="fw-preview">
+      <button class="demo-btn" onclick="showSpinner()">⏳ Simular carga</button>
+      <div id="spinner-area" style="font-size:0.85em; margin-top:0.4em; color:#FF4B4B;"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+function launchBalloons() {
+  var area = document.getElementById('balloon-area');
+  area.innerHTML = '';
+  var emojis = ['🎈','🎉','🎊','🥳','🎈','🎊'];
+  emojis.forEach(function(e, i) {
+    setTimeout(function(){
+      area.innerHTML += e + ' ';
+    }, i * 150);
+  });
+  setTimeout(function(){ area.innerHTML = ''; }, 2500);
+}
+function showSpinner() {
+  var area = document.getElementById('spinner-area');
+  area.textContent = '⏳ Procesando...';
+  setTimeout(function(){ area.textContent = '✅ ¡Listo!'; }, 1800);
+  setTimeout(function(){ area.textContent = ''; }, 3000);
+}
+</script>
+<aside class="notes">
+<p>“st.balloons es una de las cosas más divertidas de Streamlit — lanza globos animados por toda la pantalla. Úsenlo para celebrar el primer formulario completado o un modelo entrenado exitosamente. st.spinner es crítico para operaciones lentas — muestra un indicador de carga mientras el bloque <code>with</code> está ejecutándose.”</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section></section>
+<section>
+<section id="layout-básico-organizar-la-app" class="title-slide slide level1 center" data-background-color="#0d0d0d">
+<h1>Layout Básico — Organizar la App 🏗️</h1>
+
+</section>
+<section id="st.columns" class="slide level2" data-auto-animate="true">
+<h2 data-id="quarto-animate-title"><code>st.columns()</code></h2>
+<div class="layout-demo">
+  <div class="ld-code">
+    <pre><code class="language-python">col1, col2, col3 = st.columns(3)
+# Argumento 1: n_columns (int) o lista de pesos
+# st.columns([2, 1, 1]) → primera columna más ancha
+# gap="small"/"medium"/"large" — espacio entre cols
+
+with col1:
+    st.metric("Ventas", "$ 1,234")
+
+with col2:
+    st.metric("Clientes", "89")
+
+with col3:
+    st.metric("Conversión", "7.2%")</code></pre>
+  </div>
+  <div class="ld-preview">
+    <div class="lp-bar">🌐 resultado</div>
+    <div class="lp-cols">
+      <div class="lp-col">
+        <div class="lp-metric-label">Ventas</div>
+        <div class="lp-metric-val">$ 1,234</div>
+      </div>
+      <div class="lp-col">
+        <div class="lp-metric-label">Clientes</div>
+        <div class="lp-metric-val">89</div>
+      </div>
+      <div class="lp-col">
+        <div class="lp-metric-label">Conversión</div>
+        <div class="lp-metric-val">7.2%</div>
+      </div>
+    </div>
+  </div>
+</div>
+<aside class="notes">
+<p>“st.columns es uno de los widgets más usados en Streamlit. Divide el ancho disponible en columnas y te da un objeto para cada una. Puedes usar <code>with col1:</code> como context manager, o guardar los widgets directamente: <code>col1.write('texto')</code>. Los pesos proporcionales como <code>[2,1,1]</code> son muy útiles para layouts asimétricos.”</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="st.expander-st.container" class="slide level2" data-auto-animate="true">
+<h2 data-id="quarto-animate-title"><code>st.expander()</code> · <code>st.container()</code></h2>
+<div class="double-widget">
+  <div class="dw-col">
+    <div class="dw-title">st.expander()</div>
+    <pre><code class="language-python">with st.expander("Ver detalles"):
+    # label: texto del header (str)
+    # expanded=False: cerrado por defecto
+    # Ideal para: configs, logs,
+    # información secundaria
+    st.write("Contenido oculto...")
+    st.code("print('dentro!')")</code></pre>
+    <div class="dw-preview">
+      <div class="fake-expander" id="exp1">
+        <div class="fe-header" onclick="toggleExp('exp1')">
+          <span id="exp1-arrow">▶</span> Ver detalles
+        </div>
+        <div class="fe-body" id="exp1-body" style="display:none">
+          <div style="color:#ccc; font-size:0.85em; padding:0.3em 0;">Contenido oculto...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="dw-col">
+    <div class="dw-title">st.container()</div>
+    <pre><code class="language-python">with st.container():
+    # Sin argumentos obligatorios
+    # border=True → borde visible
+    # height=300 → altura fija + scroll
+    # Agrupa widgets lógicamente
+    st.write("Elemento 1")
+    st.write("Elemento 2")
+    # Útil para agrupar, aplicar
+    # estilos o controlar layout</code></pre>
+    <div class="dw-preview">
+      <div class="fake-container">
+        <div style="color:#ccc; font-size:0.82em;">Elemento 1</div>
+        <div style="color:#ccc; font-size:0.82em;">Elemento 2</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function toggleExp(id) {
+  var body = document.getElementById(id + '-body');
+  var arrow = document.getElementById(id + '-arrow');
+  if (body.style.display === 'none') {
+    body.style.display = 'block';
+    arrow.textContent = '▼';
+  } else {
+    body.style.display = 'none';
+    arrow.textContent = '▶';
+  }
+}
+</script>
+<aside class="notes">
+<p>“st.expander es perfecto para contenido secundario que no quieres mostrar siempre — configuraciones avanzadas, logs, explicaciones adicionales. El usuario decide si lo abre. st.container con <code>border=True</code> es nuevo en versiones recientes y permite crear tarjetas visuales sin CSS adicional.”</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section></section>
+<section>
+<section id="media-imágenes-y-video" class="title-slide slide level1 center" data-background-color="#0d0d0d">
+<h1>Media — Imágenes y Video 🖼️</h1>
+
+</section>
+<section id="st.image-st.video" class="slide level2" data-auto-animate="true">
+<h2 data-id="quarto-animate-title"><code>st.image()</code> · <code>st.video()</code></h2>
+<div class="media-demo">
+  <div class="md-col">
+    <div class="md-title">📷 st.image()</div>
+    <pre><code><span class="sy-fn">st.image</span>(
+  image,                 <span class="sy-cm"># path, URL, PIL, numpy</span>
+  caption=<span class="sy-str">"Texto"</span>,       <span class="sy-cm"># pie de imagen (str)</span>
+  width=<span class="sy-num">300</span>,             <span class="sy-cm"># ancho en px</span>
+  use_column_width=<span class="sy-kw">True</span>, <span class="sy-cm"># 100% ancho</span>
+  clamp=<span class="sy-kw">False</span>,           <span class="sy-cm"># clamp de píxeles</span>
+  channels=<span class="sy-str">"RGB"</span>,        <span class="sy-cm"># "RGB" o "BGR"</span>
+  output_format=<span class="sy-str">"auto"</span>   <span class="sy-cm"># "JPEG","PNG","auto"</span>
+)</code></pre>
+    <div class="md-example">
+      <div class="fake-image">
+        <div class="fi-canvas">
+          <div class="fi-icon">🏔️</div>
+          <div class="fi-dims">300 × 200 px</div>
+        </div>
+        <div class="fi-caption">caption: "Mi foto"</div>
+      </div>
+    </div>
+  </div>
+  <div class="md-col">
+    <div class="md-title">🎬 st.video()</div>
+    <pre><code><span class="sy-fn">st.video</span>(
+  data,                <span class="sy-cm"># URL, path local, bytes</span>
+  format=<span class="sy-str">"video/mp4"</span>, <span class="sy-cm"># MIME type</span>
+  start_time=<span class="sy-num">0</span>,       <span class="sy-cm"># segundo de inicio</span>
+  subtitles=<span class="sy-kw">None</span>      <span class="sy-cm"># subs VTT o dict</span>
+)
+<span class="sy-cm"># ✓ URLs de YouTube</span>
+<span class="sy-cm"># ✓ Archivos .mp4 / .webm</span>
+<span class="sy-cm"># ✓ bytes en memoria</span></code></pre>
+    <div class="md-example">
+      <div class="fake-video">
+        <div class="fv-screen">
+          <div class="fv-play-btn">▶</div>
+        </div>
+        <div class="fv-controls">
+          <span class="fv-time">0:00 / 0:42</span>
+          <div class="fv-bar"><div class="fv-dot"></div></div>
+          <span class="fv-vol">🔊</span>
+        </div>
+        <div class="fv-label">video.mp4</div>
+      </div>
+    </div>
+  </div>
+</div>
+<aside class="notes">
+<p>“st.image es muy flexible — acepta URLs de internet, rutas locales, objetos PIL para imágenes procesadas con Python, y arrays de numpy para visualizar datos de imágenes directamente. st.video también acepta URLs de YouTube directamente, no solo archivos locales.”</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section></section>
+<section>
+<section id="el-scripting-flow-en-acción-todo-junto" class="title-slide slide level1 center" data-background-color="#0d0d0d">
+<h1>El Scripting Flow en acción — Todo junto 🎯</h1>
+
+</section>
+<section id="app-completa-de-ejemplo" class="slide level2" data-auto-animate="true">
+<h2 data-id="quarto-animate-title">App completa de ejemplo</h2>
+<div class="full-app-demo">
+  <div class="fad-code">
+    <div class="fad-bar">📄 app_completa.py</div>
+    <pre style="font-size:0.62em; max-height: 320px; overflow-y:auto;"><code class="language-python">import streamlit as st
+
+st.title("🎛️ Mi App de Demostración")
+st.divider()
+
+# Sección de inputs
+col1, col2 = st.columns(2)
+
+with col1:
+    st.header("Configuración")
+    nombre = st.text_input("Tu nombre", placeholder="Ej: Ana")
+    edad = st.slider("Edad", 1, 100, 25)
+    activo = st.checkbox("Modo avanzado")
+
+with col2:
+    st.header("Controles")
+    nivel = st.number_input("Nivel", 1, 10, 1)
+    if st.button("Generar", type="primary"):
+        st.balloons()
+
+st.divider()
+
+# Sección de output — reacciona a los inputs
+if nombre:
+    st.success(f"¡Hola {nombre}! Tienes {edad} años.")
+    if activo:
+        with st.expander("Detalles avanzados"):
+            st.info(f"Nivel configurado: {nivel}")
+            st.code(f"usuario = dict(nombre='{nombre}', edad={edad})")
+else:
+    st.warning("Ingresa tu nombre para comenzar.")</code></pre>
+  </div>
+  <div class="fad-preview">
+    <div class="fad-pbar">🌐 resultado</div>
+    <div class="fad-pview" id="full-app">
+      <div class="fp-title">🎛️ Mi App de Demostración</div>
+      <div class="fp-divider"></div>
+      <div class="fp-row">
+        <div class="fp-col">
+          <div class="fp-label">Tu nombre</div>
+          <input id="fa-nombre" class="fp-input" placeholder="Ej: Ana" oninput="faUpdate()">
+          <div class="fp-label" style="margin-top:0.4em;">Edad</div>
+          <input type="range" id="fa-edad" min="1" max="100" value="25" oninput="faUpdate()" class="fake-slider">
+          <div style="font-size:0.7em; color:#999;">Valor: <span id="fa-edad-val">25</span></div>
+        </div>
+        <div class="fp-col">
+          <div class="fp-label">Nivel</div>
+          <input type="range" id="fa-nivel" min="1" max="10" value="1" oninput="faUpdate()" class="fake-slider">
+          <div style="font-size:0.7em; color:#999;">Nivel: <span id="fa-nivel-val">1</span></div>
+        </div>
+      </div>
+      <div id="fa-output" class="fp-output"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+function faUpdate() {
+  var nombre = document.getElementById('fa-nombre').value;
+  var edad = document.getElementById('fa-edad').value;
+  var nivel = document.getElementById('fa-nivel').value;
+  document.getElementById('fa-edad-val').textContent = edad;
+  document.getElementById('fa-nivel-val').textContent = nivel;
+  var out = document.getElementById('fa-output');
+  if (nombre.trim()) {
+    out.innerHTML = '<div class="fp-success">✅ ¡Hola ' + nombre + '! Tienes ' + edad + ' años.</div>';
+  } else {
+    out.innerHTML = '<div class="fp-warning">⚠️ Ingresa tu nombre para comenzar.</div>';
+  }
+}
+faUpdate();
+</script>
+<aside class="notes">
+<p>“Este es un ejemplo realista que combina todo lo que vimos. Noten cómo el output al final del script reacciona en tiempo real a los inputs que están arriba. Eso es el scripting flow en acción — Python de arriba a abajo, reactive sin frameworks complejos.”</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="por-qué-el-orden-importa" class="slide level2" data-auto-animate="true">
+<h2 data-id="quarto-animate-title">¿Por qué el orden importa?</h2>
+<div class="order-demo">
+  <div class="od-bad">
+    <div class="od-title bad-title">❌ Orden incorrecto</div>
+    <pre><code class="language-python">st.write(f"Hola {nombre}")  # ← ERROR
+# nombre no existe todavía!
+
+nombre = st.text_input("Nombre")</code></pre>
+    <div class="od-result bad-result">NameError: name 'nombre' is not defined</div>
+  </div>
+  <div class="od-good">
+    <div class="od-title good-title">✅ Orden correcto</div>
+    <pre><code class="language-python">nombre = st.text_input("Nombre")
+# ↑ primero definimos el widget
+
+if nombre:
+    st.write(f"Hola {nombre}")  # ✅</code></pre>
+    <div class="od-result good-result">Funciona perfectamente 🎉</div>
+  </div>
+</div>
+<div class="fragment fade-up">
+<div class="box-accent">
+<p>El scripting flow garantiza que el código se lee como un libro: <strong>de arriba a abajo</strong>. Primero defines, luego usas.</p>
+</div>
+</div>
+<aside class="notes">
+<p>“Esta es la trampa más común en Streamlit. Como el script corre de arriba a abajo, no puedes usar una variable antes de declararla. A diferencia de frameworks con callbacks o estado reactivo, en Streamlit el flujo es completamente lineal y predecible.”</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section></section>
+<section>
+<section id="resumen-del-módulo-1" class="title-slide slide level1 center" data-background-color="#0d0d0d">
+<h1>Resumen del Módulo 1 🏁</h1>
+
+</section>
+<section id="todo-lo-que-aprendiste-hoy" class="slide level2 center">
+<h2>Todo lo que aprendiste hoy</h2>
+<div class="summary-grid">
+  <div class="sg-card fade-item" style="animation-delay:0.1s">
+    <div class="sgc-icon">🐍</div>
+    <div class="sgc-num">01</div>
+    <div class="sgc-title">Streamlit = Python → Web App</div>
+    <div class="sgc-desc">Sin HTML, sin JS, sin frameworks</div>
+  </div>
+  <div class="sg-card fade-item" style="animation-delay:0.3s">
+    <div class="sgc-icon">💻</div>
+    <div class="sgc-num">02</div>
+    <div class="sgc-title">pip install + streamlit run</div>
+    <div class="sgc-desc">Dos comandos para arrancar</div>
+  </div>
+  <div class="sg-card fade-item" style="animation-delay:0.5s">
+    <div class="sgc-icon">🔄</div>
+    <div class="sgc-num">03</div>
+    <div class="sgc-title">Scripting Flow</div>
+    <div class="sgc-desc">Cada interacción = re-ejecución completa</div>
+  </div>
+  <div class="sg-card fade-item" style="animation-delay:0.7s">
+    <div class="sgc-icon">📝</div>
+    <div class="sgc-num">04</div>
+    <div class="sgc-title">Texto y Títulos</div>
+    <div class="sgc-desc">title, header, write, markdown, code...</div>
+  </div>
+  <div class="sg-card fade-item" style="animation-delay:0.9s">
+    <div class="sgc-icon">🎛️</div>
+    <div class="sgc-num">05</div>
+    <div class="sgc-title">Inputs Simples</div>
+    <div class="sgc-desc">button, checkbox, text_input, slider...</div>
+  </div>
+  <div class="sg-card fade-item" style="animation-delay:1.1s">
+    <div class="sgc-icon">🏗️</div>
+    <div class="sgc-num">06</div>
+    <div class="sgc-title">Layout y Feedback</div>
+    <div class="sgc-desc">columns, expander, success, error...</div>
+  </div>
+</div>
+<aside class="notes">
+<p>“En este módulo cubrimos los fundamentos completos. La próxima clase entramos en gestión de estado con session_state y el sistema de cache para apps más eficientes.”</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="tu-producto-parcial" class="slide level2 center">
+<h2>Tu producto parcial ✔️</h2>
+<div class="checkpoint">
+  <div class="cp-title">App Base Ejecutándose</div>
+  <div class="cp-code">
+    <pre><code class="language-python">import streamlit as st
+
+st.title("Mi Primera App 🎈")
+st.write("¡Está funcionando!")
+
+nombre = st.text_input("¿Cómo te llamas?")
+edad = st.slider("¿Cuántos años tienes?", 1, 100, 25)
+
+if nombre:
+    st.success(f"¡Bienvenido/a, {nombre}! Tienes {edad} años. 🎉")
+    st.balloons()
+else:
+    st.info("Escribe tu nombre arriba 👆")</code></pre>
+  </div>
+  <div class="cp-run fade-item" style="animation-delay:0.5s">
+    <div class="terminal-mini">
+      <span class="t-prompt">$</span>
+      <span class="t-cmd">streamlit run mi_app.py</span>
+    </div>
+    <div class="cp-badge">✅ Módulo 1 Completo</div>
+  </div>
+</div>
+<aside class="notes">
+<p>“Este es el entregable del módulo 1. Una app corriendo en tu máquina con widgets reales que responden al usuario. Parece simple, pero entender el scripting flow que hay detrás es la base de todo lo que viene.”</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section class="slide level2">
+
+<div style="text-align:center; padding: 3em 0;">
+<div class="r-fit-text">
+<p>¡A construir! 🚀</p>
+</div>
+<p><span style="font-size:1.2em; color:#FF4B4B;"><strong>Módulo 1 — Completado</strong></span></p>
+<p><span class="text-muted">Preguntas antes de cerrar 🙋</span></p>
+</div>
+<aside class="notes">
+<p>“Tiempo libre para que pongan en práctica lo que vimos. El ejercicio mínimo: instalar Streamlit y hacer correr el script de la slide anterior. Si quieren ir más lejos, agreguen más widgets y experimenten con el scripting flow.”</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+
+</section></section>
+    </div>
+  <div class="quarto-auto-generated-content" style="display: none;">
+<div class="footer footer-default">
+<p>Módulo 1 · Streamlit · Introducción y Entorno de Trabajo</p>
+</div>
+</div></div>
+
+  <script>window.backupDefine = window.define; window.define = undefined;</script>
+  <script src="streamlit-modulo1_files/libs/revealjs/dist/reveal.js"></script>
+  <!-- reveal.js plugins -->
+  <script src="streamlit-modulo1_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.js"></script>
+  <script src="streamlit-modulo1_files/libs/revealjs/plugin/pdf-export/pdfexport.js"></script>
+  <script src="streamlit-modulo1_files/libs/revealjs/plugin/reveal-menu/menu.js"></script>
+  <script src="streamlit-modulo1_files/libs/revealjs/plugin/reveal-menu/quarto-menu.js"></script>
+  <script src="streamlit-modulo1_files/libs/revealjs/plugin/quarto-support/support.js"></script>
+  
+
+  <script src="streamlit-modulo1_files/libs/revealjs/plugin/notes/notes.js"></script>
+  <script src="streamlit-modulo1_files/libs/revealjs/plugin/search/search.js"></script>
+  <script src="streamlit-modulo1_files/libs/revealjs/plugin/zoom/zoom.js"></script>
+  <script src="streamlit-modulo1_files/libs/revealjs/plugin/math/math.js"></script>
+  <script>window.define = window.backupDefine; window.backupDefine = undefined;</script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+'controlsAuto': false,
+'previewLinksAuto': false,
+'pdfSeparateFragments': false,
+'autoAnimateEasing': "ease-in-out",
+'autoAnimateDuration': 0.8,
+'autoAnimateUnmatched': false,
+'jumpToSlide': true,
+'menu': {"side":"left","useTextContentForMissingTitles":true,"markers":false,"loadIcons":false,"custom":[{"title":"Tools","icon":"<i class=\"fas fa-gear\"></i>","content":"<ul class=\"slide-menu-items\">\n<li class=\"slide-tool-item active\" data-item=\"0\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.fullscreen(event)\"><kbd>f</kbd> Fullscreen</a></li>\n<li class=\"slide-tool-item\" data-item=\"1\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.speakerMode(event)\"><kbd>s</kbd> Speaker View</a></li>\n<li class=\"slide-tool-item\" data-item=\"2\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.overview(event)\"><kbd>o</kbd> Slide Overview</a></li>\n<li class=\"slide-tool-item\" data-item=\"3\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.togglePdfExport(event)\"><kbd>e</kbd> PDF Export Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"4\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleScrollView(event)\"><kbd>r</kbd> Scroll View Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"5\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.keyboardHelp(event)\"><kbd>?</kbd> Keyboard Help</a></li>\n</ul>"}],"openButton":true},
+'smaller': false,
+ 
+        // Display controls in the bottom right corner
+        controls: true,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: false,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'bottom-right',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: 'c/t',
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: true,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: true,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: false,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'linear',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: false,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'fade',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'fast',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'none',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        // The "normal" size of the presentation, aspect ratio will be preserved
+        // when the presentation is scaled to fit different resolutions. Can be
+        // specified using percentage units.
+        width: 1050,
+
+        height: 700,
+
+        // Factor of the display size that should remain empty around the content
+        margin: 5.0e-2,
+
+        // Bounds for smallest/largest possible scale to apply to content
+        minScale: 0.1,
+
+        maxScale: 0.9,
+
+        math: {
+          mathjax: 'https://cdn.jsdelivr.net/npm/mathjax@2.7.9/MathJax.js',
+          config: 'TeX-AMS_HTML-full',
+          tex2jax: {
+            inlineMath: [['\\(','\\)']],
+            displayMath: [['\\[','\\]']],
+            balanceBraces: true,
+            processEscapes: false,
+            processRefs: true,
+            processEnvironments: true,
+            preview: 'TeX',
+            skipTags: ['script','noscript','style','textarea','pre','code'],
+            ignoreClass: 'tex2jax_ignore',
+            processClass: 'tex2jax_process'
+          },
+        },
+
+        // reveal.js plugins
+        plugins: [QuartoLineHighlight, PdfExport, RevealMenu, QuartoSupport,
+
+          RevealMath,
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    <script id="quarto-html-after-body" type="application/javascript">
+      window.document.addEventListener("DOMContentLoaded", function (event) {
+        const tabsets =  window.document.querySelectorAll(".panel-tabset-tabby")
+        tabsets.forEach(function(tabset) {
+          const tabby = new Tabby('#' + tabset.id);
+        });
+        const isCodeAnnotation = (el) => {
+          for (const clz of el.classList) {
+            if (clz.startsWith('code-annotation-')) {                     
+              return true;
+            }
+          }
+          return false;
+        }
+        const onCopySuccess = function(e) {
+          // button target
+          const button = e.trigger;
+          // don't keep focus
+          button.blur();
+          // flash "checked"
+          button.classList.add('code-copy-button-checked');
+          var currentTitle = button.getAttribute("title");
+          button.setAttribute("title", "Copied!");
+          let tooltip;
+          if (window.bootstrap) {
+            button.setAttribute("data-bs-toggle", "tooltip");
+            button.setAttribute("data-bs-placement", "left");
+            button.setAttribute("data-bs-title", "Copied!");
+            tooltip = new bootstrap.Tooltip(button, 
+              { trigger: "manual", 
+                customClass: "code-copy-button-tooltip",
+                offset: [0, -8]});
+            tooltip.show();    
+          }
+          setTimeout(function() {
+            if (tooltip) {
+              tooltip.hide();
+              button.removeAttribute("data-bs-title");
+              button.removeAttribute("data-bs-toggle");
+              button.removeAttribute("data-bs-placement");
+            }
+            button.setAttribute("title", currentTitle);
+            button.classList.remove('code-copy-button-checked');
+          }, 1000);
+          // clear code selection
+          e.clearSelection();
+        }
+        const getTextToCopy = function(trigger) {
+          const outerScaffold = trigger.parentElement.cloneNode(true);
+          const codeEl = outerScaffold.querySelector('code');
+          for (const childEl of codeEl.children) {
+            if (isCodeAnnotation(childEl)) {
+              childEl.remove();
+            }
+          }
+          return codeEl.innerText;
+        }
+        const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+          text: getTextToCopy
+        });
+        clipboard.on('success', onCopySuccess);
+        if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+          const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+            text: getTextToCopy,
+            container: window.document.getElementById('quarto-embedded-source-code-modal')
+          });
+          clipboardModal.on('success', onCopySuccess);
+        }
+          var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+          var mailtoRegex = new RegExp(/^mailto:/);
+            var filterRegex = new RegExp('/' + window.location.host + '/');
+          var isInternal = (href) => {
+              return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+          }
+          // Inspect non-navigation links and adorn them if external
+         var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+          for (var i=0; i<links.length; i++) {
+            const link = links[i];
+            if (!isInternal(link.href)) {
+              // undo the damage that might have been done by quarto-nav.js in the case of
+              // links that we want to consider external
+              if (link.dataset.originalHref !== undefined) {
+                link.href = link.dataset.originalHref;
+              }
+            }
+          }
+        function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+          const config = {
+            allowHTML: true,
+            maxWidth: 500,
+            delay: 100,
+            arrow: false,
+            appendTo: function(el) {
+                return el.closest('section.slide') || el.parentElement;
+            },
+            interactive: true,
+            interactiveBorder: 10,
+            theme: 'light-border',
+            placement: 'bottom-start',
+          };
+          if (contentFn) {
+            config.content = contentFn;
+          }
+          if (onTriggerFn) {
+            config.onTrigger = onTriggerFn;
+          }
+          if (onUntriggerFn) {
+            config.onUntrigger = onUntriggerFn;
+          }
+            config['offset'] = [0,0];
+            config['maxWidth'] = 700;
+          window.tippy(el, config); 
+        }
+        const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+        for (var i=0; i<noterefs.length; i++) {
+          const ref = noterefs[i];
+          tippyHover(ref, function() {
+            // use id or data attribute instead here
+            let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+            try { href = new URL(href).hash; } catch {}
+            const id = href.replace(/^#\/?/, "");
+            const note = window.document.getElementById(id);
+            if (note) {
+              return note.innerHTML;
+            } else {
+              return "";
+            }
+          });
+        }
+        const findCites = (el) => {
+          const parentEl = el.parentElement;
+          if (parentEl) {
+            const cites = parentEl.dataset.cites;
+            if (cites) {
+              return {
+                el,
+                cites: cites.split(' ')
+              };
+            } else {
+              return findCites(el.parentElement)
+            }
+          } else {
+            return undefined;
+          }
+        };
+        var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+        for (var i=0; i<bibliorefs.length; i++) {
+          const ref = bibliorefs[i];
+          const citeInfo = findCites(ref);
+          if (citeInfo) {
+            tippyHover(citeInfo.el, function() {
+              var popup = window.document.createElement('div');
+              citeInfo.cites.forEach(function(cite) {
+                var citeDiv = window.document.createElement('div');
+                citeDiv.classList.add('hanging-indent');
+                citeDiv.classList.add('csl-entry');
+                var biblioDiv = window.document.getElementById('ref-' + cite);
+                if (biblioDiv) {
+                  citeDiv.innerHTML = biblioDiv.innerHTML;
+                }
+                popup.appendChild(citeDiv);
+              });
+              return popup.innerHTML;
+            });
+          }
+        }
+      });
+      </script>
+    <script>
+    (function() {
+      function colorize(block) {
+        var lines = block.innerHTML.split('\n');
+        lines = lines.map(function(line) {
+          // Split code vs comment (avoid # inside strings)
+          var inStr = false, strChar = '', ci = -1;
+          for (var i = 0; i < line.length; i++) {
+            var c = line[i];
+            if (!inStr && (c === '"' || c === "'")) { inStr = true; strChar = c; }
+            else if (inStr && c === strChar && line[i-1] !== '\\') { inStr = false; }
+            else if (!inStr && c === '#') { ci = i; break; }
+          }
+          var code    = ci >= 0 ? line.substring(0, ci) : line;
+          var comment = ci >= 0 ? line.substring(ci)    : '';
+
+          // Tokenise code — use placeholders to avoid re-matching inside spans
+          var P = '\x00';
+          // strings
+          code = code.replace(/("(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')/g, P+'S'+P+'$1'+P+'/S'+P);
+          // st. calls
+          code = code.replace(/\b(st\.[A-Za-z_]+)/g, P+'F'+P+'$1'+P+'/F'+P);
+          // keywords
+          code = code.replace(/\b(True|False|None|def|class|if|elif|else|with|return|import|as|for|in|not|and|or|lambda)\b/g, P+'K'+P+'$1'+P+'/K'+P);
+          // numbers
+          code = code.replace(/\b(\d+(\.\d+)?)\b/g, P+'N'+P+'$1'+P+'/N'+P);
+          // resolve placeholders
+          code = code.replace(new RegExp(P+'S'+P+'(.*?)'+P+'\\/S'+P,'g'), '<span class="sy-str">$1</span>');
+          code = code.replace(new RegExp(P+'F'+P+'(.*?)'+P+'\\/F'+P,'g'), '<span class="sy-fn">$1</span>');
+          code = code.replace(new RegExp(P+'K'+P+'(.*?)'+P+'\\/K'+P,'g'), '<span class="sy-kw">$1</span>');
+          code = code.replace(new RegExp(P+'N'+P+'(.*?)'+P+'\\/N'+P,'g'), '<span class="sy-num">$1</span>');
+
+          if (comment) comment = '<span class="sy-cm">' + comment + '</span>';
+          return code + comment;
+        });
+        block.innerHTML = lines.join('\n');
+      }
+
+      function run() {
+        document.querySelectorAll('.reveal pre code').forEach(colorize);
+      }
+
+      if (typeof Reveal !== 'undefined') {
+        Reveal.on('ready', run);
+      } else {
+        document.addEventListener('DOMContentLoaded', run);
+      }
+    })();
+    </script>
+    
+
+</body></html>

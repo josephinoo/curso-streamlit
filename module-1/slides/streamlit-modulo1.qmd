@@ -1,0 +1,1292 @@
+---
+title: "Streamlit — Módulo 1"
+subtitle: "Introducción y entorno de trabajo"
+author: "@josephinoo"
+date: "2026-04-13"
+format:
+  revealjs:
+    theme: [dark, streamlit-theme.scss]
+    transition: fade
+    transition-speed: fast
+    slide-number: c/t
+    progress: true
+    controls: true
+    controls-layout: bottom-right
+    footer: "Módulo 1 · Streamlit · Introducción y Entorno de Trabajo"
+    width: 1050
+    height: 700
+    margin: 0.05
+    min-scale: 0.1
+    max-scale: 0.9
+    highlight-style: github-dark
+    code-line-numbers: false
+    code-copy: true
+    incremental: false
+    center-title-slide: true
+    auto-animate-easing: ease-in-out
+    auto-animate-unmatched: false
+    auto-animate-duration: 0.8
+title-slide-attributes:
+  data-background-color: "#0d0d0d"
+execute:
+  echo: true
+  eval: false
+include-after-body:
+  text: |
+    <script>
+    (function() {
+      function colorize(block) {
+        var lines = block.innerHTML.split('\n');
+        lines = lines.map(function(line) {
+          // Split code vs comment (avoid # inside strings)
+          var inStr = false, strChar = '', ci = -1;
+          for (var i = 0; i < line.length; i++) {
+            var c = line[i];
+            if (!inStr && (c === '"' || c === "'")) { inStr = true; strChar = c; }
+            else if (inStr && c === strChar && line[i-1] !== '\\') { inStr = false; }
+            else if (!inStr && c === '#') { ci = i; break; }
+          }
+          var code    = ci >= 0 ? line.substring(0, ci) : line;
+          var comment = ci >= 0 ? line.substring(ci)    : '';
+
+          // Tokenise code — use placeholders to avoid re-matching inside spans
+          var P = '\x00';
+          // strings
+          code = code.replace(/("(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')/g, P+'S'+P+'$1'+P+'/S'+P);
+          // st. calls
+          code = code.replace(/\b(st\.[A-Za-z_]+)/g, P+'F'+P+'$1'+P+'/F'+P);
+          // keywords
+          code = code.replace(/\b(True|False|None|def|class|if|elif|else|with|return|import|as|for|in|not|and|or|lambda)\b/g, P+'K'+P+'$1'+P+'/K'+P);
+          // numbers
+          code = code.replace(/\b(\d+(\.\d+)?)\b/g, P+'N'+P+'$1'+P+'/N'+P);
+          // resolve placeholders
+          code = code.replace(new RegExp(P+'S'+P+'(.*?)'+P+'\\/S'+P,'g'), '<span class="sy-str">$1</span>');
+          code = code.replace(new RegExp(P+'F'+P+'(.*?)'+P+'\\/F'+P,'g'), '<span class="sy-fn">$1</span>');
+          code = code.replace(new RegExp(P+'K'+P+'(.*?)'+P+'\\/K'+P,'g'), '<span class="sy-kw">$1</span>');
+          code = code.replace(new RegExp(P+'N'+P+'(.*?)'+P+'\\/N'+P,'g'), '<span class="sy-num">$1</span>');
+
+          if (comment) comment = '<span class="sy-cm">' + comment + '</span>';
+          return code + comment;
+        });
+        block.innerHTML = lines.join('\n');
+      }
+
+      function run() {
+        document.querySelectorAll('.reveal pre code').forEach(colorize);
+      }
+
+      if (typeof Reveal !== 'undefined') {
+        Reveal.on('ready', run);
+      } else {
+        document.addEventListener('DOMContentLoaded', run);
+      }
+    })();
+    </script>
+---
+
+## {background-color="#0d0d0d" .center}
+
+```{=html}
+<div style="text-align: center; margin-top: 1em;">
+  <div style="width: 220px; height: 220px; margin: 0 auto; border-radius: 50%; border: 3px solid #FF4B4B; overflow: hidden; background: #1e1e1e; display:flex; align-items:center; justify-content:center;">
+    <span style="font-size:5em;">🎈</span>
+  </div>
+  <h2 style="color: #ffffff; font-size: 2em; font-weight: bold; margin-top: 0.8em; letter-spacing: -0.02em;">Módulo 1</h2>
+  <p style="color:#FF4B4B; font-size:1.2em; font-weight:600;">Introducción y Entorno de Trabajo</p>
+</div>
+```
+
+::: {.notes}
+Bienvenida al módulo 1 del curso de Streamlit. "Hoy vamos a entender qué es Streamlit, cómo instalarlo y, lo más importante, cómo funciona internamente su modelo de ejecución — el scripting flow. Al final de la clase tendrás una app corriendo en tu máquina."
+:::
+
+# ¿Qué es Streamlit? {background-color="#0d0d0d"}
+
+## La promesa de Streamlit {.center}
+
+::: {.r-fit-text}
+Python → App Web 🚀
+:::
+
+::: {.notes}
+Pregunta retórica para romper el hielo: "¿Cuántos han intentado mostrar un análisis de datos a alguien no técnico? ¿Cómo lo hicieron?" Streamlit resuelve exactamente ese dolor.
+:::
+
+## ¿Qué problema resuelve? {auto-animate=true}
+
+```{=html}
+<div class="problem-cols">
+  <div class="prob-col fade-item" style="animation-delay:0.1s">
+    <div class="prob-icon">😩</div>
+    <div class="prob-title">Sin Streamlit</div>
+    <div class="prob-items">
+      <div class="prob-item bad">Aprender HTML/CSS/JS</div>
+      <div class="prob-item bad">Frameworks web complejos</div>
+      <div class="prob-item bad">Backend + Frontend separados</div>
+      <div class="prob-item bad">Despliegue complicado</div>
+      <div class="prob-item bad">Semanas de trabajo</div>
+    </div>
+  </div>
+  <div class="prob-divider fade-item" style="animation-delay:0.5s">VS</div>
+  <div class="prob-col fade-item" style="animation-delay:0.9s">
+    <div class="prob-icon">😍</div>
+    <div class="prob-title">Con Streamlit</div>
+    <div class="prob-items">
+      <div class="prob-item good">Solo Python</div>
+      <div class="prob-item good">Un solo archivo .py</div>
+      <div class="prob-item good">App lista al instante</div>
+      <div class="prob-item good">Deploy en 1 click</div>
+      <div class="prob-item good">Horas, no semanas</div>
+    </div>
+  </div>
+</div>
+```
+
+::: {.notes}
+"Streamlit convierte tu script de Python directamente en una app web interactiva. Sin conocer HTML, sin servidores, sin nada extra. Es la herramienta favorita de Data Scientists y analistas para compartir su trabajo."
+:::
+
+## Quién usa Streamlit {auto-animate=true}
+
+```{=html}
+<div class="users-grid">
+  <div class="user-card fade-item" style="animation-delay:0.1s">
+    <div class="uc-icon">🔬</div>
+    <div class="uc-title">Data Scientists</div>
+    <div class="uc-desc">Modelos de ML en producción sin ingeniería web</div>
+  </div>
+  <div class="user-card fade-item" style="animation-delay:0.3s">
+    <div class="uc-icon">📊</div>
+    <div class="uc-title">Analistas</div>
+    <div class="uc-desc">Dashboards interactivos desde pandas y matplotlib</div>
+  </div>
+  <div class="user-card fade-item" style="animation-delay:0.5s">
+    <div class="uc-icon">🎓</div>
+    <div class="uc-title">Estudiantes</div>
+    <div class="uc-desc">Proyectos finales con interfaz profesional</div>
+  </div>
+  <div class="user-card fade-item" style="animation-delay:0.7s">
+    <div class="uc-icon">🏢</div>
+    <div class="uc-title">Empresas</div>
+    <div class="uc-desc">Prototipos rápidos y herramientas internas</div>
+  </div>
+</div>
+```
+
+::: {.fragment .fade-up}
+::: {.box-accent}
+🏆 Más de **30 millones** de apps creadas · Usado por Google, Airbnb, Uber, NASA
+:::
+:::
+
+::: {.notes}
+"Streamlit no es un juguete — es usado en producción por empresas Fortune 500. Pero su curva de aprendizaje es tan suave que un principiante puede tener algo corriendo en 5 minutos."
+:::
+
+# Instalación y primer arranque {background-color="#0d0d0d"}
+
+## Requisitos previos {auto-animate=true}
+
+```{=html}
+<div class="req-list">
+  <div class="req-item fade-item" style="animation-delay:0.1s">
+    <div class="req-check">✅</div>
+    <div class="req-content">
+      <div class="req-title">Python 3.8+</div>
+      <div class="req-cmd">python --version</div>
+    </div>
+  </div>
+  <div class="req-item fade-item" style="animation-delay:0.4s">
+    <div class="req-check">✅</div>
+    <div class="req-content">
+      <div class="req-title">pip (viene con Python)</div>
+      <div class="req-cmd">pip --version</div>
+    </div>
+  </div>
+  <div class="req-item fade-item" style="animation-delay:0.7s">
+    <div class="req-check">✅</div>
+    <div class="req-content">
+      <div class="req-title">Un terminal / VS Code</div>
+      <div class="req-cmd">cualquier editor de texto sirve</div>
+    </div>
+  </div>
+</div>
+```
+
+::: {.fragment .fade-up}
+::: {.box-muted}
+💡 **Recomendado:** Crea un entorno virtual primero → `python -m venv venv` → `source venv/bin/activate`
+:::
+:::
+
+::: {.notes}
+"Antes de instalar Streamlit, necesitamos Python instalado. Si tienen Anaconda o Miniconda también funciona perfecto. Les recomiendo entornos virtuales para mantener los proyectos aislados — buena práctica desde el primer día."
+:::
+
+## Instalación — 1 solo comando {auto-animate=true}
+
+```{=html}
+<div class="install-scene">
+  <div class="terminal-window">
+    <div class="terminal-bar">
+      <span class="t-dot" style="background:#ff5f56"></span>
+      <span class="t-dot" style="background:#ffbd2e"></span>
+      <span class="t-dot" style="background:#27c93f"></span>
+      <span class="t-title">Terminal</span>
+    </div>
+    <div class="terminal-body" id="term-body">
+      <div class="t-line"><span class="t-prompt">$</span> <span class="t-cmd" id="install-cmd">pip install streamlit</span></div>
+      <div class="t-output" id="install-out" style="display:none">
+        <div class="t-line dim">Collecting streamlit...</div>
+        <div class="t-line dim">Downloading streamlit-1.x.x...</div>
+        <div class="t-line dim">Installing collected packages: streamlit</div>
+        <div class="t-line ok">✓ Successfully installed streamlit</div>
+      </div>
+    </div>
+  </div>
+  <div class="btn-row" style="margin-top:0.8em">
+    <button class="demo-btn" onclick="runInstall()">▶ Ejecutar</button>
+    <button class="demo-btn demo-btn-ghost" onclick="resetInstall()">↺ Reiniciar</button>
+  </div>
+</div>
+
+<script>
+function runInstall() {
+  var out = document.getElementById('install-out');
+  out.style.display = 'block';
+  out.querySelectorAll('.t-line').forEach(function(el, i) {
+    el.style.opacity = 0;
+    setTimeout(function(){ el.style.transition='opacity 0.4s'; el.style.opacity=1; }, i * 350);
+  });
+}
+function resetInstall() {
+  var out = document.getElementById('install-out');
+  out.style.display = 'none';
+}
+</script>
+```
+
+::: {.fragment .fade-up}
+::: {.box-accent}
+Luego verificar: `streamlit --version` → debería mostrar la versión instalada
+:::
+:::
+
+::: {.notes}
+"Un solo comando. pip descarga Streamlit y todas sus dependencias automáticamente. El proceso tarda 30-60 segundos dependiendo de la conexión. Después verificamos con `streamlit --version` que todo quedó bien."
+:::
+
+## Tu primera app — hello.py {auto-animate=true}
+
+```{=html}
+<div class="file-create-scene">
+  <div class="file-tab">📄 hello.py</div>
+  <div class="code-window">
+    <pre><code class="language-python" id="hello-code">import streamlit as st
+
+st.title("¡Hola, Streamlit! 🎈")
+st.write("Mi primera app en Python.")</code></pre>
+  </div>
+  <div class="run-row fade-item" style="animation-delay:0.5s">
+    <div class="terminal-mini">
+      <span class="t-prompt">$</span>
+      <span class="t-cmd">streamlit run hello.py</span>
+    </div>
+  </div>
+</div>
+```
+
+::: {.fragment .fade-up}
+```{=html}
+<div class="browser-preview">
+  <div class="bp-bar">
+    <div class="bp-url">🌐 localhost:8501</div>
+  </div>
+  <div class="bp-content">
+    <div class="bp-title">¡Hola, Streamlit! 🎈</div>
+    <div class="bp-text">Mi primera app en Python.</div>
+  </div>
+</div>
+```
+:::
+
+::: {.notes}
+"Eso es todo. 3 líneas de Python y tienes una app web. `streamlit run hello.py` abre automáticamente el navegador en localhost:8501. Cada vez que guardes el archivo, la app se recarga automáticamente."
+:::
+
+## Anatomía del comando `streamlit run` {auto-animate=true}
+
+```{=html}
+<div class="cmd-anatomy">
+  <div class="cmd-parts">
+    <div class="cmd-part fade-item" style="animation-delay:0.1s">
+      <div class="cp-word">streamlit</div>
+      <div class="cp-arrow">↓</div>
+      <div class="cp-desc">El programa principal</div>
+    </div>
+    <div class="cmd-part fade-item" style="animation-delay:0.4s">
+      <div class="cp-word accent">run</div>
+      <div class="cp-arrow">↓</div>
+      <div class="cp-desc">Subcomando: ejecutar una app</div>
+    </div>
+    <div class="cmd-part fade-item" style="animation-delay:0.7s">
+      <div class="cp-word green">hello.py</div>
+      <div class="cp-arrow">↓</div>
+      <div class="cp-desc">Tu script de Python</div>
+    </div>
+  </div>
+  <div class="cmd-extras fade-item" style="animation-delay:1.1s">
+    <div class="ce-title">Opciones útiles:</div>
+    <div class="ce-item"><code>--server.port 8502</code> — cambiar el puerto</div>
+    <div class="ce-item"><code>--server.headless true</code> — no abrir el browser</div>
+    <div class="ce-item"><code>--logger.level debug</code> — ver más logs</div>
+  </div>
+</div>
+```
+
+::: {.notes}
+"El comando `streamlit run` es todo lo que necesitas para el 99% de los casos. Streamlit levanta un servidor web local, sirve tu app en el puerto 8501 por defecto, y mantiene un watcher para recargar cuando detecta cambios en el archivo."
+:::
+
+# El Scripting Flow — el corazón de Streamlit 🧠 {background-color="#0d0d0d"}
+
+## ¿Cómo ejecuta Streamlit tu código? {.center}
+
+::: {.r-fit-text}
+De arriba → abajo, siempre 🔄
+:::
+
+::: {.notes}
+"Este es el concepto más importante de todo el módulo. Entender el scripting flow te va a evitar el 80% de los bugs y confusiones que tienen los principiantes. Presta mucha atención aquí."
+:::
+
+## El flujo paso a paso {auto-animate=true}
+
+```{=html}
+<div class="flow-steps" id="flow-steps">
+  <div class="fs-step fade-item" style="animation-delay:0.1s">
+    <div class="fs-num">1</div>
+    <div class="fs-content">
+      <div class="fs-title">Usuario abre la app</div>
+      <div class="fs-desc">Streamlit ejecuta el script completo de arriba a abajo</div>
+    </div>
+  </div>
+  <div class="fs-arrow fade-item" style="animation-delay:0.4s">↓</div>
+  <div class="fs-step fade-item" style="animation-delay:0.7s">
+    <div class="fs-num">2</div>
+    <div class="fs-content">
+      <div class="fs-title">Usuario interactúa (click, slider, input...)</div>
+      <div class="fs-desc">Streamlit vuelve a ejecutar TODO el script desde cero</div>
+    </div>
+  </div>
+  <div class="fs-arrow fade-item" style="animation-delay:1.0s">↓</div>
+  <div class="fs-step fade-item" style="animation-delay:1.3s">
+    <div class="fs-num">3</div>
+    <div class="fs-content">
+      <div class="fs-title">Streamlit compara el resultado</div>
+      <div class="fs-desc">Solo actualiza en pantalla lo que cambió (DOM diffing)</div>
+    </div>
+  </div>
+  <div class="fs-arrow fade-item" style="animation-delay:1.6s">↓</div>
+  <div class="fs-step fade-item" style="animation-delay:1.9s">
+    <div class="fs-num">4</div>
+    <div class="fs-content">
+      <div class="fs-title">Pantalla actualizada ✅</div>
+      <div class="fs-desc">El usuario ve el nuevo resultado al instante</div>
+    </div>
+  </div>
+</div>
+```
+
+::: {.notes}
+"Cada vez que alguien hace clic en un botón, mueve un slider o escribe en un campo de texto, Streamlit re-ejecuta tu script completo de arriba a abajo. Esto suena ineficiente pero en la práctica es increíblemente simple y predecible. No hay estado oculto, no hay callbacks complejos."
+:::
+
+## Demo del Scripting Flow {auto-animate=true}
+
+```{=html}
+<div class="sf-demo">
+  <div class="sf-code">
+    <div class="sfc-bar">📄 app.py</div>
+    <div class="sfc-body" id="sfc-body">
+      <div class="sfc-line" id="sfl-1">import streamlit as st</div>
+      <div class="sfc-line" id="sfl-2">st.title("Demo")</div>
+      <div class="sfc-line" id="sfl-3">nombre = st.text_input("Tu nombre")</div>
+      <div class="sfc-line" id="sfl-4">if nombre:</div>
+      <div class="sfc-line" id="sfl-5">    st.write(f"¡Hola, {nombre}! 👋")</div>
+    </div>
+  </div>
+
+  <div class="sf-arrow-col">
+    <div class="sf-big-arrow" id="sf-exec-arrow">▶</div>
+  </div>
+
+  <div class="sf-preview">
+    <div class="sfp-bar">🌐 localhost:8501</div>
+    <div class="sfp-body">
+      <div class="sfp-title">Demo</div>
+      <input id="sfp-input" class="sfp-input" placeholder="Tu nombre" oninput="sfUpdate(this.value)" />
+      <div id="sfp-output" class="sfp-output"></div>
+    </div>
+  </div>
+</div>
+
+<div class="sf-log-area">
+  <div class="sfl-header">🔄 Ejecuciones del script:</div>
+  <div id="sf-log" class="sf-log"></div>
+</div>
+
+<script>
+var sfCount = 0;
+function sfUpdate(val) {
+  sfCount++;
+  // highlight lines
+  var lines = document.querySelectorAll('.sfc-line');
+  var delay = 0;
+  lines.forEach(function(l, i) {
+    l.classList.remove('sfc-active');
+    setTimeout((function(el){ return function(){ el.classList.add('sfc-active'); }; })(l), delay);
+    delay += 120;
+  });
+  setTimeout(function(){
+    document.querySelectorAll('.sfc-line').forEach(function(l){ l.classList.remove('sfc-active'); });
+  }, delay + 300);
+
+  // update output
+  var out = document.getElementById('sfp-output');
+  if (val.trim()) {
+    out.textContent = '¡Hola, ' + val + '! 👋';
+    out.style.opacity = 1;
+  } else {
+    out.textContent = '';
+  }
+
+  // log
+  var log = document.getElementById('sf-log');
+  var entry = document.createElement('div');
+  entry.className = 'sf-log-entry';
+  entry.textContent = '▶ Ejecución #' + sfCount + ' — input: "' + val + '"';
+  log.appendChild(entry);
+  log.scrollTop = log.scrollHeight;
+}
+</script>
+```
+
+::: {.notes}
+"Escriban algo en el input y observen el log de la derecha — cada keystroke dispara una re-ejecución completa del script. Las líneas se iluminan de arriba a abajo para que vean el flujo. Así es exactamente como funciona Streamlit."
+:::
+
+## La regla de oro 🥇 {.center}
+
+```{=html}
+<div class="golden-rule">
+  <div class="gr-box fade-item" style="animation-delay:0.1s">
+    <div class="gr-icon">🔄</div>
+    <div class="gr-text">
+      <strong>Cada interacción del usuario = re-ejecución completa del script</strong>
+    </div>
+  </div>
+  <div class="gr-consequence fade-item" style="animation-delay:0.6s">
+    <div class="grc-item">
+      <span class="grc-icon">✅</span>
+      <span>El orden del código <strong>importa</strong> — lo que está arriba se ejecuta primero</span>
+    </div>
+    <div class="grc-item">
+      <span class="grc-icon">✅</span>
+      <span>Las variables <strong>no persisten</strong> entre ejecuciones (a menos que uses <code>st.session_state</code>)</span>
+    </div>
+    <div class="grc-item">
+      <span class="grc-icon">✅</span>
+      <span>El código Python normal funciona <strong>exactamente igual</strong> — Streamlit solo agrega widgets</span>
+    </div>
+  </div>
+</div>
+```
+
+::: {.notes}
+"Graben esto en la memoria: cada vez que el usuario hace algo, el script corre de nuevo de arriba a abajo. Las variables se reinician. Los cálculos se repiten. Esto se puede optimizar con `@st.cache_data` (módulo 3), pero por ahora lo importante es entender el modelo."
+:::
+
+# Widgets de Texto y Títulos 📝 {background-color="#0d0d0d"}
+
+## `st.title()` · `st.header()` · `st.subheader()` {auto-animate=true}
+
+```{=html}
+<div class="widget-split">
+  <div class="ws-code">
+    <div class="ws-bar">📄 código</div>
+    <pre><code class="language-python">import streamlit as st
+
+st.title("Título Principal")
+# Argumento: texto (str)
+# Nivel H1 — el más grande
+
+st.header("Sección")
+# Argumento: texto (str)
+# Nivel H2 — para secciones
+
+st.subheader("Subsección")
+# Argumento: texto (str)
+# Nivel H3 — para subsecciones</code></pre>
+  </div>
+  <div class="ws-preview">
+    <div class="ws-bar">🌐 resultado</div>
+    <div class="ws-pview">
+      <div class="wsp-title">Título Principal</div>
+      <div class="wsp-header">Sección</div>
+      <div class="wsp-subheader">Subsección</div>
+    </div>
+  </div>
+</div>
+```
+
+::: {.fragment .fade-up}
+::: {.box-muted}
+Los tres aceptan **anchor** (para links internos) y **help** (tooltip). Ej: `st.title("App", anchor="inicio")`
+:::
+:::
+
+::: {.notes}
+"title, header y subheader son equivalentes a H1, H2 y H3 en HTML. El argumento principal es siempre el texto. Opcionalmente puedes pasar `anchor` para crear IDs en el HTML y `help` para mostrar un tooltip de interrogante."
+:::
+
+## `st.write()` — el comando todo-en-uno {auto-animate=true}
+
+```{=html}
+<div class="write-demo">
+  <div class="wd-title">st.write() acepta casi cualquier cosa:</div>
+  <div class="wd-grid">
+    <div class="wd-item fade-item" style="animation-delay:0.1s">
+      <div class="wdi-code">st.write("Texto normal")</div>
+      <div class="wdi-result">Texto normal</div>
+    </div>
+    <div class="wd-item fade-item" style="animation-delay:0.3s">
+      <div class="wdi-code">st.write("**Negrita** y *cursiva*")</div>
+      <div class="wdi-result"><strong>Negrita</strong> y <em>cursiva</em></div>
+    </div>
+    <div class="wd-item fade-item" style="animation-delay:0.5s">
+      <div class="wdi-code">st.write(42)</div>
+      <div class="wdi-result">42</div>
+    </div>
+    <div class="wd-item fade-item" style="animation-delay:0.7s">
+      <div class="wdi-code">st.write({"a": 1, "b": 2})</div>
+      <div class="wdi-result">{ "a": 1, "b": 2 }</div>
+    </div>
+    <div class="wd-item fade-item" style="animation-delay:0.9s">
+      <div class="wdi-code">st.write(df)</div>
+      <div class="wdi-result">📊 tabla interactiva</div>
+    </div>
+    <div class="wd-item fade-item" style="animation-delay:1.1s">
+      <div class="wdi-code">st.write(figura)</div>
+      <div class="wdi-result">📈 gráfico</div>
+    </div>
+  </div>
+</div>
+```
+
+::: {.notes}
+"st.write es el navaja suiza de Streamlit. Detecta automáticamente qué tipo de dato le estás pasando y lo renderiza de la forma más apropiada. Texto → markdown. Número → número. DataFrame → tabla. Gráfico de matplotlib → imagen. Es perfecto para prototipado rápido."
+:::
+
+## `st.text()` · `st.markdown()` · `st.caption()` {auto-animate=true}
+
+```{=html}
+<div class="widget-split">
+  <div class="ws-code">
+    <div class="ws-bar">📄 código</div>
+    <pre><code class="language-python">st.text("Texto plano sin formato.")
+# Argumento: body (str)
+# Sin markdown — literal
+
+st.markdown("**Negrita**, *cursiva*, `código`")
+# Argumento: body (str)
+# unsafe_allow_html=True → HTML directo
+
+st.caption("Nota al pie o aclaración")
+# Argumento: body (str)
+# Texto pequeño y gris — ideal para
+# fuentes, notas y aclaraciones</code></pre>
+  </div>
+  <div class="ws-preview">
+    <div class="ws-bar">🌐 resultado</div>
+    <div class="ws-pview">
+      <div class="wsp-text">Texto plano sin formato.</div>
+      <div class="wsp-md"><strong>Negrita</strong>, <em>cursiva</em>, <code>código</code></div>
+      <div class="wsp-caption">Nota al pie o aclaración</div>
+    </div>
+  </div>
+</div>
+```
+
+::: {.notes}
+"st.text es para texto sin procesar, literalmente lo que escribes. st.markdown es el más poderoso — acepta Markdown completo e incluso HTML si activas `unsafe_allow_html`. st.caption es ideal para footnotes, créditos o aclaraciones secundarias — sale en gris y pequeño."
+:::
+
+## `st.code()` · `st.divider()` {auto-animate=true}
+
+```{=html}
+<div class="widget-split">
+  <div class="ws-code">
+    <div class="ws-bar">📄 código</div>
+    <pre><code class="language-python">st.code("""
+def saludar(nombre):
+    return f"Hola, {nombre}!"
+""", language="python")
+# language: "python","sql","bash","json"...
+# line_numbers=True → muestra nros de línea
+
+st.divider()
+# Sin argumentos
+# Solo dibuja una línea separadora
+# Equivalente a st.markdown("---")</code></pre>
+  </div>
+  <div class="ws-preview">
+    <div class="ws-bar">🌐 resultado</div>
+    <div class="ws-pview">
+      <div class="wsp-code-block">
+        <span class="cb-kw">def</span> <span class="cb-fn">saludar</span>(nombre):<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="cb-kw">return</span> <span class="cb-str">f"Hola, {nombre}!"</span>
+      </div>
+      <div class="wsp-divider"></div>
+    </div>
+  </div>
+</div>
+```
+
+::: {.notes}
+"st.code muestra bloques de código con syntax highlighting. El argumento `language` acepta cualquier lenguaje que soporte Prism.js. Con `line_numbers=True` agrega números de línea — muy útil para tutoriales. st.divider es simplemente una línea horizontal para separar secciones visualmente."
+:::
+
+# Inputs Simples — El Usuario Habla 🎛️ {background-color="#0d0d0d"}
+
+## `st.button()` {auto-animate=true}
+
+```{=html}
+<div class="widget-full">
+  <div class="wf-code">
+    <pre><code class="language-python">clicked = st.button(
+    label="Haz clic aquí",  # texto del botón (str) *obligatorio*
+    key="mi_boton",         # ID único (str) — necesario si hay varios
+    help="Tooltip al hover",# texto de ayuda (str)
+    type="primary",         # "primary" (azul) o "secondary" (gris)
+    disabled=False,         # deshabilitar (bool)
+    use_container_width=True# ancho completo (bool)
+)
+
+if clicked:
+    st.write("¡Botón presionado! 🎉")</code></pre>
+  </div>
+  <div class="wf-note">
+    <div class="wfn-title">⚠️ Comportamiento clave:</div>
+    <div class="wfn-items">
+      <div class="wfn-item">Devuelve <code>True</code> solo en la ejecución inmediatamente posterior al click</div>
+      <div class="wfn-item">En la siguiente re-ejecución vuelve a <code>False</code></div>
+      <div class="wfn-item">Para estado persistente → <code>st.session_state</code></div>
+    </div>
+  </div>
+</div>
+```
+
+::: {.notes}
+"st.button devuelve True solo una vez — en la re-ejecución del script inmediatamente después del click. Si el usuario no vuelve a hacer clic, en la próxima ejecución devuelve False. Esto confunde a muchos principiantes. Es por el scripting flow: cada ejecución es un nuevo mundo."
+:::
+
+## `st.checkbox()` · `st.text_input()` {auto-animate=true}
+
+```{=html}
+<div class="double-widget">
+  <div class="dw-col">
+    <div class="dw-title">st.checkbox()</div>
+    <pre><code class="language-python">activo = st.checkbox(
+    label="Activar opción",
+    value=False,    # estado inicial (bool)
+    key="check1",   # ID único
+    help="Ayuda",   # tooltip
+    disabled=False  # deshabilitar
+)
+# Devuelve True/False</code></pre>
+    <div class="dw-preview">
+      <label class="fake-check">
+        <input type="checkbox" id="demo-check" onchange="checkUpdate(this)" />
+        <span>Activar opción</span>
+      </label>
+      <div id="check-out" class="dw-out"></div>
+    </div>
+  </div>
+  <div class="dw-col">
+    <div class="dw-title">st.text_input()</div>
+    <pre><code class="language-python">texto = st.text_input(
+    label="Escribe algo",
+    value="",         # valor inicial (str)
+    max_chars=100,    # máx caracteres (int)
+    key="input1",     # ID único
+    type="default",   # "default" o "password"
+    placeholder="..."  # texto fantasma
+)
+# Devuelve el string escrito</code></pre>
+    <div class="dw-preview">
+      <input id="demo-ti" class="fake-input" placeholder="Escribe algo..." oninput="tiUpdate(this.value)" />
+      <div id="ti-out" class="dw-out"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+function checkUpdate(el) {
+  document.getElementById('check-out').textContent = 'Valor: ' + el.checked;
+}
+function tiUpdate(val) {
+  document.getElementById('ti-out').textContent = val ? 'Texto: "' + val + '"' : '';
+}
+</script>
+```
+
+::: {.notes}
+"checkbox devuelve True o False. Es perfecto para mostrar/ocultar secciones condicionales con if. text_input devuelve el string que escribió el usuario. El `type='password'` oculta los caracteres — muy útil para tokens y contraseñas."
+:::
+
+## `st.number_input()` · `st.slider()` {auto-animate=true}
+
+```{=html}
+<div class="double-widget">
+  <div class="dw-col">
+    <div class="dw-title">st.number_input()</div>
+    <pre><code class="language-python">num = st.number_input(
+    label="Edad",
+    min_value=0,    # mínimo (int/float)
+    max_value=120,  # máximo (int/float)
+    value=25,       # valor inicial
+    step=1,         # incremento
+    format="%d",    # formato de display
+    key="num1"
+)
+# Devuelve int o float</code></pre>
+    <div class="dw-preview" style="font-size:0.8em; color:#ccc;">
+      <div>Resultado: <code id="num-out">25</code></div>
+      <div style="margin-top:0.3em; display:flex; gap:0.3em; align-items:center;">
+        <button class="small-btn" onclick="adjNum(-1)">−</button>
+        <span id="num-val">25</span>
+        <button class="small-btn" onclick="adjNum(1)">+</button>
+      </div>
+    </div>
+  </div>
+  <div class="dw-col">
+    <div class="dw-title">st.slider()</div>
+    <pre><code class="language-python">val = st.slider(
+    label="Temperatura",
+    min_value=0,    # mínimo
+    max_value=100,  # máximo
+    value=50,       # inicial (o tupla para rango)
+    step=1,         # paso
+    format="%d°C",  # formato del label
+    key="slider1"
+)
+# value=(20,80) → slider de rango</code></pre>
+    <div class="dw-preview" style="font-size:0.8em; color:#ccc;">
+      <input type="range" id="demo-slider" min="0" max="100" value="50" oninput="slideUpdate(this.value)" class="fake-slider" />
+      <div>Valor: <code id="slider-out">50</code>°C</div>
+    </div>
+  </div>
+</div>
+
+<script>
+var numVal = 25;
+function adjNum(d) {
+  numVal = Math.max(0, Math.min(120, numVal + d));
+  document.getElementById('num-val').textContent = numVal;
+  document.getElementById('num-out').textContent = numVal;
+}
+function slideUpdate(v) {
+  document.getElementById('slider-out').textContent = v;
+}
+</script>
+```
+
+::: {.notes}
+"number_input es ideal para valores exactos con flechas de incremento. slider es mejor para rangos visuales donde la precisión exacta no es crítica. El slider puede retornar una tupla si le das `value=(20,80)` para crear un selector de rango — muy útil para filtros de fecha o precio."
+:::
+
+# Feedback Visual — La App Habla 💬 {background-color="#0d0d0d"}
+
+## Los mensajes de estado {auto-animate=true}
+
+```{=html}
+<div class="status-demo">
+  <div class="sd-grid">
+    <div class="sd-item fade-item" style="animation-delay:0.1s">
+      <div class="sd-code"><code>st.success("Operación exitosa ✅")</code></div>
+      <div class="sd-msg success-msg">✅ Operación exitosa</div>
+    </div>
+    <div class="sd-item fade-item" style="animation-delay:0.4s">
+      <div class="sd-code"><code>st.error("Algo salió mal ❌")</code></div>
+      <div class="sd-msg error-msg">❌ Algo salió mal</div>
+    </div>
+    <div class="sd-item fade-item" style="animation-delay:0.7s">
+      <div class="sd-code"><code>st.warning("Cuidado ⚠️")</code></div>
+      <div class="sd-msg warning-msg">⚠️ Cuidado con esto</div>
+    </div>
+    <div class="sd-item fade-item" style="animation-delay:1.0s">
+      <div class="sd-code"><code>st.info("Para tu información 💡")</code></div>
+      <div class="sd-msg info-msg">💡 Para tu información</div>
+    </div>
+  </div>
+  <div class="sd-args fade-item" style="animation-delay:1.4s">
+    <div class="sda-title">Todos comparten los mismos argumentos:</div>
+    <div class="sda-items">
+      <code>body</code> (str) — el mensaje
+      &nbsp;·&nbsp;
+      <code>icon</code> (str) — emoji o None
+      &nbsp;·&nbsp;
+      <code>expanded</code> (bool) — colapsable si es largo
+    </div>
+  </div>
+</div>
+```
+
+::: {.notes}
+"Los cuatro mensajes de estado tienen la misma firma de función. El único argumento obligatorio es el texto. El color y el ícono izquierdo se determinan automáticamente según el tipo. Puedes pasar `icon` para personalizar el emoji que aparece a la izquierda."
+:::
+
+## `st.balloons()` · `st.spinner()` {auto-animate=true}
+
+```{=html}
+<div class="fun-widgets">
+  <div class="fw-col">
+    <div class="fw-title">🎈 st.balloons()</div>
+    <pre><code class="language-python">if st.button("Celebrar"):
+    st.balloons()
+# Sin argumentos
+# Lanza una animación de globos
+# Perfecto para onboarding y logros</code></pre>
+    <div class="fw-preview">
+      <button class="demo-btn" onclick="launchBalloons()">🎈 Lanzar globos</button>
+      <div id="balloon-area" style="font-size:2em; text-align:center; min-height:40px;"></div>
+    </div>
+  </div>
+  <div class="fw-col">
+    <div class="fw-title">⏳ st.spinner()</div>
+    <pre><code class="language-python">with st.spinner("Procesando..."):
+    time.sleep(2)      # simulación
+    resultado = calcular()
+# text (str): mensaje del spinner
+# Se usa como context manager (with)
+# Mientras dura el bloque → spinner activo</code></pre>
+    <div class="fw-preview">
+      <button class="demo-btn" onclick="showSpinner()">⏳ Simular carga</button>
+      <div id="spinner-area" style="font-size:0.85em; margin-top:0.4em; color:#FF4B4B;"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+function launchBalloons() {
+  var area = document.getElementById('balloon-area');
+  area.innerHTML = '';
+  var emojis = ['🎈','🎉','🎊','🥳','🎈','🎊'];
+  emojis.forEach(function(e, i) {
+    setTimeout(function(){
+      area.innerHTML += e + ' ';
+    }, i * 150);
+  });
+  setTimeout(function(){ area.innerHTML = ''; }, 2500);
+}
+function showSpinner() {
+  var area = document.getElementById('spinner-area');
+  area.textContent = '⏳ Procesando...';
+  setTimeout(function(){ area.textContent = '✅ ¡Listo!'; }, 1800);
+  setTimeout(function(){ area.textContent = ''; }, 3000);
+}
+</script>
+```
+
+::: {.notes}
+"st.balloons es una de las cosas más divertidas de Streamlit — lanza globos animados por toda la pantalla. Úsenlo para celebrar el primer formulario completado o un modelo entrenado exitosamente. st.spinner es crítico para operaciones lentas — muestra un indicador de carga mientras el bloque `with` está ejecutándose."
+:::
+
+# Layout Básico — Organizar la App 🏗️ {background-color="#0d0d0d"}
+
+## `st.columns()` {auto-animate=true}
+
+```{=html}
+<div class="layout-demo">
+  <div class="ld-code">
+    <pre><code class="language-python">col1, col2, col3 = st.columns(3)
+# Argumento 1: n_columns (int) o lista de pesos
+# st.columns([2, 1, 1]) → primera columna más ancha
+# gap="small"/"medium"/"large" — espacio entre cols
+
+with col1:
+    st.metric("Ventas", "$ 1,234")
+
+with col2:
+    st.metric("Clientes", "89")
+
+with col3:
+    st.metric("Conversión", "7.2%")</code></pre>
+  </div>
+  <div class="ld-preview">
+    <div class="lp-bar">🌐 resultado</div>
+    <div class="lp-cols">
+      <div class="lp-col">
+        <div class="lp-metric-label">Ventas</div>
+        <div class="lp-metric-val">$ 1,234</div>
+      </div>
+      <div class="lp-col">
+        <div class="lp-metric-label">Clientes</div>
+        <div class="lp-metric-val">89</div>
+      </div>
+      <div class="lp-col">
+        <div class="lp-metric-label">Conversión</div>
+        <div class="lp-metric-val">7.2%</div>
+      </div>
+    </div>
+  </div>
+</div>
+```
+
+::: {.notes}
+"st.columns es uno de los widgets más usados en Streamlit. Divide el ancho disponible en columnas y te da un objeto para cada una. Puedes usar `with col1:` como context manager, o guardar los widgets directamente: `col1.write('texto')`. Los pesos proporcionales como `[2,1,1]` son muy útiles para layouts asimétricos."
+:::
+
+## `st.expander()` · `st.container()` {auto-animate=true}
+
+```{=html}
+<div class="double-widget">
+  <div class="dw-col">
+    <div class="dw-title">st.expander()</div>
+    <pre><code class="language-python">with st.expander("Ver detalles"):
+    # label: texto del header (str)
+    # expanded=False: cerrado por defecto
+    # Ideal para: configs, logs,
+    # información secundaria
+    st.write("Contenido oculto...")
+    st.code("print('dentro!')")</code></pre>
+    <div class="dw-preview">
+      <div class="fake-expander" id="exp1">
+        <div class="fe-header" onclick="toggleExp('exp1')">
+          <span id="exp1-arrow">▶</span> Ver detalles
+        </div>
+        <div class="fe-body" id="exp1-body" style="display:none">
+          <div style="color:#ccc; font-size:0.85em; padding:0.3em 0;">Contenido oculto...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="dw-col">
+    <div class="dw-title">st.container()</div>
+    <pre><code class="language-python">with st.container():
+    # Sin argumentos obligatorios
+    # border=True → borde visible
+    # height=300 → altura fija + scroll
+    # Agrupa widgets lógicamente
+    st.write("Elemento 1")
+    st.write("Elemento 2")
+    # Útil para agrupar, aplicar
+    # estilos o controlar layout</code></pre>
+    <div class="dw-preview">
+      <div class="fake-container">
+        <div style="color:#ccc; font-size:0.82em;">Elemento 1</div>
+        <div style="color:#ccc; font-size:0.82em;">Elemento 2</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function toggleExp(id) {
+  var body = document.getElementById(id + '-body');
+  var arrow = document.getElementById(id + '-arrow');
+  if (body.style.display === 'none') {
+    body.style.display = 'block';
+    arrow.textContent = '▼';
+  } else {
+    body.style.display = 'none';
+    arrow.textContent = '▶';
+  }
+}
+</script>
+```
+
+::: {.notes}
+"st.expander es perfecto para contenido secundario que no quieres mostrar siempre — configuraciones avanzadas, logs, explicaciones adicionales. El usuario decide si lo abre. st.container con `border=True` es nuevo en versiones recientes y permite crear tarjetas visuales sin CSS adicional."
+:::
+
+# Media — Imágenes y Video 🖼️ {background-color="#0d0d0d"}
+
+## `st.image()` · `st.video()` {auto-animate=true}
+
+```{=html}
+<div class="media-demo">
+  <div class="md-col">
+    <div class="md-title">📷 st.image()</div>
+    <pre><code><span class="sy-fn">st.image</span>(
+  image,                 <span class="sy-cm"># path, URL, PIL, numpy</span>
+  caption=<span class="sy-str">"Texto"</span>,       <span class="sy-cm"># pie de imagen (str)</span>
+  width=<span class="sy-num">300</span>,             <span class="sy-cm"># ancho en px</span>
+  use_column_width=<span class="sy-kw">True</span>, <span class="sy-cm"># 100% ancho</span>
+  clamp=<span class="sy-kw">False</span>,           <span class="sy-cm"># clamp de píxeles</span>
+  channels=<span class="sy-str">"RGB"</span>,        <span class="sy-cm"># "RGB" o "BGR"</span>
+  output_format=<span class="sy-str">"auto"</span>   <span class="sy-cm"># "JPEG","PNG","auto"</span>
+)</code></pre>
+    <div class="md-example">
+      <div class="fake-image">
+        <div class="fi-canvas">
+          <div class="fi-icon">🏔️</div>
+          <div class="fi-dims">300 × 200 px</div>
+        </div>
+        <div class="fi-caption">caption: "Mi foto"</div>
+      </div>
+    </div>
+  </div>
+  <div class="md-col">
+    <div class="md-title">🎬 st.video()</div>
+    <pre><code><span class="sy-fn">st.video</span>(
+  data,                <span class="sy-cm"># URL, path local, bytes</span>
+  format=<span class="sy-str">"video/mp4"</span>, <span class="sy-cm"># MIME type</span>
+  start_time=<span class="sy-num">0</span>,       <span class="sy-cm"># segundo de inicio</span>
+  subtitles=<span class="sy-kw">None</span>      <span class="sy-cm"># subs VTT o dict</span>
+)
+<span class="sy-cm"># ✓ URLs de YouTube</span>
+<span class="sy-cm"># ✓ Archivos .mp4 / .webm</span>
+<span class="sy-cm"># ✓ bytes en memoria</span></code></pre>
+    <div class="md-example">
+      <div class="fake-video">
+        <div class="fv-screen">
+          <div class="fv-play-btn">▶</div>
+        </div>
+        <div class="fv-controls">
+          <span class="fv-time">0:00 / 0:42</span>
+          <div class="fv-bar"><div class="fv-dot"></div></div>
+          <span class="fv-vol">🔊</span>
+        </div>
+        <div class="fv-label">video.mp4</div>
+      </div>
+    </div>
+  </div>
+</div>
+```
+
+::: {.notes}
+"st.image es muy flexible — acepta URLs de internet, rutas locales, objetos PIL para imágenes procesadas con Python, y arrays de numpy para visualizar datos de imágenes directamente. st.video también acepta URLs de YouTube directamente, no solo archivos locales."
+:::
+
+# El Scripting Flow en acción — Todo junto 🎯 {background-color="#0d0d0d"}
+
+## App completa de ejemplo {auto-animate=true}
+
+```{=html}
+<div class="full-app-demo">
+  <div class="fad-code">
+    <div class="fad-bar">📄 app_completa.py</div>
+    <pre style="font-size:0.62em; max-height: 320px; overflow-y:auto;"><code class="language-python">import streamlit as st
+
+st.title("🎛️ Mi App de Demostración")
+st.divider()
+
+# Sección de inputs
+col1, col2 = st.columns(2)
+
+with col1:
+    st.header("Configuración")
+    nombre = st.text_input("Tu nombre", placeholder="Ej: Ana")
+    edad = st.slider("Edad", 1, 100, 25)
+    activo = st.checkbox("Modo avanzado")
+
+with col2:
+    st.header("Controles")
+    nivel = st.number_input("Nivel", 1, 10, 1)
+    if st.button("Generar", type="primary"):
+        st.balloons()
+
+st.divider()
+
+# Sección de output — reacciona a los inputs
+if nombre:
+    st.success(f"¡Hola {nombre}! Tienes {edad} años.")
+    if activo:
+        with st.expander("Detalles avanzados"):
+            st.info(f"Nivel configurado: {nivel}")
+            st.code(f"usuario = dict(nombre='{nombre}', edad={edad})")
+else:
+    st.warning("Ingresa tu nombre para comenzar.")</code></pre>
+  </div>
+  <div class="fad-preview">
+    <div class="fad-pbar">🌐 resultado</div>
+    <div class="fad-pview" id="full-app">
+      <div class="fp-title">🎛️ Mi App de Demostración</div>
+      <div class="fp-divider"></div>
+      <div class="fp-row">
+        <div class="fp-col">
+          <div class="fp-label">Tu nombre</div>
+          <input id="fa-nombre" class="fp-input" placeholder="Ej: Ana" oninput="faUpdate()" />
+          <div class="fp-label" style="margin-top:0.4em;">Edad</div>
+          <input type="range" id="fa-edad" min="1" max="100" value="25" oninput="faUpdate()" class="fake-slider" />
+          <div style="font-size:0.7em; color:#999;">Valor: <span id="fa-edad-val">25</span></div>
+        </div>
+        <div class="fp-col">
+          <div class="fp-label">Nivel</div>
+          <input type="range" id="fa-nivel" min="1" max="10" value="1" oninput="faUpdate()" class="fake-slider" />
+          <div style="font-size:0.7em; color:#999;">Nivel: <span id="fa-nivel-val">1</span></div>
+        </div>
+      </div>
+      <div id="fa-output" class="fp-output"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+function faUpdate() {
+  var nombre = document.getElementById('fa-nombre').value;
+  var edad = document.getElementById('fa-edad').value;
+  var nivel = document.getElementById('fa-nivel').value;
+  document.getElementById('fa-edad-val').textContent = edad;
+  document.getElementById('fa-nivel-val').textContent = nivel;
+  var out = document.getElementById('fa-output');
+  if (nombre.trim()) {
+    out.innerHTML = '<div class="fp-success">✅ ¡Hola ' + nombre + '! Tienes ' + edad + ' años.</div>';
+  } else {
+    out.innerHTML = '<div class="fp-warning">⚠️ Ingresa tu nombre para comenzar.</div>';
+  }
+}
+faUpdate();
+</script>
+```
+
+::: {.notes}
+"Este es un ejemplo realista que combina todo lo que vimos. Noten cómo el output al final del script reacciona en tiempo real a los inputs que están arriba. Eso es el scripting flow en acción — Python de arriba a abajo, reactive sin frameworks complejos."
+:::
+
+## ¿Por qué el orden importa? {auto-animate=true}
+
+```{=html}
+<div class="order-demo">
+  <div class="od-bad">
+    <div class="od-title bad-title">❌ Orden incorrecto</div>
+    <pre><code class="language-python">st.write(f"Hola {nombre}")  # ← ERROR
+# nombre no existe todavía!
+
+nombre = st.text_input("Nombre")</code></pre>
+    <div class="od-result bad-result">NameError: name 'nombre' is not defined</div>
+  </div>
+  <div class="od-good">
+    <div class="od-title good-title">✅ Orden correcto</div>
+    <pre><code class="language-python">nombre = st.text_input("Nombre")
+# ↑ primero definimos el widget
+
+if nombre:
+    st.write(f"Hola {nombre}")  # ✅</code></pre>
+    <div class="od-result good-result">Funciona perfectamente 🎉</div>
+  </div>
+</div>
+```
+
+::: {.fragment .fade-up}
+::: {.box-accent}
+El scripting flow garantiza que el código se lee como un libro: **de arriba a abajo**. Primero defines, luego usas.
+:::
+:::
+
+::: {.notes}
+"Esta es la trampa más común en Streamlit. Como el script corre de arriba a abajo, no puedes usar una variable antes de declararla. A diferencia de frameworks con callbacks o estado reactivo, en Streamlit el flujo es completamente lineal y predecible."
+:::
+
+# Resumen del Módulo 1 🏁 {background-color="#0d0d0d"}
+
+## Todo lo que aprendiste hoy {.center}
+
+```{=html}
+<div class="summary-grid">
+  <div class="sg-card fade-item" style="animation-delay:0.1s">
+    <div class="sgc-icon">🐍</div>
+    <div class="sgc-num">01</div>
+    <div class="sgc-title">Streamlit = Python → Web App</div>
+    <div class="sgc-desc">Sin HTML, sin JS, sin frameworks</div>
+  </div>
+  <div class="sg-card fade-item" style="animation-delay:0.3s">
+    <div class="sgc-icon">💻</div>
+    <div class="sgc-num">02</div>
+    <div class="sgc-title">pip install + streamlit run</div>
+    <div class="sgc-desc">Dos comandos para arrancar</div>
+  </div>
+  <div class="sg-card fade-item" style="animation-delay:0.5s">
+    <div class="sgc-icon">🔄</div>
+    <div class="sgc-num">03</div>
+    <div class="sgc-title">Scripting Flow</div>
+    <div class="sgc-desc">Cada interacción = re-ejecución completa</div>
+  </div>
+  <div class="sg-card fade-item" style="animation-delay:0.7s">
+    <div class="sgc-icon">📝</div>
+    <div class="sgc-num">04</div>
+    <div class="sgc-title">Texto y Títulos</div>
+    <div class="sgc-desc">title, header, write, markdown, code...</div>
+  </div>
+  <div class="sg-card fade-item" style="animation-delay:0.9s">
+    <div class="sgc-icon">🎛️</div>
+    <div class="sgc-num">05</div>
+    <div class="sgc-title">Inputs Simples</div>
+    <div class="sgc-desc">button, checkbox, text_input, slider...</div>
+  </div>
+  <div class="sg-card fade-item" style="animation-delay:1.1s">
+    <div class="sgc-icon">🏗️</div>
+    <div class="sgc-num">06</div>
+    <div class="sgc-title">Layout y Feedback</div>
+    <div class="sgc-desc">columns, expander, success, error...</div>
+  </div>
+</div>
+```
+
+::: {.notes}
+"En este módulo cubrimos los fundamentos completos. La próxima clase entramos en gestión de estado con session_state y el sistema de cache para apps más eficientes."
+:::
+
+## Tu producto parcial ✔️ {.center}
+
+```{=html}
+<div class="checkpoint">
+  <div class="cp-title">App Base Ejecutándose</div>
+  <div class="cp-code">
+    <pre><code class="language-python">import streamlit as st
+
+st.title("Mi Primera App 🎈")
+st.write("¡Está funcionando!")
+
+nombre = st.text_input("¿Cómo te llamas?")
+edad = st.slider("¿Cuántos años tienes?", 1, 100, 25)
+
+if nombre:
+    st.success(f"¡Bienvenido/a, {nombre}! Tienes {edad} años. 🎉")
+    st.balloons()
+else:
+    st.info("Escribe tu nombre arriba 👆")</code></pre>
+  </div>
+  <div class="cp-run fade-item" style="animation-delay:0.5s">
+    <div class="terminal-mini">
+      <span class="t-prompt">$</span>
+      <span class="t-cmd">streamlit run mi_app.py</span>
+    </div>
+    <div class="cp-badge">✅ Módulo 1 Completo</div>
+  </div>
+</div>
+```
+
+::: {.notes}
+"Este es el entregable del módulo 1. Una app corriendo en tu máquina con widgets reales que responden al usuario. Parece simple, pero entender el scripting flow que hay detrás es la base de todo lo que viene."
+:::
+
+---
+
+::: {style="text-align:center; padding: 3em 0;"}
+
+::: {.r-fit-text}
+¡A construir! 🚀
+:::
+
+[**Módulo 1 — Completado**]{style="font-size:1.2em; color:#FF4B4B;"}
+
+[Preguntas antes de cerrar 🙋]{.text-muted}
+
+:::
+
+::: {.notes}
+"Tiempo libre para que pongan en práctica lo que vimos. El ejercicio mínimo: instalar Streamlit y hacer correr el script de la slide anterior. Si quieren ir más lejos, agreguen más widgets y experimenten con el scripting flow."
+:::

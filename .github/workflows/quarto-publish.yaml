@@ -1,0 +1,53 @@
+name: Render and Publish Quarto Slides Pages
+
+on:
+  push:
+    branches:
+      - main
+      - master
+    paths:
+      - 'slides/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Quarto
+        uses: quarto-dev/quarto-actions/setup@v2
+
+      - name: Render Quarto
+        run: quarto render module-1/slides/streamlit-modulo1.qmd
+      - name: Prepare Site
+        run: |
+          mkdir _site
+          mv module-1/slides/streamlit-modulo1.html _site/index.html
+          if [ -d "module-1/slides/streamlit-modulo1_files" ]; then mv module-1/slides/streamlit-modulo1_files _site/; fi
+          cp module-1/slides/*.png module-1/slides/*.mp4 module-1/slides/*.avif _site/ 2>/dev/null || true
+          
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: '_site'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

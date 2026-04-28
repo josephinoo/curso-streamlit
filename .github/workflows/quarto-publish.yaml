@@ -44,22 +44,136 @@ jobs:
           # Root index header
           cat <<EOF > _site/index.html
           <!DOCTYPE html>
-          <html>
+          <html lang="es">
           <head>
             <meta charset="utf-8">
-            <title>Curso Streamlit Slides</title>
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Curso Streamlit - Diapositivas</title>
             <style>
-              body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; padding: 2rem; max-width: 800px; margin: 0 auto; line-height: 1.6; }
-              h1 { color: #333; }
-              ul { list-style-type: none; padding: 0; }
-              li { margin: 10px 0; }
-              a { text-decoration: none; color: #0366d6; font-size: 1.2rem; }
-              a:hover { text-decoration: underline; }
+              :root {
+                --bg-color: #0e1117;
+                --text-color: #fafafa;
+                --primary: #FF4B4B;
+                --card-bg: #262730;
+                --card-hover: #31333F;
+              }
+              body {
+                font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+                background-color: var(--bg-color);
+                color: var(--text-color);
+                margin: 0;
+                padding: 4rem 1.5rem;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                min-height: 100vh;
+              }
+              header {
+                text-align: center;
+                margin-bottom: 4rem;
+              }
+              h1 {
+                font-size: 3.5rem;
+                font-weight: 800;
+                margin: 0;
+                background: linear-gradient(135deg, #FF4B4B, #FF8F8F);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                letter-spacing: -1px;
+              }
+              p.subtitle {
+                font-size: 1.25rem;
+                color: #a0aec0;
+                margin-top: 1rem;
+              }
+              .grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+                gap: 2rem;
+                width: 100%;
+                max-width: 1100px;
+              }
+              .card {
+                background-color: var(--card-bg);
+                border-radius: 16px;
+                padding: 2.5rem 2rem;
+                text-decoration: none;
+                color: var(--text-color);
+                transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+                border: 1px solid rgba(255, 255, 255, 0.05);
+                display: flex;
+                flex-direction: column;
+                position: relative;
+                overflow: hidden;
+              }
+              .card::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 4px;
+                height: 100%;
+                background-color: var(--primary);
+                transform: scaleY(0);
+                transition: transform 0.3s ease;
+                transform-origin: bottom;
+              }
+              .card:hover {
+                transform: translateY(-8px);
+                background-color: var(--card-hover);
+                box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+                border-color: rgba(255, 75, 75, 0.3);
+              }
+              .card:hover::before {
+                transform: scaleY(1);
+              }
+              .card-title {
+                font-size: 1.75rem;
+                font-weight: 600;
+                margin: 0 0 0.5rem 0;
+              }
+              .card-icon {
+                font-size: 3rem;
+                margin-bottom: 1.5rem;
+              }
+              .card-desc {
+                color: #cbd5e1;
+                font-size: 1rem;
+                line-height: 1.6;
+                margin: 0;
+                flex-grow: 1;
+              }
+              .card-footer {
+                margin-top: 2rem;
+                font-weight: 600;
+                color: var(--primary);
+                font-size: 0.95rem;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                transition: gap 0.3s ease;
+              }
+              .card:hover .card-footer {
+                gap: 12px;
+                color: #ff7676;
+              }
+              footer {
+                margin-top: auto;
+                padding-top: 5rem;
+                color: #718096;
+                font-size: 0.9rem;
+                text-align: center;
+              }
             </style>
           </head>
           <body>
-            <h1>Curso Streamlit Slides</h1>
-            <ul>
+            <header>
+              <h1>Curso Streamlit</h1>
+              <p class="subtitle">Material de estudio y presentaciones interactivas</p>
+            </header>
+            <div class="grid">
           EOF
           
           # Process each module dynamically
@@ -83,7 +197,34 @@ jobs:
                   
                   # Add link to index.html (Capitalize module name for display)
                   mod_title=$(echo "$mod_dir" | tr '-' ' ' | awk '{for(i=1;i<=NF;i++)sub(/./,toupper(substr($i,1,1)),$i)}1')
-                  echo "              <li><a href=\"$mod_dir/\">▶ $mod_title</a></li>" >> _site/index.html
+                  
+                  # Add some descriptions based on module number
+                  mod_num=$(echo "$mod_title" | grep -o -E '[0-9]+' || echo "0")
+                  icon="📂"
+                  desc="Material y diapositivas interactivas del módulo."
+                  
+                  if [ "$mod_num" = "1" ]; then
+                    icon="🚀"
+                    desc="Introducción, arquitectura de Streamlit y conceptos básicos."
+                  elif [ "$mod_num" = "2" ]; then
+                    icon="📊"
+                    desc="Visualización de datos, gráficos y componentes interactivos."
+                  elif [ "$mod_num" = "3" ]; then
+                    icon="🎨"
+                    desc="Diseño, personalización de la UI y layouts avanzados."
+                  elif [ "$mod_num" = "4" ]; then
+                    icon="🧠"
+                    desc="Estado de sesión, fragmentos, seguridad y chat bots."
+                  fi
+                  
+                  cat <<EOF >> _site/index.html
+              <a href="$mod_dir/" class="card">
+                <div class="card-icon">$icon</div>
+                <h2 class="card-title">$mod_title</h2>
+                <p class="card-desc">$desc</p>
+                <div class="card-footer">Ver Diapositivas <span aria-hidden="true">→</span></div>
+              </a>
+          EOF
                   
                   # Only process the first html file found per module
                   break
@@ -94,7 +235,10 @@ jobs:
           
           # Close HTML
           cat <<EOF >> _site/index.html
-            </ul>
+            </div>
+            <footer>
+              <p>Generado automáticamente con GitHub Actions y Quarto</p>
+            </footer>
           </body>
           </html>
           EOF

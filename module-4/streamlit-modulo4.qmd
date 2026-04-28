@@ -1,0 +1,2835 @@
+---
+title: "Streamlit — Módulo 4"
+subtitle: "Seguridad · Formularios · Fragmentos · Chat"
+author: "@josephinoo"
+date: "2026-04-26"
+format:
+  revealjs:
+    theme: [dark, streamlit-theme.scss]
+    transition: fade
+    transition-speed: fast
+    slide-number: c/t
+    progress: true
+    controls: true
+    controls-layout: bottom-right
+    footer: "Módulo 4 · Streamlit · Seguridad · Formularios · Fragmentos · Chat"
+    width: 1600
+    height: 900
+    margin: 0.05
+    min-scale: 0.1
+    max-scale: 0.9
+    highlight-style: github-dark
+    code-line-numbers: false
+    code-copy: true
+    incremental: false
+    center-title-slide: true
+    auto-animate-easing: ease-in-out
+    auto-animate-unmatched: false
+    auto-animate-duration: 0.8
+title-slide-attributes:
+  data-background-color: "#0d0d0d"
+execute:
+  echo: true
+  eval: false
+include-after-body:
+  text: |
+    <script>
+    (function() {
+      function colorize(block) {
+        var lines = block.innerHTML.split('\n');
+        lines = lines.map(function(line) {
+          var inStr = false, strChar = '', ci = -1;
+          for (var i = 0; i < line.length; i++) {
+            var c = line[i];
+            if (!inStr && (c === '"' || c === "'")) { inStr = true; strChar = c; }
+            else if (inStr && c === strChar && line[i-1] !== '\\') { inStr = false; }
+            else if (!inStr && c === '#') { ci = i; break; }
+          }
+          var code    = ci >= 0 ? line.substring(0, ci) : line;
+          var comment = ci >= 0 ? line.substring(ci)    : '';
+          var P = '\x00';
+          code = code.replace(/("(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')/g, P+'S'+P+'$1'+P+'/S'+P);
+          code = code.replace(/\b(st\.[A-Za-z_]+)/g, P+'F'+P+'$1'+P+'/F'+P);
+          code = code.replace(/\b(True|False|None|def|class|if|elif|else|with|return|import|as|for|in|not|and|or|lambda|raise|async|await)\b/g, P+'K'+P+'$1'+P+'/K'+P);
+          code = code.replace(/\b(\d+(\.\d+)?)\b/g, P+'N'+P+'$1'+P+'/N'+P);
+          code = code.replace(new RegExp(P+'S'+P+'(.*?)'+P+'\\/S'+P,'g'), '<span class="sy-str">$1</span>');
+          code = code.replace(new RegExp(P+'F'+P+'(.*?)'+P+'\\/F'+P,'g'), '<span class="sy-fn">$1</span>');
+          code = code.replace(new RegExp(P+'K'+P+'(.*?)'+P+'\\/K'+P,'g'), '<span class="sy-kw">$1</span>');
+          code = code.replace(new RegExp(P+'N'+P+'(.*?)'+P+'\\/N'+P,'g'), '<span class="sy-num">$1</span>');
+          if (comment) comment = '<span class="sy-cm">' + comment + '</span>';
+          return code + comment;
+        });
+        block.innerHTML = lines.join('\n');
+      }
+      function run() {
+        document.querySelectorAll('.reveal pre code').forEach(colorize);
+      }
+      if (typeof Reveal !== 'undefined') {
+        Reveal.on('ready', run);
+      } else {
+        document.addEventListener('DOMContentLoaded', run);
+      }
+    })();
+    </script>
+---
+
+```{=html}
+<style>
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@300;400;600;700;900&display=swap');
+:root {
+  --red:#FF4B4B; --green:#22c55e; --blue:#3b82f6; --gold:#f59e0b; --purple:#a855f7;
+  --bg:#0d0d0d; --panel:#1a1a1a; --panel2:#222; --border:#2a2a2a;
+  --text:#e8e8e8; --muted:#666; --mono:'JetBrains Mono',monospace;
+}
+.box-accent { background:rgba(255,75,75,.1); border:1px solid rgba(255,75,75,.35); border-radius:7px; padding:.55em 1em; font-size:.78em; color:#e8e8e8; margin:.4em 0; }
+.box-muted  { background:#111; border:1px solid #222; border-radius:7px; padding:.55em 1em; font-size:.75em; color:#777; margin:.4em 0; }
+.box-green  { background:rgba(34,197,94,.08); border:1px solid rgba(34,197,94,.3); border-radius:7px; padding:.55em 1em; font-size:.78em; color:#e8e8e8; margin:.4em 0; }
+.box-blue   { background:rgba(59,130,246,.08); border:1px solid rgba(59,130,246,.3); border-radius:7px; padding:.55em 1em; font-size:.78em; color:#e8e8e8; margin:.4em 0; }
+.box-yellow { background:rgba(245,158,11,.08); border:1px solid rgba(245,158,11,.3); border-radius:7px; padding:.55em 1em; font-size:.78em; color:#e8e8e8; margin:.4em 0; }
+.box-purple { background:rgba(168,85,247,.08); border:1px solid rgba(168,85,247,.3); border-radius:7px; padding:.55em 1em; font-size:.78em; color:#e8e8e8; margin:.4em 0; }
+.text-muted { color:#666; }
+.fade-item  { animation:fadeUp .5s ease both; }
+@keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:none} }
+pre { background:#0f0f0f!important; border:1px solid #1e1e1e; border-radius:7px; font-size:.63em!important; margin:.4em 0; }
+pre code { font-family:var(--mono)!important; padding:.9em 1.1em!important; line-height:1.6; }
+.split2 { display:grid; grid-template-columns:1fr 1fr; gap:1.2em; align-items:start; }
+.split3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:1em; align-items:start; }
+
+
+/* syntax highlighting */
+.sy-str { color: #a5d6ff; }
+.sy-fn  { color: #d2a8ff; font-weight: 600; }
+.sy-kw  { color: #ff7b72; font-weight: 600; }
+.sy-num { color: #79c0ff; }
+.sy-cm  { color: #8b949e; font-style: italic; }
+
+/* summary */
+.summary-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:.7em; }
+.sg-card  { background:var(--panel); border:1px solid var(--border); border-radius:8px; padding:.75em .9em; }
+.sgc-num  { font-size:.55em; color:var(--muted); font-family:var(--mono); margin-bottom:.1em; }
+.sgc-icon { font-size:1.1em; margin-bottom:.15em; }
+.sgc-title{ font-size:.82em; font-weight:700; color:#fff; margin-bottom:.15em; }
+.sgc-desc { font-size:.68em; color:#777; line-height:1.4; }
+.sgc-desc code { color:#f97316; background:rgba(249,115,22,.1); border-radius:3px; padding:.02em .3em; font-size:.9em; }
+
+/* secrets */
+.secrets-demo { display:grid; grid-template-columns:1fr 1fr; gap:1em; font-size:.8em; }
+.sec-file { background:#0a0a0a; border:1px solid #222; border-radius:8px; overflow:hidden; }
+.sec-bar  { background:#111; padding:.3em .7em; font-size:.7em; color:#555; border-bottom:1px solid #1a1a1a; display:flex; align-items:center; gap:.4em; }
+.sec-bar-dot { width:.5em; height:.5em; border-radius:50%; background:#333; }
+.sec-body { padding:.7em .9em; font-family:var(--mono); font-size:.8em; color:#bbb; line-height:1.8; }
+.sec-key  { color:#60a5fa; } .sec-val { color:#22c55e; } .sec-eq { color:#888; } .sec-comment { color:#555; }
+
+/* login flow */
+.login-flow { display:flex; flex-direction:column; gap:.5em; font-size:.8em; }
+.lf-step { background:var(--panel); border:1px solid var(--border); border-radius:6px; padding:.5em .9em; display:flex; align-items:center; gap:.7em; }
+.lf-num  { background:#2a2a2a; color:var(--muted); border-radius:50%; width:1.5em; height:1.5em; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:.82em; flex-shrink:0; font-family:var(--mono); }
+.lf-text { font-size:.82em; color:#bbb; flex:1; }
+.lf-code { font-family:var(--mono); color:var(--red); font-size:.78em; }
+.lf-arrow { text-align:center; color:var(--muted); font-size:.75em; }
+.lf-step.ok   { border-color:rgba(34,197,94,.35);  background:rgba(34,197,94,.04); }
+.lf-step.bad  { border-color:rgba(255,75,75,.35);  background:rgba(255,75,75,.04); }
+.lf-step.blue { border-color:rgba(59,130,246,.35); background:rgba(59,130,246,.04); }
+.lf-step.pur  { border-color:rgba(168,85,247,.35); background:rgba(168,85,247,.04); }
+
+/* login mock */
+.login-mock { background:#111; border:1px solid #222; border-radius:10px; overflow:hidden; font-size:.82em; max-width:300px; }
+.lm-header { background:#0d0d0d; padding:.6em 1em; border-bottom:1px solid #1a1a1a; text-align:center; }
+.lm-lock   { font-size:2em; } .lm-title { font-size:.85em; font-weight:700; color:#fff; margin-top:.1em; }
+.lm-body   { padding:.9em 1em; }
+.lm-label  { font-size:.65em; color:var(--muted); text-transform:uppercase; letter-spacing:.08em; margin-bottom:.2em; }
+.lm-input  { background:#1a1a1a; border:1px solid #2a2a2a; border-radius:5px; padding:.35em .6em; width:100%; color:#ccc; font-size:.78em; font-family:'Inter',sans-serif; box-sizing:border-box; margin-bottom:.5em; }
+.lm-input:focus { outline:none; border-color:var(--red); }
+.lm-btn    { background:var(--red); color:#fff; border:none; border-radius:5px; padding:.45em; width:100%; font-size:.78em; font-weight:700; cursor:pointer; font-family:'Inter',sans-serif; }
+.lm-btn:hover { background:#ff6666; }
+.lm-err { background:rgba(255,75,75,.1); border:1px solid rgba(255,75,75,.3); border-radius:5px; padding:.3em .6em; font-size:.68em; color:#ff8888; margin-top:.4em; display:none; }
+.lm-ok  { background:rgba(34,197,94,.1); border:1px solid rgba(34,197,94,.3); border-radius:5px; padding:.3em .6em; font-size:.68em; color:#86efac; margin-top:.4em; display:none; }
+
+/* stop diagram */
+.stop-diagram { font-size:.8em; }
+.sd-line { padding:.25em .7em; border-left:2px solid var(--border); margin:.1em 0; font-family:var(--mono); font-size:.82em; color:#777; }
+.sd-line.run  { border-color:var(--green); color:#bbb; }
+.sd-line.stop { border-color:var(--red); color:var(--red); font-weight:700; }
+.sd-line.skip { border-color:#1a1a1a; color:#333; text-decoration:line-through; }
+
+/* arch diagram */
+.arch-diagram { display:flex; align-items:center; gap:.5em; flex-wrap:wrap; font-size:.8em; justify-content:center; }
+.arch-box { background:var(--panel); border:1px solid var(--border); border-radius:7px; padding:.5em .9em; text-align:center; min-width:95px; }
+.arch-box .ab-icon  { font-size:1.4em; }
+.arch-box .ab-label { font-size:.7em; color:#ccc; margin-top:.2em; font-weight:600; }
+.arch-box .ab-sub   { font-size:.6em; color:#555; font-family:var(--mono); }
+.arch-box.blue  { border-color:rgba(59,130,246,.4);  background:rgba(59,130,246,.06); }
+.arch-box.red   { border-color:rgba(255,75,75,.4);   background:rgba(255,75,75,.06); }
+.arch-box.green { border-color:rgba(34,197,94,.4);   background:rgba(34,197,94,.06); }
+.arch-box.pur   { border-color:rgba(168,85,247,.4);  background:rgba(168,85,247,.06); }
+.arch-arrow { color:#555; font-size:.9em; display:flex; flex-direction:column; align-items:center; }
+.arch-arrow span { font-size:.6em; color:#444; font-family:var(--mono); }
+
+/* stauth preview */
+.stauth-prev { background:#111; border:1px solid #1e1e1e; border-radius:10px; overflow:hidden; font-size:.8em; }
+.sap-bar   { background:#0a0a0a; padding:.3em .7em; font-size:.68em; color:#444; border-bottom:1px solid #181818; }
+.sap-body  { padding:.75em .9em; }
+.sap-logo  { display:flex; align-items:center; gap:.5em; margin-bottom:.7em; }
+.sap-logo-icon { width:1.8em; height:1.8em; background:var(--red); border-radius:4px; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:900; font-size:.75em; }
+.sap-logo-text { font-size:.82em; font-weight:700; color:#ccc; }
+.sap-field { margin-bottom:.4em; }
+.sap-fl    { font-size:.62em; color:#666; margin-bottom:.12em; text-transform:uppercase; letter-spacing:.08em; }
+.sap-inp   { background:#1a1a1a; border:1px solid #2a2a2a; border-radius:4px; padding:.3em .6em; width:100%; color:#bbb; font-size:.75em; font-family:'Inter',sans-serif; box-sizing:border-box; }
+.sap-btn   { background:var(--red); color:#fff; border:none; border-radius:5px; padding:.38em; width:100%; font-size:.75em; font-weight:700; cursor:pointer; margin-top:.5em; font-family:'Inter',sans-serif; }
+.sap-btn:hover { background:#ff6666; }
+.sap-links { display:flex; justify-content:space-between; margin-top:.4em; font-size:.62em; }
+.sap-links a { color:#60a5fa; text-decoration:none; }
+
+/* feature pills */
+.feat-pills { display:flex; flex-wrap:wrap; gap:.35em; margin:.5em 0; }
+.fp        { border-radius:20px; padding:.2em .65em; font-size:.68em; font-weight:600; }
+.fp-green  { background:rgba(34,197,94,.12);  border:1px solid rgba(34,197,94,.3);  color:#86efac; }
+.fp-blue   { background:rgba(59,130,246,.12); border:1px solid rgba(59,130,246,.3); color:#93c5fd; }
+.fp-purple { background:rgba(168,85,247,.12); border:1px solid rgba(168,85,247,.3); color:#d8b4fe; }
+.fp-gold   { background:rgba(245,158,11,.12); border:1px solid rgba(245,158,11,.3); color:#fcd34d; }
+.fp-red    { background:rgba(255,75,75,.12);  border:1px solid rgba(255,75,75,.3);  color:#fca5a5; }
+
+/* compare table */
+.cmp-table { width:100%; border-collapse:collapse; font-size:.7em; }
+.cmp-table th { background:#111; color:var(--muted); text-transform:uppercase; letter-spacing:.07em; padding:.4em .7em; border-bottom:1px solid #222; text-align:left; font-size:.78em; }
+.cmp-table td { padding:.38em .7em; border-bottom:1px solid #181818; color:#bbb; vertical-align:top; }
+.cmp-table td.met  { color:#fff; font-weight:600; font-family:var(--mono); }
+.cmp-table td.good { color:var(--green); }
+.cmp-table td.mid  { color:var(--gold); }
+.cmp-table td.bad  { color:var(--red); }
+
+/* form / rerun */
+.cart-analogy { display:grid; grid-template-columns:1fr auto 1fr; gap:.8em; align-items:center; font-size:.8em; }
+.ca-side  { background:var(--panel); border:1px solid var(--border); border-radius:8px; padding:.7em .9em; }
+.ca-title { font-size:.72em; font-weight:700; color:#fff; margin-bottom:.4em; text-transform:uppercase; letter-spacing:.06em; }
+.ca-item  { display:flex; align-items:center; gap:.4em; margin:.2em 0; font-size:.78em; color:#aaa; }
+.ca-item-bad  { color:#ff6666; } .ca-item-good { color:#86efac; }
+.ca-vs    { font-size:1.2em; font-weight:900; color:var(--muted); text-align:center; }
+.rerun-demo { background:var(--panel); border:1px solid var(--border); border-radius:8px; padding:.8em 1em; font-size:.8em; }
+.rd-title { font-size:.7em; color:var(--muted); text-transform:uppercase; letter-spacing:.08em; margin-bottom:.5em; }
+.rd-counter { display:flex; align-items:center; gap:.7em; }
+.rd-val   { font-size:2.5em; font-weight:900; color:var(--red); font-family:var(--mono); line-height:1; min-width:1.5em; text-align:center; }
+.rd-label { font-size:.68em; color:#888; }
+.rd-widgets { display:flex; gap:.5em; flex-wrap:wrap; margin-top:.6em; }
+.rd-w     { background:#111; border:1px solid #2a2a2a; border-radius:5px; padding:.25em .6em; font-size:.7em; color:#666; cursor:pointer; font-family:'Inter',sans-serif; }
+.rd-w:hover { border-color:var(--red); color:var(--red); }
+.form-mock { background:#111; border:1px solid #222; border-radius:10px; overflow:hidden; font-size:.8em; }
+.fm-bar   { background:#0d0d0d; padding:.4em .8em; font-size:.7em; color:#555; border-bottom:1px solid #1a1a1a; }
+.fm-body  { padding:.75em .9em; }
+.fm-label { font-size:.65em; color:var(--muted); text-transform:uppercase; letter-spacing:.08em; margin-bottom:.15em; margin-top:.4em; }
+.fm-select { background:#1a1a1a; border:1px solid #2a2a2a; border-radius:4px; padding:.3em .5em; width:100%; color:#ccc; font-size:.75em; font-family:'Inter',sans-serif; }
+.fm-slider { width:100%; accent-color:var(--red); margin:.2em 0; }
+.fm-submit { background:var(--red); color:#fff; border:none; border-radius:5px; padding:.4em .9em; font-size:.75em; font-weight:700; cursor:pointer; margin-top:.5em; width:100%; font-family:'Inter',sans-serif; }
+.fm-submit:hover { background:#ff6666; }
+.fm-result { background:rgba(34,197,94,.1); border:1px solid rgba(34,197,94,.3); border-radius:5px; padding:.3em .6em; font-size:.7em; color:#86efac; margin-top:.4em; display:none; }
+.fm-note   { font-size:.62em; color:#444; text-align:center; margin-top:.3em; }
+
+/* fragment */
+.flow-compare { display:grid; grid-template-columns:1fr 1fr; gap:1em; font-size:.8em; }
+.fc-box   { background:var(--panel); border:1px solid var(--border); border-radius:8px; overflow:hidden; }
+.fc-bar   { padding:.35em .7em; font-size:.7em; font-weight:700; display:flex; align-items:center; gap:.4em; letter-spacing:.04em; }
+.fc-bar.bad  { background:rgba(255,75,75,.12); color:var(--red); border-bottom:1px solid rgba(255,75,75,.2); }
+.fc-bar.good { background:rgba(34,197,94,.08); color:var(--green); border-bottom:1px solid rgba(34,197,94,.15); }
+.fc-body  { padding:.6em .8em; }
+.fc-block { border:1px solid var(--border); border-radius:5px; padding:.3em .6em; margin:.25em 0; font-size:.75em; font-family:var(--mono); color:#888; }
+.fc-block.active   { border-color:var(--red);    color:var(--red);    background:rgba(255,75,75,.06); }
+.fc-block.active-g { border-color:var(--green);  color:var(--green);  background:rgba(34,197,94,.06); }
+.fc-block.frozen   { border-color:#1e1e1e; color:#333; }
+.fc-block.fragment { border-color:var(--purple); color:var(--purple); background:rgba(168,85,247,.06); }
+.spinner-frag { background:var(--panel); border:1px solid var(--border); border-radius:8px; padding:.8em 1em; font-size:.8em; }
+.sf-fragment  { border:1px dashed rgba(168,85,247,.4); border-radius:6px; padding:.5em .7em; margin-top:.5em; }
+.sf-frag-label{ font-size:.62em; color:var(--purple); font-family:var(--mono); margin-bottom:.3em; opacity:.8; }
+.sf-btn  { background:#222; border:1px solid #333; color:#ccc; border-radius:5px; padding:.3em .8em; font-size:.72em; cursor:pointer; font-family:'Inter',sans-serif; }
+.sf-btn:hover { border-color:var(--purple); color:var(--purple); }
+
+/* chat */
+.chat-mock { background:#111; border:1px solid #222; border-radius:10px; overflow:hidden; font-size:.82em; display:flex; flex-direction:column; height:290px; }
+.cm-bar   { background:#0d0d0d; padding:.4em .8em; font-size:.7em; color:#555; border-bottom:1px solid #1a1a1a; display:flex; align-items:center; gap:.4em; }
+.cm-messages { flex:1; overflow-y:auto; padding:.6em .8em; display:flex; flex-direction:column; gap:.5em; }
+.cm-msg   { display:flex; gap:.4em; align-items:flex-start; max-width:85%; }
+.cm-msg.user { align-self:flex-end; flex-direction:row-reverse; }
+.cm-avatar { width:1.6em; height:1.6em; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:.75em; flex-shrink:0; }
+.cm-avatar.bot  { background:#2a2a2a; }
+.cm-avatar.user { background:rgba(255,75,75,.2); border:1px solid rgba(255,75,75,.4); }
+.cm-bubble { background:#1a1a1a; border:1px solid #2a2a2a; border-radius:8px; padding:.4em .65em; font-size:.78em; color:#ccc; line-height:1.5; }
+.cm-msg.user .cm-bubble { background:rgba(255,75,75,.1); border-color:rgba(255,75,75,.2); }
+.cm-input-row { border-top:1px solid #1a1a1a; padding:.45em .7em; display:flex; gap:.4em; align-items:center; background:#0d0d0d; }
+.cm-text  { flex:1; background:#1a1a1a; border:1px solid #2a2a2a; border-radius:5px; padding:.3em .6em; font-size:.75em; color:#ccc; font-family:'Inter',sans-serif; }
+.cm-text:focus { outline:none; border-color:var(--red); }
+.cm-send  { background:var(--red); color:#fff; border:none; border-radius:5px; padding:.3em .6em; font-size:.75em; cursor:pointer; }
+.cm-dot   { width:.4em; height:.4em; border-radius:50%; background:#555; animation:blink 1.4s infinite; display:inline-block; margin:.1em; }
+.cm-dot:nth-child(2){animation-delay:.2s;} .cm-dot:nth-child(3){animation-delay:.4s;}
+@keyframes blink{0%,80%,100%{opacity:.2}40%{opacity:1}}
+
+/* checkpoint / reto */
+.cp-badge { display:inline-block; background:rgba(34,197,94,.15); border:1px solid rgba(34,197,94,.4); color:var(--green); border-radius:20px; padding:.2em .8em; font-size:.72em; font-weight:700; letter-spacing:.06em; }
+.terminal-mini { background:#0a0a0a; border:1px solid #222; border-radius:6px; padding:.4em .8em; font-family:var(--mono); font-size:.72em; margin:.8em 0; display:inline-block; }
+.t-prompt { color:var(--green); } .t-cmd { color:#e8e8e8; margin-left:.4em; }
+.reto-grid { display:grid; grid-template-columns:1fr 1fr; gap:.8em; font-size:.82em; }
+.reto-card { background:var(--panel); border:1px solid var(--border); border-radius:8px; padding:.7em .9em; }
+.rc-icon  { font-size:1.3em; margin-bottom:.2em; }
+.rc-title { font-size:.8em; font-weight:700; color:#fff; margin-bottom:.3em; }
+.rc-items { font-size:.7em; color:#777; line-height:1.7; }
+.rc-items code { color:#f97316; background:rgba(249,115,22,.1); border-radius:3px; padding:.02em .3em; font-size:.9em; }
+</style>
+```
+
+## {background-color="#0d0d0d" .center}
+
+```{=html}
+<div style="text-align:center;margin-top:1em;">
+  <div style="width:200px;height:200px;margin:0 auto;border-radius:50%;border:3px solid #FF4B4B;background:#1a1a1a;display:flex;align-items:center;justify-content:center;">
+    <span style="font-size:4.5em;">🔐</span>
+  </div>
+  <h2 style="color:#fff;font-size:2em;font-weight:900;margin-top:.7em;letter-spacing:-.02em;">Módulo 4</h2>
+  <p style="color:#FF4B4B;font-size:1.15em;font-weight:600;">Seguridad · Formularios · Fragmentos · Chat</p>
+</div>
+```
+
+::: {.notes}
+Módulo 4. Hoy llevamos la app a producción: proteger credenciales con st.secrets, tres estrategias de login (manual, FastAPI+JWT, streamlit-authenticator), formularios eficientes, fragmentos para re-ejecuciones parciales, e interfaces de chat al estilo ChatGPT.
+:::
+
+## ¿Qué construimos hoy? {.center}
+
+```{=html}
+<div class="summary-grid" style="margin-top:.8em;">
+  <div class="sg-card fade-item" style="animation-delay:.1s">
+    <div class="sgc-icon">📋</div>
+    <div class="sgc-title">Bloque 1 — Formularios</div>
+    <div class="sgc-desc"><code>st.form</code> · <code>st.form_submit_button</code> · agrupar inputs sin reruns explosivos</div>
+  </div>
+  <div class="sg-card fade-item" style="animation-delay:.25s">
+    <div class="sgc-icon">🔐</div>
+    <div class="sgc-title">Bloque 2 — Seguridad y Acceso</div>
+    <div class="sgc-desc"><code>st.secrets</code> · login manual · <code>FastAPI + JWT</code> · <code>streamlit-authenticator</code></div>
+  </div>
+  <div class="sg-card fade-item" style="animation-delay:.4s">
+    <div class="sgc-icon">⚡</div>
+    <div class="sgc-title">Bloque 3 — @st.fragment</div>
+    <div class="sgc-desc">Re-ejecución parcial · aislar secciones pesadas del resto de la app</div>
+  </div>
+  <div class="sg-card fade-item" style="animation-delay:.55s">
+    <div class="sgc-icon">💬</div>
+    <div class="sgc-title">Bloque 4 — Interfaces de Chat</div>
+    <div class="sgc-desc"><code>st.chat_message</code> · <code>st.chat_input</code> · <code>st.write_stream</code> · historial en <code>session_state</code></div>
+  </div>
+</div>
+```
+
+# Bloque 1 — Formularios (`st.form`) 📋 {background-color="#0d0d0d"}
+
+## El problema: re-ejecuciones explosivas
+
+```{=html}
+<div class="split2">
+  <div>
+    <pre><code class="language-python"># Sin st.form — cada widget
+# dispara una re-ejecución completa
+
+ciudad = st.selectbox(
+    "Ciudad",
+    ["Quito", "Guayaquil", "Cuenca"]
+)  # ← rerun #1
+
+presupuesto = st.slider(
+    "Presupuesto", 50000, 300000
+)  # ← rerun #2
+
+habitaciones = st.number_input(
+    "Habitaciones", 1, 10
+)  # ← rerun #3
+
+# Con 10 filtros = 10 reruns
+# Si cada uno consulta la DB... 💥</code></pre>
+  </div>
+  <div>
+    <div class="rerun-demo">
+      <div class="rd-title">Re-ejecuciones al interactuar</div>
+      <div class="rd-counter">
+        <div class="rd-val" id="rr-count">0</div>
+        <div><div style="font-size:.8em;color:#ccc;">re-ejecuciones</div><div class="rd-label">Toca los widgets →</div></div>
+      </div>
+      <div class="rd-widgets">
+        <div class="rd-w" onclick="rrInc()">🏙️ Ciudad</div>
+        <div class="rd-w" onclick="rrInc()">💰 Slider</div>
+        <div class="rd-w" onclick="rrInc()">🛏️ Habitaciones</div>
+        <div class="rd-w" onclick="rrInc()">📐 m²</div>
+        <div class="rd-w" onclick="rrInc()">🏊 Amenidades</div>
+      </div>
+      <div id="rr-warn" style="font-size:.65em;color:#f59e0b;margin-top:.4em;display:none;">
+        ⚠️ ¡Demasiados reruns! La DB estaría sufriendo...
+      </div>
+    </div>
+    <script>var rrN=0;function rrInc(){rrN++;document.getElementById('rr-count').textContent=rrN;document.getElementById('rr-warn').style.display=rrN>=3?'block':'none';}</script>
+  </div>
+</div>
+```
+
+::: {.notes}
+Demo en vivo: abrir app con 5 widgets sin form, añadir st.write que muestre un contador de ejecuciones. Ver cómo sube en tiempo real al mover cada slider.
+:::
+
+## La analogía del carrito de compras
+
+```{=html}
+<div class="cart-analogy" style="margin-top:.5em;">
+  <div class="ca-side">
+    <div class="ca-title">❌ Sin formulario</div>
+    <div class="ca-item ca-item-bad">🛒 Metes producto 1 → pasa tarjeta</div>
+    <div class="ca-item ca-item-bad">🛒 Metes producto 2 → pasa tarjeta</div>
+    <div class="ca-item ca-item-bad">🛒 Metes producto 3 → pasa tarjeta</div>
+    <div class="ca-item ca-item-bad">✏️ Cambias cantidad → pasa tarjeta</div>
+    <div style="font-size:.65em;color:var(--red);margin-top:.4em;">Cobra 4 veces por hacer UNA compra</div>
+  </div>
+  <div class="ca-vs">VS</div>
+  <div class="ca-side">
+    <div class="ca-title">✅ Con st.form</div>
+    <div class="ca-item ca-item-good">🛒 Metes todos los productos en paz</div>
+    <div class="ca-item ca-item-good">✏️ Ajustas cantidades sin miedo</div>
+    <div class="ca-item ca-item-good">🎁 Aplicas cupones y descuentos</div>
+    <div class="ca-item ca-item-good" style="font-weight:700;">💳 Un solo clic → "Ir a la caja"</div>
+    <div style="font-size:.65em;color:var(--green);margin-top:.4em;font-style:italic;">st.form_submit_button = la caja registradora</div>
+  </div>
+</div>
+```
+
+::: {.fragment .fade-up}
+::: {.box-blue}
+💡 `st.form` agrupa todos sus widgets y **solo** dispara una re-ejecución cuando el usuario presiona `st.form_submit_button`.
+:::
+:::
+
+## `st.form` — código completo
+
+```{=html}
+<div class="split2">
+  <div>
+    <pre><code class="language-python">import streamlit as st
+
+st.subheader("Buscador de Propiedades")
+
+with st.form("buscador_casas"):
+    st.write("Configura tu búsqueda:")
+    col1, col2 = st.columns(2)
+
+    ciudad = col1.selectbox(
+        "Ciudad",
+        ["Quito", "Guayaquil", "Cuenca"]
+    )
+    presupuesto = col2.slider(
+        "Presupuesto Máximo ($)",
+        50_000, 300_000, 100_000,
+        step=5_000
+    )
+    habitaciones = st.number_input(
+        "Mínimo de habitaciones", 1, 10, 2
+    )
+    solo_nuevas = st.checkbox(
+        "Solo propiedades nuevas"
+    )
+
+    # El único botón que dispara el rerun
+    enviado = st.form_submit_button(
+        "🔍 Buscar Propiedades",
+        type="primary"
+    )
+
+if enviado:
+    st.success(
+        f"Buscando en **{ciudad}** · "
+        f"≤ ${presupuesto:,} · "
+        f"{habitaciones}+ hab."
+    )
+    # df_filtrado = df[
+    #   (df.ciudad == ciudad) &
+    #   (df.precio <= presupuesto)
+    # ]</code></pre>
+  </div>
+  <div>
+    <div class="form-mock">
+      <div class="fm-bar">📋 Buscador de Propiedades</div>
+      <div class="fm-body">
+        <div class="fm-label">Ciudad</div>
+        <select class="fm-select" id="fm-ciudad"><option>Quito</option><option>Guayaquil</option><option>Cuenca</option></select>
+        <div class="fm-label">Presupuesto Máximo ($)</div>
+        <input type="range" class="fm-slider" id="fm-presup" min="50000" max="300000" value="100000" step="5000" oninput="fmUpdate()"/>
+        <div style="font-size:.65em;color:#777;">$<span id="fm-presup-val">100,000</span></div>
+        <div class="fm-label">Mínimo de habitaciones</div>
+        <input type="range" class="fm-slider" id="fm-habs" min="1" max="10" value="2" oninput="fmUpdate2()"/>
+        <div style="font-size:.65em;color:#777;"><span id="fm-habs-val">2</span> hab.</div>
+        <button class="fm-submit" onclick="fmSubmit()">🔍 Buscar Propiedades</button>
+        <div id="fm-result" class="fm-result"></div>
+        <div class="fm-note">⚡ 0 reruns al ajustar · 1 rerun al buscar</div>
+      </div>
+    </div>
+    <script>
+    function fmUpdate(){var v=document.getElementById('fm-presup').value;document.getElementById('fm-presup-val').textContent=parseInt(v).toLocaleString();}
+    function fmUpdate2(){document.getElementById('fm-habs-val').textContent=document.getElementById('fm-habs').value;}
+    function fmSubmit(){var c=document.getElementById('fm-ciudad').value;var p=parseInt(document.getElementById('fm-presup').value).toLocaleString();var r=document.getElementById('fm-result');r.textContent='✅ Buscando en '+c+' · $'+p+'...';r.style.display='block';}
+    </script>
+  </div>
+</div>
+```
+
+::: {.notes}
+Demo en vivo: mostrar el contador con y sin form. El impacto visual es inmediato. El form tiene un key como string que debe ser único en la app.
+:::
+
+# Formularios Avanzados 📋 {background-color="#0d0d0d"}
+
+## Formularios con validación en tiempo real
+
+```{=html}
+<div class="split2">
+  <div>
+    <pre><code class="language-python">import streamlit as st
+import re
+
+st.subheader("Registro de Cliente")
+
+with st.form("registro_cliente"):
+    nombre = st.text_input(
+        "Nombre completo",
+        placeholder="Ana García"
+    )
+    email = st.text_input(
+        "Email",
+        placeholder="ana@empresa.com"
+    )
+    telefono = st.text_input(
+        "Teléfono (opcional)",
+        placeholder="+593 99 123 4567"
+    )
+    presupuesto = st.select_slider(
+        "Rango de presupuesto",
+        options=["< $50k", "$50k-100k",
+                 "$100k-200k", "> $200k"],
+        value="$50k-100k"
+    )
+    acepta_terminos = st.checkbox(
+        "Acepto los términos y condiciones"
+    )
+    enviado = st.form_submit_button(
+        "📝 Registrar Cliente",
+        type="primary"
+    )
+
+if enviado:
+    # Validar DESPUÉS de enviar el form
+    errores = []
+
+    if not nombre.strip():
+        errores.append("El nombre es requerido")
+
+    if not re.match(
+        r'^[\w.-]+@[\w.-]+\.\w{2,}$', email
+    ):
+        errores.append("Email inválido")
+
+    if not acepta_terminos:
+        errores.append("Debes aceptar términos")
+
+    if errores:
+        for e in errores:
+            st.error(f"❌ {e}")
+    else:
+        st.success(
+            f"✅ {nombre} registrado correctamente!"
+        )
+        guardar_cliente(nombre, email, presupuesto)</code></pre>
+  </div>
+  <div>
+    <div style="font-size:.8em;">
+      <div class="box-yellow" style="margin-bottom:.5em;">
+        ⚠️ La validación ocurre DESPUÉS del submit. Dentro del form no hay reruns, así que no puedes mostrar mensajes de error en tiempo real mientras escribe. La validación en el bloque <code>if enviado:</code> es el patrón correcto.
+      </div>
+      <pre><code class="language-python"># ── Patrón avanzado: re-mostrar el form
+# si hay errores (UX mejorada)
+
+if enviado and not errores:
+    st.session_state.registro_ok = True
+
+if st.session_state.get("registro_ok"):
+    st.balloons()
+    st.success("¡Registro completado!")
+    if st.button("Registrar otro cliente"):
+        st.session_state.registro_ok = False
+        st.rerun()
+else:
+    # El form se muestra (o re-muestra)
+    # Si hubo errores, están visibles
+    # justo debajo del formulario
+    pass</code></pre>
+      <div class="box-green" style="margin-top:.4em;">
+        ✅ <strong>Buenas prácticas:</strong> limpiar el form después del envío exitoso, guardar el estado del éxito en <code>session_state</code>.
+      </div>
+    </div>
+  </div>
+</div>
+```
+
+::: {.notes}
+La validación después del submit es el patrón correcto en Streamlit. Si se quiere UX más rica con validación en tiempo real, la alternativa es NO usar st.form y en cambio validar en cada rerun — pero eso vuelve al problema de reruns explosivos. Para la mayoría de casos, validar post-submit es suficiente.
+:::
+
+## `st.form` con múltiples secciones y columnas
+
+```{=html}
+<div class="split2">
+  <div>
+    <pre><code class="language-python">import streamlit as st
+
+st.subheader("Ficha Completa de Inmueble")
+
+with st.form("ficha_inmueble"):
+
+    # ── Sección 1: Identificación ──────────
+    st.markdown("#### 📍 Ubicación")
+    c1, c2, c3 = st.columns([2, 1, 1])
+    ciudad    = c1.selectbox(
+        "Ciudad", ["Quito","Guayaquil","Cuenca"]
+    )
+    sector    = c2.text_input("Sector")
+    codigo    = c3.text_input("Código postal")
+
+    st.divider()
+
+    # ── Sección 2: Características ─────────
+    st.markdown("#### 🏠 Características")
+    c4, c5, c6 = st.columns(3)
+    tipo       = c4.selectbox(
+        "Tipo", ["Casa","Departamento","Oficina"]
+    )
+    habitaciones = c5.number_input("Hab.", 1,20,3)
+    banos        = c6.number_input("Baños",1,10,2)
+
+    area        = st.slider(
+        "Área (m²)", 30, 500, 120
+    )
+
+    st.divider()
+
+    # ── Sección 3: Precio y extras ─────────
+    st.markdown("#### 💰 Precio y Extras")
+    precio     = st.number_input(
+        "Precio ($)", 10000, 1000000, 150000,
+        step=5000
+    )
+    extras     = st.multiselect(
+        "Amenidades",
+        ["Parqueadero","Piscina","Gimnasio",
+         "Seguridad 24h","Terraza","Bodega"]
+    )
+    disponible = st.date_input(
+        "Disponible desde"
+    )
+
+    # ── Botones de acción ──────────────────
+    col_b1, col_b2 = st.columns([1, 3])
+    guardar = col_b1.form_submit_button(
+        "💾 Guardar", type="primary"
+    )
+    borrador = col_b2.form_submit_button(
+        "📝 Guardar borrador"
+    )
+
+if guardar:
+    st.success("✅ Inmueble guardado en la DB")
+if borrador:
+    st.info("📝 Borrador guardado localmente")</code></pre>
+  </div>
+  <div>
+    <div style="background:#111;border:1px solid #222;border-radius:10px;overflow:hidden;font-size:.72em;">
+      <div style="background:#0a0a0a;padding:.3em .7em;font-size:.7em;color:#555;border-bottom:1px solid #1a1a1a;">📋 Ficha Completa de Inmueble</div>
+      <div style="padding:.6em .8em;">
+        <div style="font-size:.75em;font-weight:700;color:#ccc;margin-bottom:.3em;">📍 Ubicación</div>
+        <div style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:.3em;margin-bottom:.4em;">
+          <select style="background:#1a1a1a;border:1px solid #2a2a2a;border-radius:4px;padding:.25em .4em;color:#bbb;font-size:.8em;"><option>Quito</option></select>
+          <input style="background:#1a1a1a;border:1px solid #2a2a2a;border-radius:4px;padding:.25em .4em;color:#bbb;font-size:.8em;" placeholder="Sector"/>
+          <input style="background:#1a1a1a;border:1px solid #2a2a2a;border-radius:4px;padding:.25em .4em;color:#bbb;font-size:.8em;" placeholder="CP"/>
+        </div>
+        <div style="border-top:1px solid #1e1e1e;margin:.4em 0;"></div>
+        <div style="font-size:.75em;font-weight:700;color:#ccc;margin-bottom:.3em;">🏠 Características</div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:.3em;margin-bottom:.4em;">
+          <select style="background:#1a1a1a;border:1px solid #2a2a2a;border-radius:4px;padding:.25em .4em;color:#bbb;font-size:.8em;"><option>Casa</option></select>
+          <input type="number" value="3" style="background:#1a1a1a;border:1px solid #2a2a2a;border-radius:4px;padding:.25em .4em;color:#bbb;font-size:.8em;"/>
+          <input type="number" value="2" style="background:#1a1a1a;border:1px solid #2a2a2a;border-radius:4px;padding:.25em .4em;color:#bbb;font-size:.8em;"/>
+        </div>
+        <input type="range" value="120" min="30" max="500" style="width:100%;accent-color:#FF4B4B;"/>
+        <div style="border-top:1px solid #1e1e1e;margin:.4em 0;"></div>
+        <div style="font-size:.75em;font-weight:700;color:#ccc;margin-bottom:.3em;">💰 Precio y Extras</div>
+        <div style="display:grid;grid-template-columns:1fr 3fr;gap:.4em;">
+          <button style="background:#FF4B4B;color:#fff;border:none;border-radius:4px;padding:.3em .5em;font-size:.72em;cursor:pointer;">💾 Guardar</button>
+          <button style="background:#222;border:1px solid #333;color:#888;border-radius:4px;padding:.3em .5em;font-size:.72em;cursor:pointer;">📝 Guardar borrador</button>
+        </div>
+      </div>
+    </div>
+    <div class="box-muted" style="margin-top:.4em;">
+      💡 Un form puede tener <strong>múltiples</strong> <code>form_submit_button</code>. Cada uno retorna <code>True/False</code> independientemente.
+    </div>
+  </div>
+</div>
+```
+
+::: {.notes}
+Este es un ejemplo realista de formulario de alta. Tres secciones con st.divider entre ellas, múltiples columnas por sección, y dos botones de submit distintos — uno para guardar definitivo y otro para guardar como borrador. El form agrupa todo sin un solo rerun adicional.
+:::
+
+## `st.form` + `@st.cache_data` — el combo perfecto
+
+```{=html}
+<div class="split2">
+  <div>
+    <pre><code class="language-python">import streamlit as st
+import pandas as pd
+
+@st.cache_data
+def cargar_propiedades() -> pd.DataFrame:
+    """Carga UNA sola vez — costosa."""
+    return pd.read_csv("propiedades_ecuador.csv")
+
+@st.cache_data
+def filtrar_propiedades(
+    ciudad: str,
+    precio_max: int,
+    habitaciones: int
+) -> pd.DataFrame:
+    """Cache por combinación de parámetros."""
+    df = cargar_propiedades()
+    return df[
+        (df["ciudad"] == ciudad) &
+        (df["precio"] <= precio_max) &
+        (df["habitaciones"] >= habitaciones)
+    ]
+
+# ── El form evita reruns al ajustar sliders
+with st.form("filtros"):
+    ciudad = st.selectbox(
+        "Ciudad",
+        ["Quito", "Guayaquil", "Cuenca"]
+    )
+    precio_max     = st.slider(
+        "Precio máximo", 50_000, 500_000
+    )
+    min_hab        = st.number_input("Hab.", 1, 10)
+    buscar         = st.form_submit_button(
+        "Buscar", type="primary"
+    )
+
+# Solo filtra cuando se presiona el botón
+# Y si ya buscaste con los mismos parámetros,
+# @st.cache_data devuelve el resultado
+# sin recalcular → DOBLE OPTIMIZACIÓN
+if buscar:
+    with st.spinner("Filtrando..."):
+        resultados = filtrar_propiedades(
+            ciudad, precio_max, min_hab
+        )
+    st.metric("Propiedades encontradas",
+              len(resultados))
+    st.dataframe(resultados, use_container_width=True)</code></pre>
+  </div>
+  <div>
+    <div style="font-size:.8em;">
+      <div class="box-green" style="margin-bottom:.5em;">
+        🚀 <strong>Doble optimización:</strong>
+      </div>
+      <div class="login-flow">
+        <div class="lf-step ok"><div class="lf-num">1️⃣</div><div class="lf-text"><strong>st.form</strong> → evita reruns al mover sliders. La función de filtrado no se llama mientras el usuario ajusta parámetros.</div></div>
+        <div class="lf-step ok"><div class="lf-num">2️⃣</div><div class="lf-text"><strong>@st.cache_data</strong> → si el usuario busca dos veces con los mismos parámetros, el resultado se devuelve desde la caché instantáneamente.</div></div>
+        <div class="lf-step blue"><div class="lf-num">⚡</div><div class="lf-text">Resultado: app ultra-fluida incluso con 100k filas y consultas pesadas a bases de datos.</div></div>
+      </div>
+      <div class="box-muted" style="margin-top:.5em;">
+        📊 <strong>Para DataFrames grandes:</strong> considera también <code>@st.cache_data(ttl=300)</code> para actualizar la caché cada 5 minutos con datos frescos de la DB.
+      </div>
+    </div>
+  </div>
+</div>
+```
+
+::: {.notes}
+La combinación st.form + @st.cache_data es el patrón de rendimiento estándar para apps con datos. st.form elimina los reruns innecesarios mientras el usuario configura filtros, y @st.cache_data evita recalcular cuando los parámetros ya fueron procesados antes. Para apps con bases de datos reales, esto puede reducir el tiempo de respuesta de 5 segundos a instantáneo.
+:::
+
+# Bloque 2 — Seguridad y Acceso 🔐 {background-color="#0d0d0d"}
+
+## El problema: credenciales en el código
+
+```{=html}
+<div class="split2">
+  <div>
+    <pre><code class="language-python"># ❌ NUNCA hagas esto
+import psycopg2
+
+conn = psycopg2.connect(
+    host="prod.mydb.com",
+    user="admin",
+    password="sup3r_s3cr3t0",  # 💀
+    database="clientes"
+)
+# Git push → credencial pública
+# Bots escanean repos en segundos.</code></pre>
+    <div class="box-accent" style="margin-top:.5em;">
+      ⚠️ El error de seguridad <strong>#1</strong> de los data scientists.
+    </div>
+  </div>
+  <div>
+    <div class="login-flow">
+      <div class="lf-step bad"><div class="lf-num">💀</div><div class="lf-text">Password visible en el código fuente</div></div>
+      <div class="lf-step bad"><div class="lf-num">💀</div><div class="lf-text">Git push → credencial comprometida</div></div>
+      <div class="lf-step bad"><div class="lf-num">💀</div><div class="lf-text">API key quemada → factura inesperada 💸</div></div>
+      <div class="lf-step bad"><div class="lf-num">💀</div><div class="lf-text">Logs de Streamlit Cloud exponen el valor</div></div>
+    </div>
+  </div>
+</div>
+```
+
+::: {.notes}
+Preguntar a la clase: ¿alguien ha visto credenciales en un repo público? Es muy común. Hay bots que escanean GitHub constantemente buscando API keys. El primer paso siempre: sacar los secretos del código.
+:::
+
+## `st.secrets` — el paso cero
+
+```{=html}
+<div class="secrets-demo">
+  <div class="sec-file">
+    <div class="sec-bar"><div class="sec-bar-dot"></div><span>.streamlit/secrets.toml</span><span style="margin-left:auto;background:rgba(34,197,94,.15);border:1px solid rgba(34,197,94,.3);color:#86efac;border-radius:3px;padding:.05em .4em;font-size:.85em;">🔒 en .gitignore</span></div>
+    <div class="sec-body">
+      <span class="sec-comment"># Este archivo NUNCA va al repo</span><br><br>
+      <span class="sec-key">USUARIO_ADMIN</span> <span class="sec-eq">=</span> <span class="sec-val">"admin"</span><br>
+      <span class="sec-key">CLAVE_ADMIN</span>   <span class="sec-eq">=</span> <span class="sec-val">"clave_segura"</span><br>
+      <span class="sec-key">JWT_SECRET</span>    <span class="sec-eq">=</span> <span class="sec-val">"mi_firma_jwt"</span><br>
+      <span class="sec-key">API_URL</span>       <span class="sec-eq">=</span> <span class="sec-val">"http://localhost:8000"</span><br>
+      <span class="sec-key">OPENAI_KEY</span>    <span class="sec-eq">=</span> <span class="sec-val">"sk-proj-abc123"</span>
+    </div>
+  </div>
+  <div class="sec-file">
+    <div class="sec-bar"><div class="sec-bar-dot"></div><span>app.py</span><span style="margin-left:auto;background:rgba(59,130,246,.15);border:1px solid rgba(59,130,246,.3);color:#93c5fd;border-radius:3px;padding:.05em .4em;font-size:.85em;">✅ seguro</span></div>
+    <div class="sec-body" style="font-family:var(--mono);font-size:.78em;line-height:1.9;color:#bbb;">
+      <span style="color:#a855f7;">import</span> streamlit <span style="color:#a855f7;">as</span> st<br><br>
+      <span style="color:#555;"># Acceder con clave de diccionario</span><br>
+      clave <span style="color:#888;">=</span> <span style="color:#FF4B4B;">st.secrets</span>[<span style="color:#22c55e;">"CLAVE_ADMIN"</span>]<br><br>
+      <span style="color:#555;"># O con notación de punto</span><br>
+      api_key <span style="color:#888;">=</span> <span style="color:#FF4B4B;">st.secrets</span>.OPENAI_KEY<br><br>
+      <span style="color:#555;"># En Streamlit Cloud: panel de Settings</span><br>
+      <span style="color:#555;"># → Secrets (mismo formato TOML)</span>
+    </div>
+  </div>
+</div>
+```
+
+::: {.fragment .fade-up}
+::: {.box-muted}
+📁 `mkdir .streamlit && touch .streamlit/secrets.toml` → agregar al `.gitignore` antes del primer commit
+:::
+:::
+
+::: {.notes}
+st.secrets lee el archivo automáticamente. En Streamlit Cloud se configuran las variables desde el panel — el código no cambia. Es lo primero que hay que hacer antes de cualquier otra cosa.
+:::
+
+## Método 1 — Login manual con `session_state`
+
+```{=html}
+<div class="split2">
+  <div>
+    <pre><code class="language-python">import streamlit as st
+
+# Estado inicial
+if "autenticado" not in st.session_state:
+    st.session_state.autenticado = False
+
+if not st.session_state.autenticado:
+    st.title("🔐 Acceso Restringido")
+    usuario = st.text_input("Usuario")
+    clave   = st.text_input("Contraseña",
+                             type="password")
+
+    if st.button("Ingresar", type="primary"):
+        if (usuario == st.secrets["USUARIO_ADMIN"]
+            and clave == st.secrets["CLAVE_ADMIN"]):
+            st.session_state.autenticado = True
+            st.rerun()
+        else:
+            st.error("Credenciales incorrectas")
+
+    st.stop()  # nada más se ejecuta
+
+# ✅ Solo llega aquí si está autenticado
+st.title("🏠 Dashboard Principal")
+if st.button("Cerrar sesión"):
+    st.session_state.autenticado = False
+    st.rerun()</code></pre>
+  </div>
+  <div>
+    <div class="login-mock">
+      <div class="lm-header"><div class="lm-lock">🔐</div><div class="lm-title">Acceso Restringido</div></div>
+      <div class="lm-body">
+        <div class="lm-label">Usuario</div>
+        <input id="lm-user" class="lm-input" placeholder="admin" />
+        <div class="lm-label">Contraseña</div>
+        <input id="lm-pass" class="lm-input" type="password" placeholder="••••••••" />
+        <button class="lm-btn" onclick="lmLogin()">Ingresar</button>
+        <div id="lm-err" class="lm-err">❌ Credenciales incorrectas</div>
+        <div id="lm-ok"  class="lm-ok" >✅ ¡Bienvenido, admin!</div>
+      </div>
+    </div>
+    <div class="box-muted" style="margin-top:.5em;">
+      🎯 <strong>Ideal para:</strong> prototipos, dashboards de un solo administrador, demos rápidas.
+    </div>
+    <script>
+    function lmLogin(){
+      var u=document.getElementById('lm-user').value;
+      var p=document.getElementById('lm-pass').value;
+      var e=document.getElementById('lm-err');
+      var o=document.getElementById('lm-ok');
+      e.style.display='none'; o.style.display='none';
+      if(u==='admin'&&p==='clave_segura'){o.style.display='block';}
+      else{e.style.display='block';}
+    }
+    </script>
+  </div>
+</div>
+```
+
+::: {.notes}
+El método más simple. Tres piezas: st.secrets para no hardcodear, session_state para recordar entre reruns, y st.stop() para bloquear el resto. Perfecto para apps personales o equipo pequeño.
+:::
+
+## `st.stop()` — el guardián del script
+
+```{=html}
+<div class="split2">
+  <div>
+    <div class="stop-diagram">
+      <div class="sd-line run">import streamlit as st</div>
+      <div class="sd-line run">st.title("App Segura")</div>
+      <div class="sd-line run">if not autenticado:</div>
+      <div class="sd-line run">&nbsp;&nbsp;&nbsp;&nbsp;mostrar_login()</div>
+      <div class="sd-line stop">&nbsp;&nbsp;&nbsp;&nbsp;st.stop()  ← DETIENE AQUÍ</div>
+      <div class="sd-line skip">st.subheader("Dashboard")</div>
+      <div class="sd-line skip">df = cargar_datos_privados()</div>
+      <div class="sd-line skip">st.dataframe(df)</div>
+      <div class="sd-line skip">st.plotly_chart(grafico())</div>
+    </div>
+  </div>
+  <div>
+    <div class="login-flow">
+      <div class="lf-step ok"><div class="lf-num">1</div><div class="lf-text">App inicia → verifica <span class="lf-code">session_state</span></div></div>
+      <div class="lf-arrow">↓</div>
+      <div class="lf-step ok"><div class="lf-num">2</div><div class="lf-text">No autenticado → muestra el formulario de login</div></div>
+      <div class="lf-arrow">↓</div>
+      <div class="lf-step bad"><div class="lf-num">🛑</div><div class="lf-text"><span class="lf-code">st.stop()</span> — ejecución detenida</div></div>
+      <div class="lf-arrow">↓</div>
+      <div class="lf-step" style="opacity:.35"><div class="lf-num">✗</div><div class="lf-text">Dashboard NUNCA se renderiza ni procesa</div></div>
+    </div>
+    <div class="box-green" style="margin-top:.5em;">
+      ✅ No es solo visual: la lógica Python posterior tampoco corre. Los datos privados nunca se cargan.
+    </div>
+  </div>
+</div>
+```
+
+::: {.notes}
+Punto clave: st.stop() no es solo "no mostrar". El código Python posterior ni siquiera se evalúa. Si tienes una función que conecta a la DB, esa función nunca se llama.
+:::
+
+## Método 2 — FastAPI como backend de autenticación
+
+```{=html}
+<div class="arch-diagram" style="margin:.5em 0 .7em;">
+  <div class="arch-box red"><div class="ab-icon">🖥️</div><div class="ab-label">Streamlit</div><div class="ab-sub">Frontend</div></div>
+  <div class="arch-arrow">→<br><span>POST /token</span></div>
+  <div class="arch-box blue"><div class="ab-icon">⚡</div><div class="ab-label">FastAPI</div><div class="ab-sub">Auth Backend</div></div>
+  <div class="arch-arrow">→<br><span>verifica</span></div>
+  <div class="arch-box green"><div class="ab-icon">🗄️</div><div class="ab-label">Base de Datos</div><div class="ab-sub">bcrypt hashes</div></div>
+  <div class="arch-arrow">←<br><span>JWT token</span></div>
+  <div class="arch-box pur"><div class="ab-icon">🔑</div><div class="ab-label">JWT</div><div class="ab-sub">session_state</div></div>
+</div>
+<div class="split2">
+  <div>
+    <div style="font-size:.68em;color:#555;font-family:var(--mono);margin-bottom:.2em;">main.py — FastAPI</div>
+    <pre style="font-size:.56em!important"><code class="language-python">from fastapi import FastAPI, Depends, HTTPException
+from fastapi.security import OAuth2PasswordRequestForm
+import jwt, bcrypt
+from datetime import datetime, timedelta
+
+app = FastAPI()
+SECRET = "mi_firma_jwt"
+
+USERS_DB = {
+    "ana": bcrypt.hashpw(b"pass123",
+                          bcrypt.gensalt())
+}
+
+@app.post("/token")
+async def login(
+    form: OAuth2PasswordRequestForm = Depends()
+):
+    stored = USERS_DB.get(form.username)
+    if not stored or not bcrypt.checkpw(
+        form.password.encode(), stored
+    ):
+        raise HTTPException(401,
+                            "Credenciales inválidas")
+
+    token = jwt.encode({
+        "sub": form.username,
+        "exp": datetime.utcnow()
+               + timedelta(hours=8)
+    }, SECRET, algorithm="HS256")
+
+    return {"access_token": token,
+            "token_type":   "bearer"}</code></pre>
+  </div>
+  <div>
+    <div style="font-size:.68em;color:#555;font-family:var(--mono);margin-bottom:.2em;">app.py — Streamlit</div>
+    <pre style="font-size:.56em!important"><code class="language-python">import streamlit as st
+import requests, jwt
+
+API_URL = st.secrets["API_URL"]
+SECRET  = st.secrets["JWT_SECRET"]
+
+if "token" not in st.session_state:
+    st.session_state.token = None
+
+if not st.session_state.token:
+    st.title("🔐 Login")
+    user = st.text_input("Usuario")
+    pw   = st.text_input("Contraseña",
+                          type="password")
+
+    if st.button("Ingresar", type="primary"):
+        r = requests.post(
+            f"{API_URL}/token",
+            data={"username": user,
+                  "password": pw}
+        )
+        if r.status_code == 200:
+            st.session_state.token = \
+                r.json()["access_token"]
+            st.rerun()
+        else:
+            st.error("Credenciales inválidas")
+    st.stop()
+
+# Decodificar token y verificar expiración
+try:
+    payload = jwt.decode(
+        st.session_state.token,
+        SECRET, algorithms=["HS256"]
+    )
+except jwt.ExpiredSignatureError:
+    st.session_state.token = None
+    st.warning("Sesión expirada")
+    st.rerun()
+
+st.title(f"Hola, {payload['sub']} 👋")</code></pre>
+  </div>
+</div>
+```
+
+::: {.notes}
+Este patrón es el que se usa en producción real. FastAPI maneja la autenticación, bcrypt hashea contraseñas, JWT crea tokens sin estado. Streamlit solo hace POST al endpoint y guarda el token. Los datos nunca salen del backend sin un token válido. Ideal cuando ya tienes o vas a tener una API que sirva a múltiples frontends.
+:::
+
+## Método 3 — `streamlit-authenticator` 🏆
+
+```{=html}
+<div class="split2">
+  <div>
+    <div class="feat-pills" style="margin-bottom:.5em;">
+      <span class="fp fp-green">✅ Login UI integrada</span>
+      <span class="fp fp-blue">🍪 Cookies persistentes</span>
+      <span class="fp fp-purple">🔑 Reset contraseña</span>
+      <span class="fp fp-gold">📧 Recuperar usuario</span>
+      <span class="fp fp-red">👤 Registro de usuarios</span>
+      <span class="fp fp-green">🔒 bcrypt nativo</span>
+    </div>
+    <pre style="font-size:.55em!important"><code class="language-python">import streamlit as st
+import streamlit_authenticator as stauth
+
+# 1. Definir credenciales (hashes bcrypt)
+config = {
+    "credentials": {
+        "usernames": {
+            "ana": {
+                "name":     "Ana García",
+                "email":    "ana@empresa.com",
+                "password": "$2b$12$..."  # hash
+            },
+            "carlos": {
+                "name":     "Carlos López",
+                "email":    "carlos@empresa.com",
+                "password": "$2b$12$..."  # hash
+            }
+        }
+    },
+    "cookie": {
+        "name":        "app_cookie",
+        "key":         st.secrets["JWT_SECRET"],
+        "expiry_days": 30
+    }
+}
+
+# 2. Crear el autenticador
+auth = stauth.Authenticate(
+    config["credentials"],
+    config["cookie"]["name"],
+    config["cookie"]["key"],
+    config["cookie"]["expiry_days"],
+    auto_hash=True  # hashea automáticamente
+)
+
+# 3. Renderizar widget de login
+auth.login()
+
+# 4. Reaccionar al estado
+if st.session_state["authentication_status"]:
+    auth.logout("Cerrar sesión", "sidebar")
+    nombre = st.session_state["name"]
+    st.title(f"¡Hola, {nombre}! 👋")
+    st.write("Aquí va el dashboard...")
+
+elif st.session_state["authentication_status"] \
+     is False:
+    st.error("Usuario o contraseña incorrectos")
+
+elif st.session_state["authentication_status"] \
+     is None:
+    st.warning("Ingresa tus credenciales")</code></pre>
+  </div>
+  <div>
+    <div class="stauth-prev">
+      <div class="sap-bar">🌐 localhost:8501</div>
+      <div class="sap-body">
+        <div class="sap-logo">
+          <div class="sap-logo-icon">A</div>
+          <div class="sap-logo-text">Mi Aplicación</div>
+        </div>
+        <div class="sap-field">
+          <div class="sap-fl">Username</div>
+          <input class="sap-inp" placeholder="ana" id="stap-u"/>
+        </div>
+        <div class="sap-field">
+          <div class="sap-fl">Password</div>
+          <input class="sap-inp" type="password" placeholder="••••••••" id="stap-p"/>
+        </div>
+        <button class="sap-btn" onclick="stapAuth()">Login</button>
+        <div class="sap-links">
+          <a href="#">Forgot password?</a>
+          <a href="#">Forgot username?</a>
+        </div>
+        <div id="stap-ok" style="display:none;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);border-radius:5px;padding:.3em .6em;font-size:.68em;color:#86efac;margin-top:.4em;">
+          ✅ ¡Bienvenida, Ana García!
+        </div>
+      </div>
+    </div>
+    <div class="terminal-mini" style="margin-top:.6em;">
+      <span class="t-prompt">$</span>
+      <span class="t-cmd">pip install streamlit-authenticator</span>
+    </div>
+    <div class="box-muted" style="margin-top:.4em;">
+      📖 Docs: <code style="color:#60a5fa;">streamlit-authenticator.readthedocs.io</code>
+    </div>
+    <script>
+    function stapAuth(){document.getElementById('stap-ok').style.display='block';}
+    </script>
+  </div>
+</div>
+```
+
+::: {.notes}
+streamlit-authenticator es la solución más completa para producción sin mantener tu propio backend. Tiene login, logout, registro, recuperación de contraseña y usuario, todo con UI integrada. Cookies para persistir la sesión entre visitas. La documentación oficial está en streamlit-authenticator.readthedocs.io.
+:::
+
+## Hashear contraseñas con `stauth.Hasher`
+
+```{=html}
+<div class="split2">
+  <div>
+    <pre><code class="language-python">import streamlit_authenticator as stauth
+
+# ── Generar hashes (solo una vez al configurar)
+hashed = stauth.Hasher(
+    ["pass123", "secreto456"]
+).generate()
+# → ['$2b$12$abc...', '$2b$12$xyz...']
+
+# ── Verificar si un string ya es hash
+es_hash = stauth.Hasher.is_hash(
+    "$2b$12$abc..."
+)  # → True
+
+# ── con auto_hash=True en Authenticate,
+# puedes pasar texto plano directamente
+# y se hashea automáticamente al inicio.</code></pre>
+    <div class="box-yellow" style="margin-top:.4em;">
+      🔑 Guarda los hashes en <code>secrets.toml</code>. Nunca almacenes el texto plano de las contraseñas.
+    </div>
+  </div>
+  <div>
+    <div class="sec-file">
+      <div class="sec-bar"><div class="sec-bar-dot"></div><span>.streamlit/secrets.toml</span></div>
+      <div class="sec-body" style="font-size:.7em;">
+        <span class="sec-comment">[credentials.usernames.ana]</span><br>
+        <span class="sec-key">name</span>     <span class="sec-eq">=</span> <span class="sec-val">"Ana García"</span><br>
+        <span class="sec-key">email</span>    <span class="sec-eq">=</span> <span class="sec-val">"ana@empresa.com"</span><br>
+        <span class="sec-key">password</span> <span class="sec-eq">=</span> <span class="sec-val">"$2b$12$abc..."</span><br><br>
+        <span class="sec-comment">[credentials.usernames.carlos]</span><br>
+        <span class="sec-key">name</span>     <span class="sec-eq">=</span> <span class="sec-val">"Carlos López"</span><br>
+        <span class="sec-key">email</span>    <span class="sec-eq">=</span> <span class="sec-val">"carlos@empresa.com"</span><br>
+        <span class="sec-key">password</span> <span class="sec-eq">=</span> <span class="sec-val">"$2b$12$xyz..."</span><br><br>
+        <span class="sec-comment">[cookie]</span><br>
+        <span class="sec-key">name</span>        <span class="sec-eq">=</span> <span class="sec-val">"mi_app_cookie"</span><br>
+        <span class="sec-key">key</span>         <span class="sec-eq">=</span> <span class="sec-val">"secreto_firma"</span><br>
+        <span class="sec-key">expiry_days</span> <span class="sec-eq">=</span> <span class="sec-val">30</span>
+      </div>
+    </div>
+  </div>
+</div>
+```
+
+::: {.notes}
+El flujo de setup: 1) definir usuarios con contraseñas en texto plano, 2) usar Hasher para obtener los hashes bcrypt, 3) guardar esos hashes en secrets.toml. Con auto_hash=True, streamlit-authenticator hace el paso 2 y 3 automáticamente si pasas texto plano.
+:::
+
+## Los 3 métodos — ¿cuál usar?
+
+```{=html}
+<table class="cmp-table">
+  <tr>
+    <th>Método</th><th>Complejidad</th><th>Multi-usuario</th><th>Cookies</th><th>Ideal para</th>
+  </tr>
+  <tr>
+    <td class="met">session_state manual</td>
+    <td class="good">⭐ Baja</td>
+    <td class="bad">❌ No</td>
+    <td class="bad">❌ No</td>
+    <td>Prototipos, un solo admin, demos</td>
+  </tr>
+  <tr>
+    <td class="met">FastAPI + JWT</td>
+    <td class="bad">⭐⭐⭐ Alta</td>
+    <td class="good">✅ Sí</td>
+    <td class="mid">⚠️ Manual</td>
+    <td>Arquitecturas multi-app, API propia, control total</td>
+  </tr>
+  <tr>
+    <td class="met">streamlit-authenticator</td>
+    <td class="mid">⭐⭐ Media</td>
+    <td class="good">✅ Sí</td>
+    <td class="good">✅ Nativo</td>
+    <td>Apps Streamlit multi-usuario, sin backend propio</td>
+  </tr>
+</table>
+```
+
+::: {.fragment .fade-up}
+::: {.box-blue}
+💡 **Regla práctica:** empieza con `session_state` para prototipos → escala a `streamlit-authenticator` para multi-usuario → usa `FastAPI + JWT` si necesitas una API que sirva a múltiples aplicaciones.
+:::
+:::
+
+::: {.notes}
+No hay una respuesta correcta única. La complejidad tiene que estar justificada por los requisitos. Para el reto del curso, streamlit-authenticator es el punto dulce entre simplicidad y capacidad real.
+:::
+
+# Seguridad Avanzada 🛡️ {background-color="#0d0d0d"}
+
+## Control de roles (RBAC) con `session_state`
+
+```{=html}
+<div class="split2">
+  <div>
+    <pre><code class="language-python">import streamlit as st
+import streamlit_authenticator as stauth
+
+# Definir usuarios con roles
+config = {
+    "credentials": {
+        "usernames": {
+            "ana_admin": {
+                "name": "Ana García",
+                "email": "ana@empresa.com",
+                "password": "$2b$12$...",
+                "role": "admin"
+            },
+            "carlos_viewer": {
+                "name": "Carlos López",
+                "email": "carlos@empresa.com",
+                "password": "$2b$12$...",
+                "role": "viewer"
+            }
+        }
+    },
+    "cookie": {
+        "name": "app_cookie",
+        "key":  st.secrets["JWT_SECRET"],
+        "expiry_days": 30
+    }
+}
+
+auth = stauth.Authenticate(
+    config["credentials"],
+    config["cookie"]["name"],
+    config["cookie"]["key"],
+    config["cookie"]["expiry_days"]
+)
+auth.login()
+
+if st.session_state["authentication_status"]:
+    user = st.session_state["username"]
+    role = config["credentials"]["usernames"] \
+               [user]["role"]
+
+    st.session_state["role"] = role
+    auth.logout("Salir", "sidebar")
+    st.title(
+      f"Hola, {st.session_state['name']} 👋"
+    )
+
+    # ── Control de acceso por rol ──────────
+    if role == "admin":
+        st.success("🔑 Modo Administrador")
+        tab1, tab2, tab3 = st.tabs(
+            ["📊 Dashboard",
+             "⚙️ Gestión",
+             "🗄️ Datos brutos"]
+        )
+    elif role == "viewer":
+        st.info("👁️ Modo Solo Lectura")
+        tab1, = st.tabs(["📊 Dashboard"])
+        # tab2 y tab3 no existen para viewer</code></pre>
+  </div>
+  <div>
+    <div style="font-size:.8em;">
+      <div style="font-size:.72em;color:#555;font-family:var(--mono);margin-bottom:.4em;">Función de decorador para proteger páginas</div>
+      <pre><code class="language-python">def require_role(roles: list):
+    """Decorador para proteger secciones
+    según el rol del usuario actual."""
+    def decorator(func):
+        def wrapper(*args, **kwargs):
+            current_role = st.session_state.get(
+                "role", None
+            )
+            if current_role not in roles:
+                st.error(
+                    f"🚫 Acceso denegado. "
+                    f"Necesitas rol: {roles}"
+                )
+                st.stop()
+            return func(*args, **kwargs)
+        return wrapper
+    return decorator
+
+# Uso en cualquier función de la app:
+@require_role(["admin"])
+def panel_administracion():
+    st.subheader("⚙️ Gestión de usuarios")
+    st.dataframe(obtener_todos_los_usuarios())
+    if st.button("Eliminar usuario"):
+        # solo admins llegan aquí
+        pass
+
+@require_role(["admin", "editor"])
+def panel_edicion():
+    st.subheader("✏️ Editor de contenido")
+    # admins y editors llegan aquí</code></pre>
+    </div>
+    <div class="box-purple" style="margin-top:.4em;">
+      🔑 RBAC (Role-Based Access Control) — el patrón estándar de seguridad en aplicaciones empresariales.
+    </div>
+  </div>
+</div>
+```
+
+::: {.notes}
+RBAC es fundamental en apps reales. La idea es simple: cada usuario tiene un rol, y cada sección de la app verifica ese rol antes de renderizar. El decorador require_role es un patrón elegante en Python que convierte cualquier función en una función protegida sin repetir lógica de verificación.
+:::
+
+## Variables de entorno como alternativa a `secrets.toml`
+
+```{=html}
+<div class="split2">
+  <div>
+    <pre><code class="language-python">import streamlit as st
+import os
+
+# ── Opción 1: st.secrets (recomendado Streamlit)
+clave = st.secrets["CLAVE_ADMIN"]
+
+# ── Opción 2: variables de entorno del SO
+# Útil en Docker, CI/CD, servidores Linux
+clave = os.environ.get(
+    "CLAVE_ADMIN",
+    "valor_por_defecto"  # si no existe
+)
+
+# ── Opción 3: python-dotenv (local dev)
+# pip install python-dotenv
+from dotenv import load_dotenv
+load_dotenv()  # carga el .env
+clave = os.getenv("CLAVE_ADMIN")
+
+# ── Estrategia híbrida (producción real)
+def get_secret(key: str) -> str:
+    """Busca en st.secrets primero,
+    cae a variables de entorno."""
+    try:
+        return st.secrets[key]
+    except (KeyError, FileNotFoundError):
+        val = os.environ.get(key)
+        if val is None:
+            raise ValueError(
+                f"Secreto '{key}' no encontrado "
+                f"en secrets.toml ni en env vars"
+            )
+        return val
+
+# Uso transparente
+DB_URL  = get_secret("DB_URL")
+API_KEY = get_secret("OPENAI_KEY")</code></pre>
+  </div>
+  <div>
+    <div style="font-size:.72em;color:#555;font-family:var(--mono);margin-bottom:.3em;">.env (local, en .gitignore)</div>
+    <div class="sec-file" style="margin-bottom:.5em;">
+      <div class="sec-bar"><div class="sec-bar-dot"></div><span>.env</span><span style="margin-left:auto;background:rgba(34,197,94,.15);border:1px solid rgba(34,197,94,.3);color:#86efac;border-radius:3px;padding:.05em .4em;font-size:.85em;">🔒 .gitignore</span></div>
+      <div class="sec-body" style="font-size:.72em;">
+        <span class="sec-key">CLAVE_ADMIN</span><span class="sec-eq">=</span><span class="sec-val">clave_segura</span><br>
+        <span class="sec-key">JWT_SECRET</span><span class="sec-eq">=</span><span class="sec-val">mi_firma_jwt</span><br>
+        <span class="sec-key">DB_URL</span><span class="sec-eq">=</span><span class="sec-val">postgresql://localhost/db</span><br>
+        <span class="sec-key">OPENAI_KEY</span><span class="sec-eq">=</span><span class="sec-val">sk-proj-abc123</span>
+      </div>
+    </div>
+    <div class="login-flow">
+      <div class="lf-step ok"><div class="lf-num">1</div><div class="lf-text"><strong>Local:</strong> <code>.env</code> + <code>python-dotenv</code></div></div>
+      <div class="lf-step ok"><div class="lf-num">2</div><div class="lf-text"><strong>Streamlit Cloud:</strong> panel de Secrets</div></div>
+      <div class="lf-step blue"><div class="lf-num">3</div><div class="lf-text"><strong>Docker / Kubernetes:</strong> <code>-e VAR=value</code></div></div>
+      <div class="lf-step pur"><div class="lf-num">4</div><div class="lf-text"><strong>CI/CD (GitHub Actions):</strong> repository secrets</div></div>
+    </div>
+  </div>
+</div>
+```
+
+::: {.notes}
+La estrategia híbrida es lo que usan los equipos profesionales. En desarrollo local usan .env, en producción en Streamlit Cloud usan el panel de Secrets, en servidores propios usan variables de entorno del sistema. El código no cambia — solo el mecanismo de entrega del secreto.
+:::
+
+## Middleware de autenticación en FastAPI
+
+```{=html}
+<div class="split2">
+  <div>
+    <pre><code class="language-python">from fastapi import FastAPI, Depends, HTTPException
+from fastapi.security import HTTPBearer, \
+                              HTTPAuthorizationCredentials
+from fastapi.middleware.cors import CORSMiddleware
+import jwt
+
+app = FastAPI(title="Auth API para Streamlit")
+
+# ── CORS: permitir peticiones desde Streamlit ─
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:8501",
+                   "https://mi-app.streamlit.app"],
+    allow_methods=["POST", "GET"],
+    allow_headers=["*"],
+)
+
+security = HTTPBearer()
+
+# ── Dependencia reutilizable ──────────────────
+def verificar_token(
+    creds: HTTPAuthorizationCredentials
+          = Depends(security)
+) -> dict:
+    try:
+        payload = jwt.decode(
+            creds.credentials,
+            SECRET, algorithms=["HS256"]
+        )
+        return payload
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(401, "Token expirado")
+    except jwt.InvalidTokenError:
+        raise HTTPException(401, "Token inválido")
+
+# ── Endpoints protegidos ──────────────────────
+@app.get("/api/propiedades")
+async def listar_propiedades(
+    payload: dict = Depends(verificar_token)
+):
+    """Solo accesible con JWT válido"""
+    usuario = payload["sub"]
+    return {"usuario": usuario,
+            "datos": obtener_propiedades()}
+
+@app.get("/api/admin/usuarios")
+async def listar_usuarios(
+    payload: dict = Depends(verificar_token)
+):
+    """Solo para admins"""
+    if payload.get("role") != "admin":
+        raise HTTPException(403, "Sin permisos")
+    return obtener_todos_los_usuarios()</code></pre>
+  </div>
+  <div>
+    <pre><code class="language-python"># ── En Streamlit: llamar endpoints protegidos ─
+import streamlit as st
+import requests
+
+def api_get(endpoint: str) -> dict:
+    """Helper para llamadas autenticadas a API"""
+    token = st.session_state.get("token")
+    if not token:
+        st.error("No autenticado")
+        st.stop()
+
+    headers = {"Authorization": f"Bearer {token}"}
+    r = requests.get(
+        f"{st.secrets['API_URL']}{endpoint}",
+        headers=headers
+    )
+
+    if r.status_code == 401:
+        # Token expirado — forzar re-login
+        st.session_state.token = None
+        st.warning("Sesión expirada. Re-inicia.")
+        st.rerun()
+
+    if r.status_code == 403:
+        st.error("🚫 Sin permisos para esta acción")
+        st.stop()
+
+    r.raise_for_status()
+    return r.json()
+
+# Uso en cualquier parte de la app:
+propiedades = api_get("/api/propiedades")
+st.dataframe(propiedades["datos"])</code></pre>
+    <div class="box-blue" style="margin-top:.4em;">
+      🏗️ Con este patrón, Streamlit es solo el frontend. La lógica de negocio y los datos viven en FastAPI.
+    </div>
+  </div>
+</div>
+```
+
+::: {.notes}
+El middleware de CORS es imprescindible cuando Streamlit y FastAPI corren en dominios distintos. La dependencia verificar_token es el corazón del sistema — se inyecta en cada endpoint protegido. En el lado Streamlit, el helper api_get centraliza el manejo de errores 401/403 para no repetir lógica.
+:::
+
+# Bloque 3 — `@st.fragment` ⚡ {background-color="#0d0d0d"}
+
+## Rompiendo la regla de oro del Módulo 1
+
+```{=html}
+<div class="split2">
+  <div>
+    <div class="box-accent" style="margin-bottom:.6em;">
+      📖 <strong>Módulo 1:</strong> "Cada interacción re-ejecuta <em>todo</em> el script de arriba a abajo."
+    </div>
+    <div class="flow-compare">
+      <div class="fc-box">
+        <div class="fc-bar bad">❌ Sin fragment</div>
+        <div class="fc-body">
+          <div class="fc-block active">📊 Gráfico pesado (3s)</div>
+          <div class="fc-block active">📈 Tabla grande (2s)</div>
+          <div class="fc-block active">👍 Botón "Like"</div>
+        </div>
+      </div>
+      <div class="fc-box">
+        <div class="fc-bar good">✅ Con @st.fragment</div>
+        <div class="fc-body">
+          <div class="fc-block frozen">📊 Gráfico (congelado ✓)</div>
+          <div class="fc-block frozen">📈 Tabla (congelada ✓)</div>
+          <div class="fc-block fragment">⚡ Botón "Like" (solo esto)</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div>
+    <pre><code class="language-python">import streamlit as st
+import time
+
+# Sección pesada — solo carga al inicio
+st.subheader("Análisis Inmobiliario")
+with st.spinner("Cargando gráfico..."):
+    time.sleep(2)  # simula carga pesada
+    st.line_chart({"precio": [100,120,95,
+                               110,130]})
+
+# ─────────────────────────────────────────
+# @st.fragment → solo esta función se
+# re-ejecuta al interactuar DESDE adentro
+# ─────────────────────────────────────────
+@st.fragment
+def panel_rapido():
+    st.divider()
+    favorito = st.toggle("⭐ Guardar favorito")
+    if st.button("📤 Compartir análisis"):
+        st.success("¡Enlace copiado!")
+    if favorito:
+        st.info("Guardado en tus favoritos")
+
+panel_rapido()
+# El gráfico de arriba NO parpadea
+# al interactuar con este panel</code></pre>
+  </div>
+</div>
+```
+
+::: {.notes}
+@st.fragment redefine parcialmente el scripting flow. Cuando el usuario interactúa con un widget DENTRO de un fragmento, solo ese fragmento se re-ejecuta. El resto queda intacto. Caso de uso clásico: gráfico pesado arriba, widgets ligeros abajo.
+:::
+
+## `@st.fragment` — el impacto visual
+
+```{=html}
+<div class="split2">
+  <div>
+    <div class="spinner-frag">
+      <div style="color:#666;font-size:.72em;font-family:var(--mono);margin-bottom:.5em;">
+        ⏱️ Esta parte tardó 3s en cargar...
+      </div>
+      <div style="background:#1e1e1e;border-radius:5px;padding:.4em .6em;font-size:.7em;color:#555;font-family:var(--mono);">
+        📊 [ gráfico pesado renderizado ] ← intacto
+      </div>
+      <div style="background:#1e1e1e;border-radius:5px;padding:.4em .6em;font-size:.7em;color:#555;font-family:var(--mono);margin-top:.3em;">
+        📈 [ tabla de 50k filas ] ← intacta
+      </div>
+      <div class="sf-fragment" style="margin-top:.7em;">
+        <div class="sf-frag-label">@st.fragment — re-ejecución aislada</div>
+        <div style="font-size:.72em;color:#bbb;margin-bottom:.4em;">Panel de acciones rápidas</div>
+        <div style="display:flex;gap:.5em;align-items:center;flex-wrap:wrap;">
+          <button class="sf-btn" onclick="sfFav(this)">⭐ Guardar favorito</button>
+          <button class="sf-btn" onclick="sfShare()">📤 Compartir</button>
+        </div>
+        <div id="sf-msg" style="font-size:.65em;color:#86efac;margin-top:.4em;display:none;"></div>
+      </div>
+    </div>
+    <script>
+    function sfFav(){var m=document.getElementById('sf-msg');m.textContent='⭐ Guardado — el gráfico no parpadeó.';m.style.display='block';}
+    function sfShare(){var m=document.getElementById('sf-msg');m.textContent='📤 ¡Enlace copiado! El gráfico quedó intacto.';m.style.display='block';}
+    </script>
+  </div>
+  <div>
+    <div class="login-flow">
+      <div class="lf-step ok"><div class="lf-num">1</div><div class="lf-text">App inicia → todo se ejecuta una vez (3s)</div></div>
+      <div class="lf-arrow">↓ usuario hace clic en "Guardar favorito"</div>
+      <div class="lf-step pur"><div class="lf-num">⚡</div><div class="lf-text">Solo <code>panel_rapido()</code> se re-ejecuta (instantáneo)</div></div>
+      <div class="lf-step" style="opacity:.35"><div class="lf-num">✗</div><div class="lf-text">El gráfico y la tabla NO se vuelven a cargar</div></div>
+    </div>
+    <div class="box-purple" style="margin-top:.5em;">
+      ⚡ Ideal cuando tienes secciones "pesadas" y widgets "ligeros" conviviendo en la misma pantalla.
+    </div>
+    <div class="box-muted" style="margin-top:.4em;">
+      📌 <code>@st.fragment(run_every=5)</code> → auto-actualiza el fragmento cada 5 segundos. Perfecto para live data.
+    </div>
+  </div>
+</div>
+```
+
+::: {.notes}
+El efecto de demostración es clave: mostrar en la app real que el spinner del gráfico pesado NO aparece al interactuar con el fragmento. Eso es lo que convence a los estudiantes. También mencionar run_every para dashboards con datos en tiempo real.
+:::
+
+# `@st.fragment` Avanzado ⚡ {background-color="#0d0d0d"}
+
+## `run_every` — dashboards en tiempo real
+
+```{=html}
+<div class="split2">
+  <div>
+    <pre><code class="language-python">import streamlit as st
+import pandas as pd
+import random
+import time
+
+st.title("📡 Monitor de Ventas en Vivo")
+
+# ── Esta parte carga una vez (pesada) ─────
+@st.cache_data
+def cargar_historico():
+    return pd.read_csv("ventas_historicas.csv")
+
+df_hist = cargar_historico()
+st.line_chart(df_hist.set_index("fecha"))
+st.caption("📊 Histórico — actualiza al inicio")
+
+# ── Este fragmento se auto-actualiza ──────
+@st.fragment(run_every=5)  # cada 5 segundos
+def kpis_en_vivo():
+    """Re-ejecuta solo este bloque cada 5s.
+    El gráfico histórico de arriba NO recarga."""
+    # Simula datos en tiempo real
+    ventas_hoy  = random.randint(80, 150)
+    ticket_prom = random.uniform(45.0, 95.0)
+    activos     = random.randint(12, 35)
+
+    col1, col2, col3 = st.columns(3)
+    col1.metric(
+        "💰 Ventas hoy",
+        f"${ventas_hoy:,}",
+        delta=f"{random.randint(-5,15)}%"
+    )
+    col2.metric(
+        "🎫 Ticket promedio",
+        f"${ticket_prom:.2f}",
+        delta=f"{random.randint(-3,8):.1f}%"
+    )
+    col3.metric(
+        "👥 Usuarios activos",
+        activos,
+        delta=random.randint(-3, 5)
+    )
+    st.caption(
+        f"⏱️ Actualizado: {time.strftime('%H:%M:%S')}"
+    )
+
+kpis_en_vivo()</code></pre>
+  </div>
+  <div>
+    <div style="background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:.8em 1em;font-size:.8em;">
+      <div style="font-size:.7em;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.5em;">KPIs en Vivo — actualización cada 5s</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:.5em;margin-bottom:.6em;">
+        <div style="background:#111;border:1px solid #222;border-radius:6px;padding:.5em .6em;">
+          <div style="font-size:1.3em;font-weight:900;color:var(--red);font-family:var(--mono);" id="kpi1">$127</div>
+          <div style="font-size:.6em;color:#555;text-transform:uppercase;letter-spacing:.08em;">Ventas hoy</div>
+          <div style="font-size:.65em;color:var(--green);" id="d1">▲ +8%</div>
+        </div>
+        <div style="background:#111;border:1px solid #222;border-radius:6px;padding:.5em .6em;">
+          <div style="font-size:1.3em;font-weight:900;color:var(--red);font-family:var(--mono);" id="kpi2">$67.40</div>
+          <div style="font-size:.6em;color:#555;text-transform:uppercase;letter-spacing:.08em;">Ticket prom.</div>
+          <div style="font-size:.65em;color:var(--green);" id="d2">▲ +3.2%</div>
+        </div>
+        <div style="background:#111;border:1px solid #222;border-radius:6px;padding:.5em .6em;">
+          <div style="font-size:1.3em;font-weight:900;color:var(--red);font-family:var(--mono);" id="kpi3">23</div>
+          <div style="font-size:.6em;color:#555;text-transform:uppercase;letter-spacing:.08em;">Activos</div>
+          <div style="font-size:.65em;color:var(--red);" id="d3">▼ -2</div>
+        </div>
+      </div>
+      <div style="font-size:.6em;color:#444;" id="kpi-ts">⏱️ Actualizado: --:--:--</div>
+      <button onclick="kpiRefresh()" style="margin-top:.4em;background:#222;border:1px solid #333;color:#888;border-radius:5px;padding:.25em .7em;font-size:.68em;cursor:pointer;">⟳ Simular actualización</button>
+    </div>
+    <script>
+    function kpiRefresh(){
+      var v=['$'+Math.floor(Math.random()*70+80),'$'+(Math.random()*50+45).toFixed(2),Math.floor(Math.random()*23+12)];
+      var d=[Math.random()>.4,Math.random()>.4,Math.random()>.5];
+      document.getElementById('kpi1').textContent=v[0];
+      document.getElementById('kpi2').textContent=v[1];
+      document.getElementById('kpi3').textContent=v[2];
+      var deltas=[document.getElementById('d1'),document.getElementById('d2'),document.getElementById('d3')];
+      deltas.forEach(function(el,i){el.style.color=d[i]?'#22c55e':'#FF4B4B';el.textContent=d[i]?'▲ +'+Math.floor(Math.random()*10)+'%':'▼ -'+Math.floor(Math.random()*5);});
+      var now=new Date();
+      document.getElementById('kpi-ts').textContent='⏱️ Actualizado: '+now.toTimeString().slice(0,8);
+    }
+    kpiRefresh();
+    setInterval(kpiRefresh,3000);
+    </script>
+    <div class="box-purple" style="margin-top:.4em;">
+      📡 <code>run_every=5</code> acepta segundos (int), timedelta, o strings como <code>"5s"</code>, <code>"1m"</code>. El fragmento se re-ejecuta automáticamente sin que el usuario haga nada.
+    </div>
+  </div>
+</div>
+```
+
+::: {.notes}
+run_every es la feature más poderosa de @st.fragment para dashboards operacionales. Los KPIs se actualizan automáticamente cada 5 segundos sin recargar el gráfico histórico pesado de arriba. Esto permite tener una app que parece "viva" sin el costo de recargar toda la pantalla.
+:::
+
+## Múltiples fragmentos independientes
+
+```{=html}
+<div class="split2">
+  <div>
+    <pre><code class="language-python">import streamlit as st
+
+st.title("🏢 Dashboard Ejecutivo")
+
+# Barra de navegación — carga una vez
+seccion = st.selectbox(
+    "Ver sección:",
+    ["Ventas", "Inventario", "Clientes"]
+)
+
+# ── Fragmento 1: KPIs (actualiza cada 10s)
+@st.fragment(run_every=10)
+def bloque_kpis():
+    st.subheader("📊 KPIs en vivo")
+    col1, col2 = st.columns(2)
+    col1.metric("Ventas", "$12,400", "+8%")
+    col2.metric("Leads", "47", "+3")
+
+# ── Fragmento 2: Chat lateral (independiente)
+@st.fragment
+def bloque_chat():
+    st.subheader("💬 Asistente")
+    if "chat_msgs" not in st.session_state:
+        st.session_state.chat_msgs = []
+    for m in st.session_state.chat_msgs:
+        with st.chat_message(m["role"]):
+            st.write(m["content"])
+    if q := st.chat_input("Pregunta algo..."):
+        st.session_state.chat_msgs.append(
+            {"role": "user", "content": q}
+        )
+        st.session_state.chat_msgs.append(
+            {"role": "assistant",
+             "content": f"Analizando: {q}"}
+        )
+        st.rerun(scope="fragment")
+
+# ── Layout: 2 columnas con fragmentos ─────
+col_izq, col_der = st.columns([2, 1])
+
+with col_izq:
+    bloque_kpis()
+    # aquí va el contenido de 'seccion'
+    mostrar_seccion(seccion)
+
+with col_der:
+    bloque_chat()</code></pre>
+  </div>
+  <div>
+    <div class="login-flow">
+      <div class="lf-step pur"><div class="lf-num">⚡</div><div class="lf-text"><strong>bloque_kpis</strong> → se re-ejecuta cada 10s automáticamente</div></div>
+      <div class="lf-step pur"><div class="lf-num">💬</div><div class="lf-text"><strong>bloque_chat</strong> → solo re-ejecuta cuando el usuario escribe en el chat</div></div>
+      <div class="lf-step ok"><div class="lf-num">✓</div><div class="lf-text"><code>mostrar_seccion()</code> → solo re-carga cuando cambia el selectbox</div></div>
+    </div>
+    <div class="box-muted" style="margin-top:.5em;">
+      🔁 <code>st.rerun(scope="fragment")</code> — re-ejecuta solo el fragmento actual, no toda la app. Disponible desde Streamlit 1.33+.
+    </div>
+    <div class="box-purple" style="margin-top:.4em;">
+      🧩 Cada fragmento es independiente. Puedes tener 10 fragmentos en la misma app, cada uno con su propio ciclo de vida.
+    </div>
+  </div>
+</div>
+```
+
+::: {.notes}
+La clave aquí es st.rerun(scope="fragment") — re-ejecuta solo el fragmento actual en lugar de toda la app. Esto es crucial para el chat dentro de un fragmento, porque sin scope="fragment", el chat dispararía un rerun completo que resetearía el selectbox de arriba.
+:::
+
+# Bloque 4 — Interfaces de Chat 💬 {background-color="#0d0d0d"}
+
+## Los componentes nativos de chat
+
+```{=html}
+<div class="split2">
+  <div>
+    <table class="cmp-table">
+      <tr><th>Componente</th><th>Qué hace</th></tr>
+      <tr><td class="met">st.chat_message</td><td style="color:#bbb;font-family:'Inter',sans-serif;">Renderiza una burbuja con avatar (<code>user</code> o <code>assistant</code>). Dentro puedes usar cualquier elemento de Streamlit.</td></tr>
+      <tr><td class="met">st.chat_input</td><td style="color:#bbb;font-family:'Inter',sans-serif;">Barra fija en la parte inferior. Devuelve el texto al presionar Enter o el ícono de envío.</td></tr>
+      <tr><td class="met">st.write_stream</td><td style="color:#bbb;font-family:'Inter',sans-serif;">Consume un generador y muestra el texto palabra a palabra (efecto typewriter / ChatGPT).</td></tr>
+      <tr><td class="met">session_state</td><td style="color:#bbb;font-family:'Inter',sans-serif;">Guarda el historial de mensajes para que <strong>no se borre</strong> en cada rerun.</td></tr>
+    </table>
+    <div class="box-yellow" style="margin-top:.5em;">
+      🔑 Sin <code>session_state</code>, el chat olvida toda la conversación cada vez que el usuario escribe una letra.
+    </div>
+  </div>
+  <div>
+    <div class="chat-mock">
+      <div class="cm-bar">💬 Asistente Inmobiliario</div>
+      <div class="cm-messages" id="cm-msgs">
+        <div class="cm-msg">
+          <div class="cm-avatar bot">🤖</div>
+          <div class="cm-bubble">¡Hola! Soy tu asesor inmobiliario. ¿Qué tipo de propiedad buscas hoy?</div>
+        </div>
+      </div>
+      <div class="cm-input-row">
+        <input class="cm-text" id="cm-inp" placeholder="Ej: Busco un depto de 2 hab en Quito..." onkeydown="if(event.key==='Enter')cmSend()"/>
+        <button class="cm-send" onclick="cmSend()">➤</button>
+      </div>
+    </div>
+    <script>
+    function cmSend(){
+      var inp=document.getElementById('cm-inp');
+      var msgs=document.getElementById('cm-msgs');
+      var txt=inp.value.trim();
+      if(!txt)return;
+      msgs.innerHTML+='<div class="cm-msg user"><div class="cm-avatar user">👤</div><div class="cm-bubble">'+txt+'</div></div>';
+      inp.value='';
+      setTimeout(function(){
+        msgs.innerHTML+='<div class="cm-msg"><div class="cm-avatar bot">🤖</div><div class="cm-bubble">Entendido. Buscando opciones para: "'+txt+'" 🔍</div></div>';
+        msgs.scrollTop=msgs.scrollHeight;
+      },600);
+      msgs.scrollTop=msgs.scrollHeight;
+    }
+    </script>
+  </div>
+</div>
+```
+
+::: {.notes}
+Conectar con el Módulo 3: session_state es lo que estudiamos para guardar estado entre reruns. Ahora lo usamos para guardar el historial. Los componentes de chat son solo la presentación visual — la inteligencia real viene de una API de LLM.
+:::
+
+## Chat con historial persistente
+
+```{=html}
+<div class="split2">
+  <div>
+    <pre><code class="language-python">import streamlit as st
+
+st.subheader("🏡 Asistente Inmobiliario")
+
+# ── Inicializar historial ─────────────────
+if "mensajes" not in st.session_state:
+    st.session_state.mensajes = [{
+        "role":    "assistant",
+        "content": "¡Hola! Soy tu asesor "
+                   "inmobiliario virtual. "
+                   "¿Qué tipo de propiedad "
+                   "buscas hoy?"
+    }]
+
+# ── Renderizar historial completo ─────────
+for msg in st.session_state.mensajes:
+    with st.chat_message(msg["role"]):
+        st.write(msg["content"])
+
+# ── Capturar nueva pregunta ───────────────
+pregunta = st.chat_input(
+    "Ej: Busco un depto de 2 hab en Quito..."
+)
+
+if pregunta:
+    # 1. Guardar y mostrar mensaje del usuario
+    st.session_state.mensajes.append(
+        {"role": "user", "content": pregunta}
+    )
+    with st.chat_message("user"):
+        st.write(pregunta)
+
+    # 2. Generar y mostrar respuesta
+    with st.chat_message("assistant"):
+        respuesta = st.write_stream(
+            generar_respuesta(pregunta)
+        )
+
+    # 3. Guardar respuesta en historial
+    st.session_state.mensajes.append(
+        {"role": "assistant",
+         "content": respuesta}
+    )</code></pre>
+  </div>
+  <div>
+    <pre><code class="language-python">import time
+
+# ── Generador para efecto streaming ──────
+def generar_respuesta(pregunta: str):
+    """Simula respuesta palabra a palabra"""
+    texto = (
+        f"Basándome en tu búsqueda de "
+        f"'{pregunta}', encontré 3 opciones "
+        f"disponibles. La primera está en el "
+        f"norte de la ciudad con 2 dormitorios "
+        f"y parqueadero incluido..."
+    )
+    for palabra in texto.split():
+        yield palabra + " "
+        time.sleep(0.04)  # efecto typewriter
+
+# ── Con OpenAI API real ───────────────────
+# from openai import OpenAI
+# client = OpenAI(
+#     api_key=st.secrets["OPENAI_KEY"]
+# )
+#
+# def generar_respuesta(pregunta):
+#     stream = client.chat.completions.create(
+#         model="gpt-4o",
+#         stream=True,
+#         messages=st.session_state.mensajes
+#     )
+#     for chunk in stream:
+#         delta = chunk.choices[0].delta
+#         if delta.content:
+#             yield delta.content</code></pre>
+    <div class="terminal-mini" style="margin-top:.4em;">
+      <span class="t-prompt">$</span>
+      <span class="t-cmd">pip install openai</span>
+    </div>
+    <div class="box-purple" style="margin-top:.4em;">
+      ✨ <code>st.write_stream()</code> acepta cualquier generador Python. Compatible directamente con <code>stream=True</code> de OpenAI, Anthropic y Gemini.
+    </div>
+  </div>
+</div>
+```
+
+::: {.notes}
+El patrón de los tres pasos siempre es el mismo: 1) renderizar historial guardado, 2) capturar input del usuario, 3) agregar mensajes al historial y generar respuesta. La clave es que el historial en session_state sobrevive a los reruns. El generador de Python se puede reemplazar por cualquier API de LLM que soporte streaming.
+:::
+
+# Chat e Integración con LLMs 💬 {background-color="#0d0d0d"}
+
+## Contexto del sistema y memoria de la conversación
+
+```{=html}
+<div class="split2">
+  <div>
+    <pre><code class="language-python">import streamlit as st
+
+SYSTEM_PROMPT = """Eres un asesor inmobiliario
+experto en el mercado ecuatoriano. Tienes acceso
+a una base de datos de propiedades en Quito,
+Guayaquil y Cuenca. Responde siempre en español,
+de manera concisa y profesional. Si el usuario
+pregunta por propiedades, pide sus filtros
+(ciudad, presupuesto, habitaciones) antes de
+mostrar resultados."""
+
+# ── Inicializar con mensaje del sistema ───
+if "historial" not in st.session_state:
+    st.session_state.historial = [
+        {"role": "system",
+         "content": SYSTEM_PROMPT}
+    ]
+    # El sistema NO se muestra en la UI
+
+# ── Renderizar solo mensajes user/assistant ─
+for msg in st.session_state.historial:
+    if msg["role"] == "system":
+        continue  # ocultar prompt del sistema
+    with st.chat_message(msg["role"]):
+        st.markdown(msg["content"])
+
+# ── Input ─────────────────────────────────
+if prompt := st.chat_input("Escribe aquí..."):
+    st.session_state.historial.append(
+        {"role": "user", "content": prompt}
+    )
+    with st.chat_message("user"):
+        st.markdown(prompt)
+
+    with st.chat_message("assistant"):
+        with st.spinner("Pensando..."):
+            respuesta = llamar_llm(
+                st.session_state.historial
+            )
+        st.markdown(respuesta)
+
+    st.session_state.historial.append(
+        {"role": "assistant",
+         "content": respuesta}
+    )
+
+# ── Sidebar: controles del chat ───────────
+with st.sidebar:
+    st.caption(
+        f"💬 {len(st.session_state.historial)-1}"
+        f" mensajes en memoria"
+    )
+    if st.button("🗑️ Limpiar conversación"):
+        st.session_state.historial = [
+            {"role": "system",
+             "content": SYSTEM_PROMPT}
+        ]
+        st.rerun()</code></pre>
+  </div>
+  <div>
+    <div style="font-size:.8em;">
+      <pre><code class="language-python">from openai import OpenAI
+
+client = OpenAI(
+    api_key=st.secrets["OPENAI_KEY"]
+)
+
+def llamar_llm(historial: list) -> str:
+    """Envía el historial completo a OpenAI.
+    Incluye el system prompt automáticamente."""
+    respuesta = client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=historial,  # todo el contexto
+        max_tokens=500,
+        temperature=0.7
+    )
+    return respuesta.choices[0].message.content
+
+# ── Con streaming (efecto typewriter) ─────
+def llamar_llm_stream(historial: list):
+    """Generador para st.write_stream()"""
+    stream = client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=historial,
+        max_tokens=500,
+        stream=True  # ← activa streaming
+    )
+    for chunk in stream:
+        delta = chunk.choices[0].delta
+        if delta.content:
+            yield delta.content</code></pre>
+      <div class="box-blue" style="margin-top:.4em;">
+        🧠 El historial completo (incluyendo el system prompt) se envía en CADA llamada. Los LLMs no tienen memoria propia — toda la memoria vive en <code>session_state</code>.
+      </div>
+    </div>
+  </div>
+</div>
+```
+
+::: {.notes}
+El system prompt es la instrucción que le da personalidad y contexto al asistente. Se pone al inicio del historial como rol "system" y se envía en cada llamada a la API. El usuario no lo ve. La gestión de memoria es crítica: los LLMs cobran por tokens, así que en conversaciones largas hay que considerar truncar el historial.
+:::
+
+## Chat multimodal — texto e imágenes
+
+```{=html}
+<div class="split2">
+  <div>
+    <pre><code class="language-python">import streamlit as st
+import base64
+from openai import OpenAI
+
+client = OpenAI(api_key=st.secrets["OPENAI_KEY"])
+
+st.title("🏠 Analiza tu Propiedad con IA")
+st.caption(
+    "Sube una foto del inmueble y pregunta "
+    "lo que quieras."
+)
+
+# ── Upload de imagen ──────────────────────
+imagen = st.file_uploader(
+    "📸 Sube una foto del inmueble",
+    type=["jpg", "jpeg", "png", "webp"]
+)
+
+if imagen:
+    st.image(imagen, caption="Tu propiedad",
+             use_container_width=True)
+
+# ── Chat con imagen ───────────────────────
+if "msgs_img" not in st.session_state:
+    st.session_state.msgs_img = []
+
+for msg in st.session_state.msgs_img:
+    with st.chat_message(msg["role"]):
+        st.markdown(msg["content"]
+                    if isinstance(msg["content"],str)
+                    else msg["content"][0]["text"])
+
+pregunta = st.chat_input(
+    "Pregunta sobre la foto..."
+    if imagen else
+    "Sube una imagen primero..."
+)
+
+if pregunta and imagen:
+    # Convertir imagen a base64
+    img_b64 = base64.b64encode(
+        imagen.getvalue()
+    ).decode()
+    img_type = imagen.type
+
+    # Mensaje con imagen + texto
+    msg_usuario = {
+        "role": "user",
+        "content": [
+            {"type": "image_url",
+             "image_url": {
+                 "url": f"data:{img_type};"
+                        f"base64,{img_b64}"
+             }},
+            {"type": "text", "text": pregunta}
+        ]
+    }
+    st.session_state.msgs_img.append(msg_usuario)
+
+    with st.chat_message("user"):
+        st.markdown(pregunta)
+
+    with st.chat_message("assistant"):
+        respuesta = st.write_stream(
+            analizar_imagen(
+                st.session_state.msgs_img
+            )
+        )
+    st.session_state.msgs_img.append(
+        {"role": "assistant",
+         "content": respuesta}
+    )</code></pre>
+  </div>
+  <div>
+    <pre><code class="language-python">def analizar_imagen(historial: list):
+    """Analiza imágenes con GPT-4 Vision."""
+    stream = client.chat.completions.create(
+        model="gpt-4o",  # ← soporta visión
+        messages=[
+            {"role": "system",
+             "content": "Eres un perito en "
+             "bienes raíces. Analiza las fotos "
+             "de inmuebles y da estimaciones "
+             "de valor, estado y mejoras "
+             "posibles. Sé específico y "
+             "profesional."},
+            *historial
+        ],
+        max_tokens=800,
+        stream=True
+    )
+    for chunk in stream:
+        delta = chunk.choices[0].delta
+        if delta.content:
+            yield delta.content</code></pre>
+    <div class="box-yellow" style="margin-top:.4em;">
+      📸 GPT-4o puede analizar imágenes y responder preguntas sobre ellas. Casos de uso inmobiliarios: estimar valor, detectar daños, sugerir remodelaciones, verificar el estado del inmueble.
+    </div>
+    <div class="box-muted" style="margin-top:.4em;">
+      💡 <code>st.file_uploader</code> puede estar dentro o fuera de un <code>st.form</code>. Para uploads + texto juntos, fuera del form es más flexible.
+    </div>
+  </div>
+</div>
+```
+
+::: {.notes}
+El chat multimodal abre casos de uso muy potentes para bienes raíces. El usuario puede subir una foto de un inmueble y preguntar "¿cuánto crees que vale?" o "¿qué reparaciones necesita?". GPT-4o analiza la imagen y responde con contexto del mercado. La clave técnica es convertir la imagen a base64 y enviarla como data URL en el mensaje.
+:::
+
+## Truncamiento inteligente del historial
+
+```{=html}
+<div class="split2">
+  <div>
+    <pre><code class="language-python">import streamlit as st
+import tiktoken  # pip install tiktoken
+
+# ── Contar tokens (OpenAI) ────────────────
+def contar_tokens(historial: list,
+                  modelo: str = "gpt-4o-mini"
+                  ) -> int:
+    enc = tiktoken.encoding_for_model(modelo)
+    total = 0
+    for msg in historial:
+        contenido = msg.get("content", "")
+        if isinstance(contenido, str):
+            total += len(enc.encode(contenido))
+        total += 4  # overhead por mensaje
+    return total
+
+# ── Truncar si supera el límite ───────────
+MAX_TOKENS = 3000  # dejar margen para respuesta
+
+def gestionar_contexto(historial: list) -> list:
+    """Mantiene el system prompt + mensajes
+    más recientes dentro del límite de tokens."""
+    if not historial:
+        return historial
+
+    system = [m for m in historial
+              if m["role"] == "system"]
+    mensajes = [m for m in historial
+                if m["role"] != "system"]
+
+    # Ir eliminando mensajes viejos hasta
+    # que quepa en el límite
+    while (contar_tokens(system + mensajes)
+           > MAX_TOKENS and len(mensajes) > 2):
+        mensajes.pop(0)  # eliminar el más viejo
+
+    return system + mensajes
+
+# ── Uso en el chat ────────────────────────
+if prompt := st.chat_input("Pregunta..."):
+    st.session_state.historial.append(
+        {"role": "user", "content": prompt}
+    )
+    # Antes de llamar al LLM, gestionar contexto
+    contexto = gestionar_contexto(
+        st.session_state.historial
+    )
+    respuesta = llamar_llm(contexto)
+    # La respuesta va al historial completo
+    st.session_state.historial.append(
+        {"role": "assistant",
+         "content": respuesta}
+    )</code></pre>
+  </div>
+  <div>
+    <div style="font-size:.8em;">
+      <div class="box-accent" style="margin-bottom:.5em;">
+        💰 <strong>Por qué importa:</strong> GPT-4o cobra ~$5 por millón de tokens de entrada. Una conversación de 100 mensajes sin truncar puede costar 10x más que con truncamiento.
+      </div>
+      <div class="login-flow">
+        <div class="lf-step ok"><div class="lf-num">1</div><div class="lf-text">System prompt siempre se conserva — es la identidad del asistente</div></div>
+        <div class="lf-step ok"><div class="lf-num">2</div><div class="lf-text">Mensajes más recientes tienen prioridad — el usuario necesita que el bot recuerde lo último</div></div>
+        <div class="lf-step bad"><div class="lf-num">✗</div><div class="lf-text">Mensajes viejos se eliminan — pérdida de contexto lejano</div></div>
+      </div>
+      <div class="box-blue" style="margin-top:.5em;">
+        🧪 <strong>Alternativas avanzadas:</strong> Resumir mensajes viejos en vez de eliminarlos (summarization), o usar embeddings + vector DB para recuperar contexto relevante (RAG).
+      </div>
+    </div>
+  </div>
+</div>
+```
+
+::: {.notes}
+El truncamiento de contexto es un problema real en producción. Los modelos tienen un límite de tokens (contexto), y si lo superas, la API devuelve un error. La estrategia más simple es eliminar mensajes viejos. La más avanzada es usar RAG — Retrieval Augmented Generation — donde no almacenas toda la conversación sino que buscas fragmentos relevantes con embeddings.
+:::
+
+# App Completa — Plataforma Inmobiliaria IA 🏡 {background-color="#0d0d0d"}
+
+## Arquitectura de la app final
+
+```{=html}
+<div style="font-size:.82em;">
+  <div class="arch-diagram" style="margin:.5em 0 .9em;flex-wrap:wrap;gap:.4em;">
+    <div class="arch-box red"><div class="ab-icon">🔐</div><div class="ab-label">Login</div><div class="ab-sub">stauth</div></div>
+    <div class="arch-arrow">→</div>
+    <div class="arch-box blue"><div class="ab-icon">🗂️</div><div class="ab-label">st.navigation</div><div class="ab-sub">páginas</div></div>
+    <div class="arch-arrow">→</div>
+    <div class="arch-box green"><div class="ab-icon">📋</div><div class="ab-label">st.form</div><div class="ab-sub">filtros</div></div>
+    <div class="arch-arrow">→</div>
+    <div class="arch-box pur"><div class="ab-icon">⚡</div><div class="ab-label">@st.fragment</div><div class="ab-sub">KPIs live</div></div>
+    <div class="arch-arrow">→</div>
+    <div class="arch-box red"><div class="ab-icon">💬</div><div class="ab-label">Chat IA</div><div class="ab-sub">GPT-4o</div></div>
+  </div>
+</div>
+<div class="split2">
+  <div>
+    <div style="font-size:.68em;color:#555;font-family:var(--mono);margin-bottom:.2em;">estructura del proyecto</div>
+    <pre><code class="language-python">mi_app_inmobiliaria/
+├── .streamlit/
+│   └── secrets.toml          # 🔒 gitignore
+├── pages/
+│   ├── 1_🏠_Buscar.py        # formulario
+│   ├── 2_📊_Dashboard.py     # fragmentos
+│   └── 3_💬_Asistente.py     # chat
+├── utils/
+│   ├── auth.py               # autenticación
+│   ├── database.py           # consultas DB
+│   └── llm.py                # integración IA
+├── data/
+│   └── propiedades.csv
+└── app.py                    # entrada principal</code></pre>
+    <pre><code class="language-python"># app.py — punto de entrada
+import streamlit as st
+import streamlit_authenticator as stauth
+from utils.auth import cargar_config_auth
+
+# 1. Configurar autenticación global
+config = cargar_config_auth()
+auth   = stauth.Authenticate(
+    config["credentials"],
+    config["cookie"]["name"],
+    config["cookie"]["key"],
+    config["cookie"]["expiry_days"]
+)
+auth.login()
+
+if not st.session_state["authentication_status"]:
+    st.stop()
+
+# 2. Usuario autenticado — configurar navegación
+auth.logout("Cerrar sesión", "sidebar")
+st.sidebar.success(
+    f"👋 {st.session_state['name']}"
+)
+
+# 3. Las páginas se cargan automáticamente
+# desde la carpeta /pages</code></pre>
+  </div>
+  <div>
+    <pre><code class="language-python"># pages/1_🏠_Buscar.py
+import streamlit as st
+import pandas as pd
+
+@st.cache_data
+def cargar_datos() -> pd.DataFrame:
+    return pd.read_csv("data/propiedades.csv")
+
+st.title("🏠 Buscador de Propiedades")
+
+# ── Formulario de búsqueda ────────────────
+with st.form("busqueda"):
+    col1, col2 = st.columns(2)
+    ciudad = col1.selectbox(
+        "Ciudad",
+        ["Quito", "Guayaquil", "Cuenca"]
+    )
+    precio_max = col2.slider(
+        "Precio máximo", 50_000, 500_000
+    )
+    min_hab = st.number_input("Hab. mín.", 1, 10)
+    buscar  = st.form_submit_button("🔍 Buscar")
+
+if buscar:
+    df = cargar_datos()
+    resultado = df[
+        (df.ciudad == ciudad) &
+        (df.precio <= precio_max) &
+        (df.habitaciones >= min_hab)
+    ]
+    st.metric("Resultados", len(resultado))
+    st.dataframe(
+        resultado,
+        column_config={
+            "precio": st.column_config.NumberColumn(
+                "Precio", format="$%d"
+            ),
+            "foto": st.column_config.ImageColumn(
+                "Foto"
+            )
+        },
+        use_container_width=True
+    )
+
+    # ── Panel de acciones (fragment) ──────
+    @st.fragment
+    def acciones_resultado():
+        sel = st.selectbox(
+            "Seleccionar propiedad",
+            resultado["id"].tolist()
+        )
+        col_a, col_b, col_c = st.columns(3)
+        if col_a.button("⭐ Favorito"):
+            st.toast("¡Agregado a favoritos!")
+        if col_b.button("📞 Contactar"):
+            st.info("Enviando solicitud...")
+        if col_c.button("📊 Comparar"):
+            st.info("Agregado a comparador")
+
+    acciones_resultado()</code></pre>
+  </div>
+</div>
+```
+
+::: {.notes}
+Esta es la arquitectura de una app real completa. La carpeta /pages crea automáticamente la navegación lateral en Streamlit. El app.py es el guardian global — si no estás autenticado, ninguna página se carga. Cada página es independiente pero comparte el session_state global incluyendo el rol del usuario.
+:::
+
+## Dashboard con fragmentos y métricas en vivo
+
+```{=html}
+<div class="split2">
+  <div>
+    <pre><code class="language-python"># pages/2_📊_Dashboard.py
+import streamlit as st
+import plotly.express as px
+
+st.title("📊 Dashboard Inmobiliario")
+
+# ── Filtro de período — NO en form ────────
+periodo = st.radio(
+    "Período",
+    ["7 días", "30 días", "90 días"],
+    horizontal=True
+)
+
+# ── Sección pesada — carga una vez ────────
+@st.cache_data
+def cargar_metricas_historicas(periodo):
+    # simula consulta a DB
+    import pandas as pd, numpy as np
+    n = int(periodo.split()[0])
+    fechas = pd.date_range(
+        end="today", periods=n
+    )
+    return pd.DataFrame({
+        "fecha":  fechas,
+        "ventas": np.random.randint(5,25,n),
+        "leads":  np.random.randint(20,80,n)
+    })
+
+df_hist = cargar_metricas_historicas(periodo)
+
+fig = px.line(
+    df_hist, x="fecha",
+    y=["ventas", "leads"],
+    template="plotly_dark",
+    color_discrete_map={
+        "ventas": "#FF4B4B",
+        "leads":  "#3b82f6"
+    }
+)
+fig.update_layout(
+    plot_bgcolor="#0d0d0d",
+    paper_bgcolor="#0d0d0d",
+    margin=dict(l=0,r=0,t=20,b=0)
+)
+st.plotly_chart(fig, use_container_width=True)
+
+# ── KPIs en vivo (se actualizan solos) ────
+@st.fragment(run_every="15s")
+def kpis_tiempo_real():
+    import random
+    st.divider()
+    st.caption("⚡ KPIs en tiempo real")
+    m1,m2,m3,m4 = st.columns(4)
+    m1.metric("Activos ahora",
+              random.randint(10,40),
+              random.randint(-3,5))
+    m2.metric("Consultas/hora",
+              random.randint(8,30),
+              random.randint(-2,4))
+    m3.metric("Tasa conversión",
+              f"{random.uniform(2,8):.1f}%",
+              f"{random.uniform(-1,2):.1f}%")
+    m4.metric("Precio prom. $k",
+              random.randint(85,140),
+              random.randint(-5,10))
+
+kpis_tiempo_real()</code></pre>
+  </div>
+  <div>
+    <div style="background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:.8em 1em;font-size:.78em;">
+      <div style="font-size:.7em;color:var(--muted);margin-bottom:.5em;">📊 Evolución de ventas y leads</div>
+      <div style="background:#0d0d0d;border-radius:5px;height:80px;display:flex;align-items:flex-end;padding:.3em;gap:3px;">
+        <div style="background:rgba(255,75,75,.6);width:8px;border-radius:2px 2px 0 0;" id="b0"></div>
+        <div style="background:rgba(255,75,75,.6);width:8px;border-radius:2px 2px 0 0;" id="b1"></div>
+        <div style="background:rgba(255,75,75,.6);width:8px;border-radius:2px 2px 0 0;" id="b2"></div>
+        <div style="background:rgba(255,75,75,.6);width:8px;border-radius:2px 2px 0 0;" id="b3"></div>
+        <div style="background:rgba(255,75,75,.6);width:8px;border-radius:2px 2px 0 0;" id="b4"></div>
+        <div style="background:rgba(255,75,75,.6);width:8px;border-radius:2px 2px 0 0;" id="b5"></div>
+        <div style="background:rgba(255,75,75,.6);width:8px;border-radius:2px 2px 0 0;" id="b6"></div>
+        <div style="background:rgba(59,130,246,.5);width:8px;border-radius:2px 2px 0 0;" id="c0"></div>
+        <div style="background:rgba(59,130,246,.5);width:8px;border-radius:2px 2px 0 0;" id="c1"></div>
+        <div style="background:rgba(59,130,246,.5);width:8px;border-radius:2px 2px 0 0;" id="c2"></div>
+        <div style="background:rgba(59,130,246,.5);width:8px;border-radius:2px 2px 0 0;" id="c3"></div>
+        <div style="background:rgba(59,130,246,.5);width:8px;border-radius:2px 2px 0 0;" id="c4"></div>
+        <div style="background:rgba(59,130,246,.5);width:8px;border-radius:2px 2px 0 0;" id="c5"></div>
+        <div style="background:rgba(59,130,246,.5);width:8px;border-radius:2px 2px 0 0;" id="c6"></div>
+      </div>
+      <div style="display:flex;gap:.5em;margin-top:.3em;font-size:.65em;color:#555;">
+        <span style="color:#FF4B4B;">■ Ventas</span>
+        <span style="color:#3b82f6;">■ Leads</span>
+      </div>
+      <div style="border-top:1px solid #1e1e1e;margin:.5em 0;"></div>
+      <div style="font-size:.68em;color:#555;margin-bottom:.3em;">⚡ KPIs en tiempo real (cada 15s)</div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:.3em;">
+        <div style="background:#111;border-radius:5px;padding:.3em;text-align:center;"><div style="font-size:1em;font-weight:900;color:var(--red);font-family:var(--mono);" id="d-a">23</div><div style="font-size:.55em;color:#555;">Activos</div></div>
+        <div style="background:#111;border-radius:5px;padding:.3em;text-align:center;"><div style="font-size:1em;font-weight:900;color:var(--red);font-family:var(--mono);" id="d-b">18</div><div style="font-size:.55em;color:#555;">Consul/h</div></div>
+        <div style="background:#111;border-radius:5px;padding:.3em;text-align:center;"><div style="font-size:1em;font-weight:900;color:var(--red);font-family:var(--mono);" id="d-c">4.7%</div><div style="font-size:.55em;color:#555;">Conversión</div></div>
+        <div style="background:#111;border-radius:5px;padding:.3em;text-align:center;"><div style="font-size:1em;font-weight:900;color:var(--red);font-family:var(--mono);" id="d-d">$112k</div><div style="font-size:.55em;color:#555;">Prom.</div></div>
+      </div>
+    </div>
+    <script>
+    setInterval(function(){
+      document.getElementById('d-a').textContent=Math.floor(Math.random()*30+10);
+      document.getElementById('d-b').textContent=Math.floor(Math.random()*22+8);
+      document.getElementById('d-c').textContent=(Math.random()*6+2).toFixed(1)+'%';
+      document.getElementById('d-d').textContent='$'+Math.floor(Math.random()*55+85)+'k';
+      for(var i=0;i<7;i++){
+        document.getElementById('b'+i).style.height=Math.floor(Math.random()*60+15)+'px';
+        document.getElementById('c'+i).style.height=Math.floor(Math.random()*50+20)+'px';
+      }
+    },2500);
+    </script>
+  </div>
+</div>
+```
+
+::: {.notes}
+Este es el dashboard completo combinando todas las técnicas del módulo: @st.cache_data para el gráfico histórico, @st.fragment con run_every para los KPIs en tiempo real, y separación clara entre secciones que cambian rápido y secciones que cambian lento. El selectbox de período está fuera del form porque queremos que el gráfico histórico se actualice inmediatamente al cambiar el período.
+:::
+
+## Manejo de errores y experiencia de usuario
+
+```{=html}
+<div class="split2">
+  <div>
+    <pre><code class="language-python">import streamlit as st
+import requests
+from contextlib import contextmanager
+
+# ── Notificaciones no intrusivas ──────────
+def notificar(mensaje: str,
+              tipo: str = "info",
+              icono: str = ""):
+    """Muestra un toast en vez de interrumpir."""
+    if tipo == "exito":
+        st.toast(f"✅ {mensaje}", icon="✅")
+    elif tipo == "error":
+        st.toast(f"❌ {mensaje}", icon="❌")
+    elif tipo == "advertencia":
+        st.toast(f"⚠️ {mensaje}", icon="⚠️")
+    else:
+        st.toast(mensaje)
+
+# ── Context manager para errores de API ───
+@contextmanager
+def manejar_errores_api(operacion: str):
+    """Envuelve llamadas a APIs externas."""
+    try:
+        yield
+    except requests.exceptions.Timeout:
+        st.error(
+            f"⏱️ Timeout al {operacion}. "
+            f"Intenta de nuevo."
+        )
+        st.stop()
+    except requests.exceptions.ConnectionError:
+        st.error(
+            "🌐 Sin conexión al servidor. "
+            "Verifica tu red."
+        )
+        st.stop()
+    except requests.exceptions.HTTPError as e:
+        if e.response.status_code == 429:
+            st.warning(
+                "⚡ Demasiadas peticiones. "
+                "Espera unos segundos."
+            )
+        elif e.response.status_code >= 500:
+            st.error(
+                "🔧 Error del servidor. "
+                "El equipo fue notificado."
+            )
+        st.stop()
+
+# ── Uso en el chat ────────────────────────
+if prompt := st.chat_input("Pregunta..."):
+    with manejar_errores_api("consultar IA"):
+        with st.spinner("Consultando IA..."):
+            respuesta = llamar_llm(
+                st.session_state.historial
+            )
+    st.session_state.historial.append(
+        {"role": "assistant",
+         "content": respuesta}
+    )
+    notificar("Respuesta recibida", "exito")</code></pre>
+  </div>
+  <div>
+    <div style="font-size:.8em;">
+      <pre><code class="language-python"># ── st.status para operaciones largas ─────
+with st.status("Procesando consulta...",
+               expanded=True) as status:
+    st.write("🔍 Buscando en base de datos...")
+    resultados_db = consultar_db(filtros)
+
+    st.write("🤖 Analizando con IA...")
+    analisis = analizar_con_llm(resultados_db)
+
+    st.write("📊 Generando visualizaciones...")
+    graficos = crear_graficos(resultados_db)
+
+    status.update(
+        label="✅ Consulta completada",
+        state="complete",
+        expanded=False
+    )
+
+st.plotly_chart(graficos)
+st.markdown(analisis)
+
+# ── Feedback del usuario ───────────────────
+col_ok, col_mal = st.columns(2)
+if col_ok.button("👍 Útil"):
+    notificar("¡Gracias por tu feedback!", "exito")
+    registrar_feedback("positivo", analisis)
+
+if col_mal.button("👎 Mejorar"):
+    with st.expander("¿Qué mejorarías?"):
+        mejora = st.text_area("Cuéntanos...")
+        if st.button("Enviar", key="fb_send"):
+            registrar_feedback("negativo",
+                               analisis, mejora)
+            notificar("Feedback registrado","exito")
+            st.rerun()</code></pre>
+      <div class="box-green" style="margin-top:.4em;">
+        ✅ <code>st.toast()</code> muestra notificaciones en la esquina sin interrumpir el flujo. <code>st.status()</code> muestra el progreso de operaciones multi-paso.
+      </div>
+    </div>
+  </div>
+</div>
+```
+
+::: {.notes}
+El manejo de errores es lo que distingue una app de producción de un prototipo. st.toast es ideal para confirmaciones no intrusivas — aparece en la esquina y desaparece sola. st.status muestra el progreso de operaciones largas de forma visual y profesional. El context manager centraliza el manejo de errores de red para no repetirlo en cada llamada.
+:::
+
+## Deploy y configuración de producción
+
+```{=html}
+<div class="split2">
+  <div>
+    <pre><code class="language-python"># .streamlit/config.toml
+# (este SÍ va al repo — no tiene secretos)
+
+[theme]
+primaryColor = "#FF4B4B"
+backgroundColor = "#0d0d0d"
+secondaryBackgroundColor = "#1a1a1a"
+textColor = "#e8e8e8"
+font = "monospace"
+
+[server]
+headless = true
+port = 8501
+enableCORS = false
+enableXsrfProtection = true  # seguridad
+
+[browser]
+gatherUsageStats = false  # privacidad
+
+[runner]
+fastReruns = true  # mejor rendimiento</code></pre>
+    <div class="box-muted" style="margin-top:.4em;">
+      📁 <code>config.toml</code> configura el tema y el servidor. <code>secrets.toml</code> guarda credenciales. Los dos van en <code>.streamlit/</code> pero solo <code>secrets.toml</code> va en <code>.gitignore</code>.
+    </div>
+  </div>
+  <div>
+    <div class="login-flow">
+      <div class="lf-step blue"><div class="lf-num">1</div><div class="lf-text"><strong>Streamlit Cloud (gratis):</strong> conecta el repo de GitHub → configura Secrets → deploy automático</div></div>
+      <div class="lf-step blue"><div class="lf-num">2</div><div class="lf-text"><strong>Docker:</strong> <code>streamlit run app.py</code> en un Dockerfile + variables de entorno</div></div>
+      <div class="lf-step blue"><div class="lf-num">3</div><div class="lf-text"><strong>Hugging Face Spaces:</strong> gratis para apps públicas, soporta GPU</div></div>
+      <div class="lf-step blue"><div class="lf-num">4</div><div class="lf-text"><strong>AWS / GCP / Azure:</strong> EC2, Cloud Run, App Service — máximo control</div></div>
+    </div>
+    <pre><code class="language-python"># requirements.txt para deployment
+streamlit>=1.33.0
+streamlit-authenticator>=0.3.3
+openai>=1.0.0
+pandas>=2.0.0
+plotly>=5.0.0
+requests>=2.31.0
+python-dotenv>=1.0.0
+bcrypt>=4.0.0
+PyJWT>=2.8.0
+tiktoken>=0.7.0
+# FastAPI (si tienes backend separado):
+fastapi>=0.111.0
+uvicorn>=0.29.0</code></pre>
+  </div>
+</div>
+```
+
+::: {.notes}
+El config.toml permite personalizar el tema de la app para que coincida con la identidad visual del cliente. Streamlit Cloud es el punto de entrada más fácil para deploy — conectas el repo y en 2 minutos tienes la app en la nube. Para producción seria, Docker + un servidor propio o un servicio cloud da más control y predictibilidad de costos.
+:::
+
+---
+
+# Resumen y Reto 🏁 {background-color="#0d0d0d"}
+
+## Todo lo que aprendiste hoy
+
+```{=html}
+<div class="summary-grid" style="margin-top:.5em;">
+  <div class="sg-card fade-item" style="animation-delay:.15s">
+    <div class="sgc-icon">🔒</div><div class="sgc-num">02</div>
+    <div class="sgc-title">st.secrets</div>
+    <div class="sgc-desc">Credenciales fuera del código. <code>secrets.toml</code> en <code>.gitignore</code>. Mismo código en local y en la nube.</div>
+  </div>
+  <div class="sg-card fade-item" style="animation-delay:.25s">
+    <div class="sgc-icon">🛑</div><div class="sgc-num">03</div>
+    <div class="sgc-title">Login manual + st.stop()</div>
+    <div class="sgc-desc"><code>session_state</code> recuerda el estado entre reruns · <code>st.stop()</code> bloquea el resto del script.</div>
+  </div>
+  <div class="sg-card fade-item" style="animation-delay:.35s">
+    <div class="sgc-icon">⚡</div><div class="sgc-num">04</div>
+    <div class="sgc-title">FastAPI + JWT</div>
+    <div class="sgc-desc">Backend de auth real. <code>bcrypt</code> para contraseñas · tokens con expiración · arquitectura escalable.</div>
+  </div>
+  <div class="sg-card fade-item" style="animation-delay:.45s">
+    <div class="sgc-icon">🏆</div><div class="sgc-num">05</div>
+    <div class="sgc-title">streamlit-authenticator</div>
+    <div class="sgc-desc">Multi-usuario listo para producción. Login · logout · registro · recuperación. <code>pip install streamlit-authenticator</code>.</div>
+  </div>
+  <div class="sg-card fade-item" style="animation-delay:.05s">
+    <div class="sgc-icon">📋</div><div class="sgc-num">01</div>
+    <div class="sgc-title">st.form</div>
+    <div class="sgc-desc">Agrupa widgets y evita re-ejecuciones explosivas. El carrito de compras: ajusta todo y paga una sola vez.</div>
+  </div>
+  <div class="sg-card fade-item" style="animation-delay:.55s">
+    <div class="sgc-icon">🧩</div><div class="sgc-num">06</div>
+    <div class="sgc-title">@st.fragment</div>
+    <div class="sgc-desc">Re-ejecución parcial. Las secciones pesadas no vuelven a cargar al interactuar con widgets ligeros.</div>
+  </div>
+  <div class="sg-card fade-item" style="animation-delay:.65s">
+    <div class="sgc-icon">💬</div><div class="sgc-num">07</div>
+    <div class="sgc-title">Interfaces de Chat</div>
+    <div class="sgc-desc"><code>st.chat_message</code> · <code>st.chat_input</code> · <code>st.write_stream</code> · historial persistente en <code>session_state</code>.</div>
+  </div>
+  <div class="sg-card fade-item" style="animation-delay:.75s">
+    <div class="sgc-icon">🔗</div><div class="sgc-num">08</div>
+    <div class="sgc-title">Todo integrado</div>
+    <div class="sgc-desc">Login seguro → formulario de filtros → fragmento aislado → chat con IA. Una app profesional completa.</div>
+  </div>
+</div>
+```
+
+::: {.notes}
+Pausa para preguntas. ¿Qué parte les sorprendió más? Generalmente es @st.fragment o el streaming del chat. Dejar tiempo antes del reto.
+:::
+
+## Reto para casa 🚀
+
+```{=html}
+<div style="margin-bottom:.6em;">
+  <div style="font-size:.82em;color:#aaa;font-weight:600;">Construir una <span style="color:#FF4B4B;">Plataforma de Consulta Inteligente</span> integrando todo el módulo:</div>
+</div>
+<div class="reto-grid">
+  <div class="reto-card">
+    <div class="rc-icon">🔐</div>
+    <div class="rc-title">1. Login seguro</div>
+    <div class="rc-items">
+      Implementar con <code>streamlit-authenticator</code><br>
+      Contraseñas hasheadas con <code>bcrypt</code><br>
+      Credenciales en <code>secrets.toml</code><br>
+      <strong>Bonus:</strong> 2 roles (admin / viewer)
+    </div>
+  </div>
+  <div class="reto-card">
+    <div class="rc-icon">📋</div>
+    <div class="rc-title">2. Formulario de búsqueda</div>
+    <div class="rc-items">
+      <code>st.form</code> con mínimo 4 filtros<br>
+      Ciudad, presupuesto, habitaciones, tipo<br>
+      Resultado filtrando un DataFrame real<br>
+      <strong>Bonus:</strong> exportar resultados a CSV
+    </div>
+  </div>
+  <div class="reto-card">
+    <div class="rc-icon">⚡</div>
+    <div class="rc-title">3. Fragment aislado</div>
+    <div class="rc-items">
+      <code>@st.fragment</code> para panel de acciones<br>
+      Guardar favoritos sin recargar la tabla<br>
+      Métricas que se actualizan independientes<br>
+      <strong>Bonus:</strong> <code>run_every=10</code> para live data
+    </div>
+  </div>
+  <div class="reto-card">
+    <div class="rc-icon">💬</div>
+    <div class="rc-title">4. Chat con IA</div>
+    <div class="rc-items">
+      <code>st.chat_input</code> con historial persistente<br>
+      Efecto streaming con <code>st.write_stream</code><br>
+      El chat NO borra los filtros del form<br>
+      <strong>Bonus:</strong> conectar con OpenAI API real
+    </div>
+  </div>
+</div>
+```
+
+::: {.fragment .fade-up}
+::: {.box-accent}
+🎯 **El desafío real:** que el formulario de filtros NO se borre cuando el usuario escribe en el chat. Tip: usa `@st.fragment` en el bloque del chat, o guarda los valores del form en `session_state` antes de que el chat dispare reruns.
+:::
+:::
+
+::: {.notes}
+El reto integrador es lo que distingue este módulo. El desafío técnico real es que los filtros del formulario y el historial del chat sobrevivan a los reruns mutuamente. Hay varias soluciones válidas: fragment, session_state para los valores de los filtros, o incluso dividir en páginas con st.navigation. Que experimenten y compartan su solución.
+:::
+
+::: {style="text-align:center; padding: 2.5em 0;"}
+
+::: {.r-fit-text}
+¡A construir! 🚀
+:::
+
+[**Módulo 4 — Completado**]{style="font-size:1.2em; color:#FF4B4B;"}
+
+[Preguntas · Dudas · Reto 🙋]{.text-muted}
+
+[`streamlit-authenticator.readthedocs.io`]{style="font-size:.75em; color:#555; font-family:monospace;"}
+
+:::
+
+::: {.notes}
+Cierre del módulo. Recursos clave: documentación de streamlit-authenticator, referencia de st.fragment en docs.streamlit.io, y el repositorio de ejemplos del curso. El reto es individual pero se puede presentar en la próxima clase.
+:::

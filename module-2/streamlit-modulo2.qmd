@@ -1,0 +1,1049 @@
+---
+title: "Streamlit — Módulo 2"
+subtitle: "Widgets, Sidebar y Navegación"
+author: "@josephinoo"
+date: "2026-04-15"
+format:
+  revealjs:
+    theme: [dark, streamlit-theme.scss]
+    transition: fade
+    transition-speed: fast
+    slide-number: c/t
+    progress: true
+    controls: true
+    controls-layout: bottom-right
+    footer: "Módulo 2 · Streamlit · Sidebar y Navegación"
+    width: 1050
+    height: 700
+    margin: 0.05
+    min-scale: 0.1
+    max-scale: 0.9
+    highlight-style: github-dark
+    code-line-numbers: false
+    code-copy: true
+    incremental: false
+    center-title-slide: true
+    auto-animate-easing: ease-in-out
+    auto-animate-unmatched: false
+    auto-animate-duration: 0.8
+title-slide-attributes:
+  data-background-color: "#0d0d0d"
+execute:
+  echo: true
+  eval: false
+---
+
+## {background-color="#0d0d0d" .center}
+
+```{=html}
+<div style="text-align: center; margin-top: 1em;">
+  <div style="width: 220px; height: 220px; margin: 0 auto; border-radius: 50%; border: 3px solid #FF4B4B; overflow: hidden; background: #1e1e1e; display:flex; align-items:center; justify-content:center;">
+    <span style="font-size:5em;">🗂️</span>
+  </div>
+  <h2 style="color: #ffffff; font-size: 2em; font-weight: bold; margin-top: 0.8em; letter-spacing: -0.02em;">Módulo 2</h2>
+  <p style="color:#FF4B4B; font-size:1.2em; font-weight:600;">Widgets · Sidebar · Navegación</p>
+</div>
+```
+
+::: {.notes}
+Módulo 2. Hoy le damos estructura real a la app: sidebar, carga de datos reales, navegación entre páginas y un primer gráfico interactivo. Al final tendrán una app multi-página con datos de la guerra comercial de USA.
+:::
+
+## ¿Qué construimos hoy? {.center}
+
+```{=html}
+<div class="target-app">
+  <div class="ta-sidebar">
+    <div class="tas-logo">🇺🇸 Aranceles USA</div>
+    <div class="tas-sep"></div>
+    <div class="tas-item tas-on">📊 Ver Datos</div>
+    <div class="tas-item">📈 Ver Gráfico</div>
+    <div class="tas-sep"></div>
+    <div class="tas-lbl">Cargar CSV</div>
+    <div class="tas-upload">tariffs.csv ✅</div>
+    <div class="tas-sep"></div>
+    <div class="tas-lbl">Filtrar año</div>
+    <div style="font-size:0.62em;color:#e8e8e8;background:#1e1e1e;border:1px solid #333;border-radius:3px;padding:0.1em 0.35em;">Todos ▾</div>
+  </div>
+  <div class="ta-main">
+    <div class="tam-title">Dashboard — Aranceles USA 🇺🇸</div>
+    <div class="tam-metrics">
+      <div class="tam-metric"><div class="tmm-val">2,847</div><div class="tmm-lbl">filas</div></div>
+      <div class="tam-metric"><div class="tmm-val" style="color:#FF4B4B;">25%</div><div class="tmm-lbl">arancel máx</div></div>
+      <div class="tam-metric"><div class="tmm-val">47</div><div class="tmm-lbl">países</div></div>
+    </div>
+    <div class="mini-df">
+      <div class="mini-df-h" style="grid-template-columns:repeat(4,1fr);">
+        <span>date</span><span>country</span><span>product_category</span><span>tariff_rate_pct</span>
+      </div>
+      <div class="mini-df-r" style="grid-template-columns:repeat(4,1fr);">
+        <span>2018-07-06</span><span>China</span><span>Tech/Industrial</span><span class="rv">25.0</span>
+      </div>
+      <div class="mini-df-r" style="grid-template-columns:repeat(4,1fr);">
+        <span>2018-03-08</span><span>Global</span><span>Steel</span><span class="gv">25.0</span>
+      </div>
+      <div class="mini-df-dim">↕ scroll · clic para ordenar · filtrable</div>
+    </div>
+  </div>
+</div>
+```
+
+::: {.fragment .fade-up}
+::: {.box-accent}
+✅ Sidebar con menú · ✅ Dataset real de Kaggle · ✅ Tabla interactiva · ✅ Gráfico Plotly
+:::
+:::
+
+::: {.notes}
+Este es el objetivo. Empecemos por el componente más importante de la estructura: el Sidebar.
+:::
+
+# El Sidebar — El Panel Lateral 📌 {background-color="#0d0d0d"}
+
+## ¿Qué es el Sidebar?
+
+```{=html}
+<div class="concept-split">
+  <div class="cs-col">
+    <div class="cs-label cs-bad">😕 Sin sidebar — todo revuelto</div>
+    <div class="app-mockup">
+      <div class="mock-bar">Mi App</div>
+      <div class="mock-body">
+        <div class="mock-widget mock-widget-red">⚙️ Widget 1</div>
+        <div class="mock-widget mock-widget-red">⚙️ Widget 2</div>
+        <div class="mock-content">📊 Contenido mezclado con controles...</div>
+      </div>
+    </div>
+  </div>
+  <div class="cs-col fade-item" style="animation-delay:0.4s">
+    <div class="cs-label cs-good">😍 Con sidebar — limpio y organizado</div>
+    <div class="app-mockup app-mockup-side">
+      <div class="mock-sb">
+        <div class="mock-sb-title">⚙️ Config</div>
+        <div class="mock-sb-item">Widget 1</div>
+        <div class="mock-sb-item">Widget 2</div>
+      </div>
+      <div class="mock-sb-main">
+        <div class="mock-bar">Mi App</div>
+        <div class="mock-body"><div class="mock-content">📊 Contenido limpio y enfocado</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+```
+
+::: {.fragment .fade-up}
+::: {.box-accent}
+**Regla de oro:** controles, filtros y configuración → sidebar · tablas, gráficos y resultados → centro
+:::
+:::
+
+::: {.notes}
+El sidebar separa los controles del contenido. Como cualquier app profesional — la barra lateral para ajustes, el centro para ver resultados. Piensen en VS Code, Figma, cualquier app que usen a diario.
+:::
+
+## Las dos formas de usar el Sidebar
+
+```{=html}
+<div class="two-ways">
+  <div class="tw-col">
+    <div class="tw-title">📝 Forma 1 — Prefijo directo</div>
+    <pre><code class="language-python">st.sidebar.title("Configuración")
+st.sidebar.slider("Año", 2018, 2024)
+st.sidebar.selectbox("País", ["USA","China"])
+st.sidebar.button("Aplicar")</code></pre>
+    <div class="tw-note">Simple para 2–3 widgets</div>
+  </div>
+  <div class="tw-sep">ó</div>
+  <div class="tw-col">
+    <div class="tw-title">📦 Forma 2 — Bloque <code>with</code> ✅</div>
+    <pre><code class="language-python">with st.sidebar:
+    st.title("Configuración")
+    st.slider("Año", 2018, 2024)
+    st.selectbox("País", ["USA","China"])
+    st.button("Aplicar")</code></pre>
+    <div class="tw-note">Más limpio cuando crece el sidebar</div>
+  </div>
+</div>
+```
+
+::: {.fragment .fade-up}
+::: {.box-muted}
+Las dos formas hacen exactamente lo mismo. La mayoría prefiere `with st.sidebar:` cuando hay más de 3 widgets porque es más fácil de leer.
+:::
+:::
+
+::: {.notes}
+No hay diferencia técnica. Yo recomiendo la Forma 2 con `with st.sidebar:` porque agrupa visualmente todo lo que va en el panel lateral y es más fácil de leer cuando el proyecto crece.
+:::
+
+# selectbox y radio — El Usuario Elige 🎯 {background-color="#0d0d0d"}
+
+## `st.selectbox()` — Lista desplegable
+
+```{=html}
+<div class="widget-split">
+  <div class="ws-code">
+    <div class="ws-bar">📄 código</div>
+    <pre><code class="language-python">opcion = st.selectbox(
+    label="¿Qué quieres ver?",
+    options=["Datos", "Gráfico", "Resumen"],
+    index=0,     # cuál empieza seleccionado
+    key="menu",  # ID único (importante si hay varios)
+    help="Elige la vista"  # tooltip con ?
+)
+
+# La variable guarda el texto elegido:
+st.write(f"Elegiste: {opcion}")</code></pre>
+  </div>
+  <div class="ws-preview">
+    <div class="ws-bar">🌐 demo</div>
+    <div class="ws-pview">
+      <div style="font-size:0.72em;color:#666;margin-bottom:0.25em;">¿Qué quieres ver?</div>
+      <select class="fake-select" onchange="document.getElementById('sbo').textContent='→ Elegiste: '+this.value">
+        <option>Datos</option><option>Gráfico</option><option>Resumen</option>
+      </select>
+      <div id="sbo" class="wsd-out">→ Elegiste: Datos</div>
+      <div class="wsd-tip">
+        💡 <strong>index=0</strong> → primer elemento por defecto<br>
+        💡 Devuelve el <strong>texto</strong> de la opción elegida<br>
+        💡 <strong>key</strong> es el ID único del widget
+      </div>
+    </div>
+  </div>
+</div>
+```
+
+::: {.notes}
+selectbox es un dropdown estándar. Le pasas una lista de opciones, devuelve el texto del que eligió el usuario. index=0 hace que el primero empiece seleccionado. El key es importante cuando tienes varios selectbox en la misma página para que Streamlit los distinga.
+:::
+
+## `st.radio()` — Botones de opción visibles
+
+```{=html}
+<div class="widget-split">
+  <div class="ws-code">
+    <div class="ws-bar">📄 código</div>
+    <pre><code class="language-python">pagina = st.radio(
+    label="Navegar a:",
+    options=["📊 Ver Datos", "📈 Ver Gráfico"],
+    index=0,           # opción inicial
+    horizontal=False,  # True = en fila horizontal
+    key="navegacion"
+)
+
+if pagina == "📊 Ver Datos":
+    st.write("Mostrando la tabla...")
+elif pagina == "📈 Ver Gráfico":
+    st.write("Mostrando el gráfico...")</code></pre>
+  </div>
+  <div class="ws-preview">
+    <div class="ws-bar">🌐 demo</div>
+    <div class="ws-pview">
+      <div style="font-size:0.72em;color:#666;margin-bottom:0.3em;">Navegar a:</div>
+      <div class="fake-radio-g">
+        <div class="fake-radio" onclick="rdSw('datos')"><div class="fr-dot fr-on" id="rd1"></div>📊 Ver Datos</div>
+        <div class="fake-radio" onclick="rdSw('grafico')"><div class="fr-dot" id="rd2"></div>📈 Ver Gráfico</div>
+      </div>
+      <div id="rdo" class="wsd-out" style="margin-top:0.4em;">→ Mostrando la tabla...</div>
+      <div class="wsd-tip">
+        💡 Ideal para 2–4 opciones<br>
+        💡 <strong>horizontal=True</strong> → botones en fila
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+function rdSw(v){
+  document.getElementById('rd1').className='fr-dot'+(v==='datos'?' fr-on':'');
+  document.getElementById('rd2').className='fr-dot'+(v==='grafico'?' fr-on':'');
+  document.getElementById('rdo').textContent=v==='datos'?'→ Mostrando la tabla...':'→ Mostrando el gráfico...';
+}
+</script>
+```
+
+::: {.notes}
+Radio muestra todas las opciones al mismo tiempo. El usuario ve de un vistazo qué puede elegir sin tener que abrir ningún dropdown. Es el widget ideal para el menú de navegación de nuestra app.
+:::
+
+## Selectbox vs Radio — ¿Cuándo usar cuál?
+
+```{=html}
+<table class="vs-table">
+  <tr>
+    <th></th>
+    <th>selectbox 📋</th>
+    <th>radio 📻</th>
+  </tr>
+  <tr class="fade-item" style="animation-delay:0.1s">
+    <td class="lbl">Opciones visibles</td>
+    <td class="bd">Solo la elegida</td>
+    <td class="gd">Todas siempre</td>
+  </tr>
+  <tr class="fade-item" style="animation-delay:0.25s">
+    <td class="lbl">Cantidad ideal</td>
+    <td class="gd">5 o más ✅</td>
+    <td class="gd">2 a 4 ✅</td>
+  </tr>
+  <tr class="fade-item" style="animation-delay:0.4s">
+    <td class="lbl">Espacio que ocupa</td>
+    <td class="gd">Muy poco</td>
+    <td class="bd">Más espacio</td>
+  </tr>
+  <tr class="fade-item" style="animation-delay:0.55s">
+    <td class="lbl">Úsalo para...</td>
+    <td class="neu">Países, años, categorías largas</td>
+    <td class="neu">Menú de páginas 👈</td>
+  </tr>
+</table>
+```
+
+::: {.fragment .fade-up}
+::: {.box-accent}
+Para el **menú de navegación** → usaremos `st.radio` en el sidebar. Pocas opciones, siempre visibles.
+:::
+:::
+
+::: {.notes}
+La regla práctica: si tienes 2 a 4 opciones y quieres que el usuario las vea todas, usa radio. Si tienes una lista larga como 50 países o 10 años, usa selectbox para no ocupar tanto espacio vertical.
+:::
+
+# Cargar Datos — El Dataset Real 📁 {background-color="#0d0d0d"}
+
+## El dataset de hoy
+
+```{=html}
+<div class="dataset-card">
+  <div class="dc-left">
+    <span class="dc-badge">Kaggle · gratuito</span>
+    <div class="dc-title">US Tariff & Trade War Impact Dataset</div>
+    <div class="dc-sub">2018–presente · belbino</div>
+    <div class="dc-url">🔗 kaggle.com/datasets/belbino/us-tariff-and-trade-war-impact-dataset-2018-present</div>
+  </div>
+  <div class="dc-right">
+    <div class="dc-ct">Columnas del CSV:</div>
+    <div class="dc-cols">
+      <div class="dc-ci">📅 date</div>
+      <div class="dc-ci">🌍 country</div>
+      <div class="dc-ci">📦 product_category</div>
+      <div class="dc-ci">💰 tariff_rate_pct</div>
+      <div class="dc-ci">📰 headline</div>
+      <div class="dc-ci">🔗 announcement_source</div>
+    </div>
+  </div>
+</div>
+```
+
+::: {.fragment .fade-up}
+::: {.box-muted}
+¿Por qué este dataset? Tiene texto (países), números (aranceles) y fechas → perfecto para filtros, tablas y gráficos.
+:::
+:::
+
+::: {.notes}
+Datos reales de la guerra comercial de Estados Unidos. Tiene de todo — texto, números y fechas. Eso nos permite practicar casi todos los tipos de widget y visualización.
+:::
+
+## Descargar el dataset — 3 pasos
+
+```{=html}
+<div class="dl-steps">
+  <div class="dl-step fade-item" style="animation-delay:0.1s">
+    <div class="dl-num">1</div>
+    <div>
+      <div class="dl-title">Ir a Kaggle y crear cuenta gratuita</div>
+      <div class="dl-sub">🔗 kaggle.com → buscar "us tariff belbino" o usar el link directo de arriba</div>
+    </div>
+  </div>
+  <div class="dl-step fade-item" style="animation-delay:0.35s">
+    <div class="dl-num">2</div>
+    <div>
+      <div class="dl-title">Hacer clic en "Download"</div>
+      <div class="dl-sub">Se descarga un .zip — extraer el archivo CSV que hay adentro</div>
+    </div>
+  </div>
+  <div class="dl-step fade-item" style="animation-delay:0.6s">
+    <div class="dl-num">3</div>
+    <div>
+      <div class="dl-title">Guardar el CSV en la carpeta del proyecto</div>
+      <div class="dl-code">mi-proyecto/<br>&nbsp;&nbsp;├── app.py<br>&nbsp;&nbsp;└── tariffs.csv &nbsp; ← aquí</div>
+    </div>
+  </div>
+</div>
+```
+
+::: {.fragment .fade-up}
+::: {.box-yellow}
+⏸ **Pausa** — descarga el CSV ahora. Los que ya lo tienen esperan 2 minutos.
+:::
+:::
+
+::: {.notes}
+Pausa real aquí. Los que no tienen cuenta en Kaggle la crean ahora — tarda 2 minutos. Los que ya tienen el CSV, esperen.
+:::
+
+## `st.file_uploader()` — el usuario sube el archivo
+
+```{=html}
+<div class="widget-split">
+  <div class="ws-code">
+    <div class="ws-bar">📄 código</div>
+    <pre><code class="language-python">archivo = st.file_uploader(
+    label="Sube el CSV de Kaggle",
+    type=["csv"],   # solo acepta CSV
+    key="uploader",
+    help="Descárgalo de Kaggle primero"
+)
+
+# ⚠️ SIEMPRE verificar antes de usar
+if archivo is not None:
+    df = pd.read_csv(archivo)
+    st.success("¡Archivo cargado! ✅")
+    st.write(df)
+else:
+    st.info("Sube un archivo para comenzar")</code></pre>
+  </div>
+  <div class="ws-preview">
+    <div class="ws-bar">🌐 demo</div>
+    <div class="ws-pview">
+      <div id="fub" class="fake-upload" onclick="simUp()">
+        <div style="font-size:1.8em;">📁</div>
+        <div style="font-size:0.75em;color:#666;margin-top:0.15em;">Haz clic aquí<br><small>o arrastra un CSV</small></div>
+      </div>
+      <div id="upres" class="wsd-out"></div>
+      <div class="wsd-tip" style="margin-top:0.4em;">
+        ⚠️ Si no verificas con<br>
+        <code>if archivo is not None:</code><br>
+        la app da error al arrancar
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+function simUp(){
+  var b=document.getElementById('fub');
+  b.innerHTML='<div style="font-size:1.8em">✅</div><div style="font-size:0.75em;color:#21c55d;margin-top:0.15em;">tariffs.csv · listo</div>';
+  b.style.borderColor='#21c55d'; b.style.borderStyle='solid';
+  var r=document.getElementById('upres');
+  r.textContent='✅ ¡Archivo cargado!'; r.style.color='#21c55d';
+}
+</script>
+```
+
+::: {.notes}
+file_uploader devuelve None cuando no hay archivo. Es el error más común — intentar usar el archivo antes de verificar que existe. SIEMPRE el if antes de pd.read_csv.
+:::
+
+## Leer el CSV con pandas y mostrarlo
+
+```{=html}
+<div class="cp-row">
+  <pre><code class="language-python">import pandas as pd   # una vez, arriba del todo
+
+if archivo is not None:
+    df = pd.read_csv(archivo)  # CSV → tabla en memoria
+
+    # Métricas rápidas
+    col1, col2, col3 = st.columns(3)
+    col1.metric("Filas",         len(df))
+    col2.metric("Países únicos", df["country"].nunique())
+    col3.metric("Arancel máx", f"{df['tariff_rate_pct'].max():.1f}%")
+
+    st.divider()
+
+    # Tabla interactiva — el usuario puede ordenar y buscar
+    st.dataframe(
+        df,
+        use_container_width=True,
+        height=300,
+        hide_index=True
+    )</code></pre>
+  <div class="cp-preview">
+    <div class="cp-prev-lbl">Resultado:</div>
+    <div class="mini-df">
+      <div class="mini-df-h" style="grid-template-columns:repeat(4,1fr);">
+        <span>date ↕</span><span>country ↕</span><span>product_category ↕</span><span>tariff_rate_pct ↕</span>
+      </div>
+      <div class="mini-df-r" style="grid-template-columns:repeat(4,1fr);">
+        <span>2018-07-06</span><span>China</span><span>Tech/Industrial</span><span class="rv">25.0</span>
+      </div>
+      <div class="mini-df-r" style="grid-template-columns:repeat(4,1fr);">
+        <span>2018-03-08</span><span>Global</span><span>Steel</span><span class="gv">25.0</span>
+      </div>
+      <div class="mini-df-r" style="grid-template-columns:repeat(4,1fr);">
+        <span>2018-03-08</span><span>Global</span><span>Aluminum</span><span class="gv">10.0</span>
+      </div>
+      <div class="mini-df-dim">↕ scroll · clic para ordenar · filtrable</div>
+    </div>
+    <div class="box-muted" style="margin-top:0.5em;">
+      🐼 <strong>df</strong> es solo el nombre que le damos a la tabla. Viene de "DataFrame". Puedes llamarlo como quieras.
+    </div>
+  </div>
+</div>
+```
+
+::: {.notes}
+pd.read_csv convierte el archivo en una tabla en memoria. df es el nombre estándar en la comunidad de datos. st.dataframe da interactividad gratis — ordenar haciendo clic en los headers, buscar, scroll.
+:::
+
+# El Menú de Navegación 🗺️ {background-color="#0d0d0d"}
+
+## La idea — solo un if/elif
+
+```{=html}
+<div class="nav-idea">
+  <div class="ni-step fade-item" style="animation-delay:0.1s">
+    <span class="ni-ico">🎛️</span>
+    <span>El <strong>sidebar</strong> tiene un <code>st.radio</code> con los nombres de las páginas</span>
+  </div>
+  <div class="ni-arr fade-item" style="animation-delay:0.3s">↓</div>
+  <div class="ni-step fade-item" style="animation-delay:0.5s">
+    <span class="ni-ico">📦</span>
+    <span>La elección queda guardada en la variable <code>pagina</code></span>
+  </div>
+  <div class="ni-arr fade-item" style="animation-delay:0.7s">↓</div>
+  <div class="ni-step fade-item" style="animation-delay:0.9s">
+    <span class="ni-ico">🔀</span>
+    <span>Un <code>if / elif</code> decide qué contenido mostrar en el centro</span>
+  </div>
+</div>
+```
+
+::: {.fragment .fade-up}
+::: {.box-accent}
+No hay magia. Es Python normal. Cuando el usuario cambia el radio → el script corre de nuevo → el `if` decide qué página mostrar.
+:::
+:::
+
+::: {.notes}
+Antes de escribir el código, el concepto. Sidebar + radio + if/elif = navegación. Nada más. Es el mismo scripting flow que vimos en módulo 1.
+:::
+
+## El código del menú — 3 bloques
+
+```{=html}
+<div class="three-steps">
+  <div class="ts-item fade-item" style="animation-delay:0.1s">
+    <div class="ts-lbl" style="color:#3b82f6;">① El sidebar con el menú</div>
+    <pre><code class="language-python">with st.sidebar:
+    st.title("🗂️ Navegación")
+    pagina = st.radio("Ir a:", ["📊 Ver Datos", "📈 Ver Gráfico"])</code></pre>
+  </div>
+  <div class="ts-item fade-item" style="animation-delay:0.5s">
+    <div class="ts-lbl" style="color:#f59e0b;">② Página 1 — la tabla de datos</div>
+    <pre><code class="language-python">if pagina == "📊 Ver Datos":
+    st.title("Tabla de Aranceles")
+    st.dataframe(df)</code></pre>
+  </div>
+  <div class="ts-item fade-item" style="animation-delay:0.9s">
+    <div class="ts-lbl" style="color:#21c55d;">③ Página 2 — el gráfico</div>
+    <pre><code class="language-python">elif pagina == "📈 Ver Gráfico":
+    st.title("Gráfico de Aranceles")
+    st.plotly_chart(fig)</code></pre>
+  </div>
+</div>
+```
+
+::: {.notes}
+Tres bloques independientes y simples. El sidebar define qué eligió el usuario. Los if/elif muestran el contenido correcto. No hay nada más.
+:::
+
+## Demo interactiva del menú
+
+```{=html}
+<div class="nav-demo">
+  <div class="nd-sb" style="width:165px;">
+    <div class="nd-title">🗂️ Navegación</div>
+    <div class="nd-lbl">Ir a:</div>
+    <div id="op1" class="nd-opt nd-on" onclick="navSw('datos')">📊 Ver Datos</div>
+    <div id="op2" class="nd-opt" onclick="navSw('grafico')">📈 Ver Gráfico</div>
+    <div class="nd-sep"></div>
+    <div class="nd-lbl">Filtrar año:</div>
+    <select class="nd-sel" onchange="yrUp(this.value)">
+      <option>Todos los años</option>
+      <option>2018</option><option>2020</option><option>2022</option><option>2024</option>
+    </select>
+  </div>
+  <div class="nd-main">
+    <div id="pg-datos">
+      <div class="nd-pg-title">📊 Tabla de Aranceles</div>
+      <div id="yr-bdg" class="nd-badge">Mostrando: todos los años</div>
+      <div class="mini-df">
+        <div class="mini-df-h" style="grid-template-columns:repeat(3,1fr);"><span>date</span><span>country</span><span>tariff_rate_pct</span></div>
+        <div class="mini-df-r" style="grid-template-columns:repeat(3,1fr);"><span>2018-07-06</span><span>China</span><span class="rv">25.0</span></div>
+        <div class="mini-df-r" style="grid-template-columns:repeat(3,1fr);"><span>2019-09-01</span><span>China</span><span class="yv">15.0</span></div>
+        <div class="mini-df-r" style="grid-template-columns:repeat(3,1fr);"><span>2018-03-08</span><span>Global</span><span class="gv">10.0</span></div>
+      </div>
+    </div>
+    <div id="pg-grafico" style="display:none">
+      <div class="nd-pg-title">📈 Arancel Promedio por País</div>
+      <svg viewBox="0 0 370 175" style="width:100%;max-width:400px;display:block;margin-top:0.3em;">
+        <rect x="12" y="100" width="52" height="62" fill="#FF4B4B" rx="3" opacity="0.85"/>
+        <rect x="80" y="68" width="52" height="94" fill="#FF4B4B" rx="3" opacity="0.65"/>
+        <rect x="148" y="125" width="52" height="37" fill="#FF4B4B" rx="3" opacity="0.5"/>
+        <rect x="216" y="48" width="52" height="114" fill="#FF4B4B" rx="3" opacity="0.9"/>
+        <rect x="284" y="85" width="52" height="77" fill="#FF4B4B" rx="3" opacity="0.7"/>
+        <text x="38" y="172" fill="#555" font-size="11" text-anchor="middle">China</text>
+        <text x="106" y="172" fill="#555" font-size="11" text-anchor="middle">Mexico</text>
+        <text x="174" y="172" fill="#555" font-size="11" text-anchor="middle">Canada</text>
+        <text x="242" y="172" fill="#555" font-size="11" text-anchor="middle">EU</text>
+        <text x="310" y="172" fill="#555" font-size="11" text-anchor="middle">Japan</text>
+        <line x1="8" y1="8" x2="8" y2="160" stroke="#2a2a2a" stroke-width="1"/>
+        <line x1="8" y1="160" x2="360" y2="160" stroke="#2a2a2a" stroke-width="1"/>
+      </svg>
+    </div>
+  </div>
+</div>
+<script>
+function navSw(p){
+  document.getElementById('pg-datos').style.display=p==='datos'?'block':'none';
+  document.getElementById('pg-grafico').style.display=p==='grafico'?'block':'none';
+  document.getElementById('op1').className='nd-opt'+(p==='datos'?' nd-on':'');
+  document.getElementById('op2').className='nd-opt'+(p==='grafico'?' nd-on':'');
+}
+function yrUp(y){
+  document.getElementById('yr-bdg').textContent=y==='Todos los años'?'Mostrando: todos los años':'Filtrando: '+y;
+}
+</script>
+```
+
+::: {.notes}
+Demo en vivo — haz clic entre páginas y cambia el año. Cada cambio simula una re-ejecución del script.
+:::
+
+# Plotly Express — Tu Primer Gráfico 📊 {background-color="#0d0d0d"}
+
+## ¿Por qué Plotly?
+
+```{=html}
+<div class="plotly-grid">
+  <div class="pl-card fade-item" style="animation-delay:0.1s">
+    <div class="pl-ico">🖱️</div>
+    <div class="pl-t">Interactivo</div>
+    <div class="pl-d">Hover, zoom, pan — sin código extra</div>
+  </div>
+  <div class="pl-card fade-item" style="animation-delay:0.25s">
+    <div class="pl-ico">🎨</div>
+    <div class="pl-t">Bonito</div>
+    <div class="pl-d">Sin ajustar colores ni fuentes</div>
+  </div>
+  <div class="pl-card fade-item" style="animation-delay:0.4s">
+    <div class="pl-ico">🐼</div>
+    <div class="pl-t">Con pandas</div>
+    <div class="pl-d">Le pasas el DataFrame directo</div>
+  </div>
+  <div class="pl-card fade-item" style="animation-delay:0.55s">
+    <div class="pl-ico">⚡</div>
+    <div class="pl-t">Fácil</div>
+    <div class="pl-d">Gráfico básico = 2 líneas</div>
+  </div>
+</div>
+```
+
+::: {.fragment .fade-up}
+::: {.box-accent}
+`pip install plotly` — una vez, luego ya está disponible en todos tus proyectos.
+:::
+:::
+
+::: {.notes}
+Plotly es la librería de gráficos más popular en Python para datos. Los gráficos son interactivos por defecto — hover para ver valores exactos, zoom con scroll. Se integra perfectamente con Streamlit. En módulo 4 profundizamos.
+:::
+
+## Tu primer gráfico de barras
+
+```{=html}
+<div class="chart-row">
+  <pre><code class="language-python">import plotly.express as px   # siempre así, arriba
+
+# Datos de ejemplo
+datos = {
+    "País":    ["China", "Mexico", "Canada", "EU"],
+    "Arancel": [25,       15,       7,        20]
+}
+df_ej = pd.DataFrame(datos)
+
+# Crear el gráfico — 1 línea ✨
+fig = px.bar(
+    df_ej,
+    x="País",        # columna para el eje X
+    y="Arancel",     # columna para el eje Y
+    title="Aranceles por País",
+    color="Arancel",
+    color_continuous_scale="Reds"
+)
+
+st.plotly_chart(fig, use_container_width=True)</code></pre>
+  <div class="chart-note">
+    <div class="cn-title">3 cosas a recordar:</div>
+    <div class="cn-item"><span class="cn-num">1</span><code>import plotly.express as px</code></div>
+    <div class="cn-item"><span class="cn-num">2</span><code>px.bar(df, x="...", y="...")</code></div>
+    <div class="cn-item"><span class="cn-num">3</span><code>st.plotly_chart(fig)</code></div>
+    <div class="cn-types">
+      <div id="ct-bar" class="cn-type cn-active" onclick="ctSw('bar')">📊 bar</div>
+      <div id="ct-line" class="cn-type" onclick="ctSw('line')">📈 line</div>
+      <div id="ct-pie" class="cn-type" onclick="ctSw('pie')">🥧 pie</div>
+      <div id="ct-scatter" class="cn-type" onclick="ctSw('scatter')">🔵 scatter</div>
+    </div>
+    <div id="ct-hint" class="cn-hint">px.bar(df, x="País", y="Arancel")</div>
+  </div>
+</div>
+<script>
+var ctM={bar:'px.bar(resumen, x="tariff_rate_pct", y="country", orientation="h")',line:'px.line(df, x="date", y="tariff_rate_pct", color="country")',pie:'px.pie(df, names="product_category", values="tariff_rate_pct")',scatter:'px.scatter(df, x="date", y="tariff_rate_pct", color="country", hover_data=["headline"])'};
+function ctSw(t){
+  document.querySelectorAll('.cn-type').forEach(function(e){e.className='cn-type';});
+  document.getElementById('ct-'+t).className='cn-type cn-active';
+  document.getElementById('ct-hint').textContent=ctM[t];
+}
+</script>
+```
+
+::: {.notes}
+Todos los gráficos de Plotly Express tienen la misma estructura — solo cambia px.bar por px.line, px.pie, etc. Haz clic en los tipos para ver cómo cambia. En módulo 4 profundizamos en colores, ejes y animaciones.
+:::
+
+# Multi-página con Archivos Separados 📂 {background-color="#0d0d0d"}
+
+## Dos formas de organizar la app
+
+```{=html}
+<div class="two-ways" style="gap:1em;">
+  <div class="tw-col">
+    <div class="tw-title">🧩 Opción A — un solo archivo</div>
+    <pre><code class="language-python">with st.sidebar:
+    pagina = st.radio("Ir a:",
+        ["Datos", "Gráfico"])
+
+if pagina == "Datos":
+    st.dataframe(df)
+elif pagina == "Gráfico":
+    st.plotly_chart(fig)</code></pre>
+    <div style="font-size:0.74em;color:#4ade80;margin-top:0.2em;">✅ Simple · bueno para demos</div>
+    <div style="font-size:0.74em;color:#f59e0b;margin-top:0.06em;">⚠️ Se hace muy largo con muchas páginas</div>
+  </div>
+  <div class="tw-sep">vs</div>
+  <div class="tw-col">
+    <div class="tw-title">📁 Opción B — archivos separados</div>
+    <pre><code class="language-python">mi-proyecto/
+  app.py           ← portada
+  pages/
+    1_Datos.py     ← página 1
+    2_Grafico.py   ← página 2
+    3_Filtros.py   ← página 3</code></pre>
+    <div style="font-size:0.74em;color:#4ade80;margin-top:0.2em;">✅ Organizado · fácil de mantener</div>
+    <div style="font-size:0.74em;color:#f59e0b;margin-top:0.06em;">⚠️ Necesita la carpeta <code>pages/</code></div>
+  </div>
+</div>
+```
+
+::: {.fragment .fade-up}
+::: {.box-accent}
+Streamlit **detecta automáticamente** la carpeta `pages/` y crea el menú lateral. Sin código extra de navegación.
+:::
+:::
+
+::: {.notes}
+Para apps pequeñas, un archivo está bien. Para apps reales con muchas pantallas, la carpeta pages es la opción correcta — cada pantalla en su propio archivo, Streamlit hace el menú solo.
+:::
+
+## La carpeta `pages/` y el menú automático
+
+```{=html}
+<div class="folder-pair">
+  <div>
+    <div style="font-size:0.82em;font-weight:700;color:#fff;margin-bottom:0.4em;">Estructura del proyecto:</div>
+    <div class="tree-view">
+      <div class="tv-li tv-fo fade-item" style="animation-delay:0.1s">📁 mi-proyecto/</div>
+      <div class="tv-li tv-fi fade-item" style="animation-delay:0.22s">&nbsp;&nbsp;&nbsp;📄 app.py<span class="tv-tag-b">portada</span></div>
+      <div class="tv-li tv-fo fade-item" style="animation-delay:0.34s">&nbsp;&nbsp;&nbsp;📁 pages/<span class="tv-tag-r">especial</span></div>
+      <div class="tv-li tv-fi fade-item" style="animation-delay:0.46s">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;📄 1_Datos.py<span class="tv-tag-g">página 1</span></div>
+      <div class="tv-li tv-fi fade-item" style="animation-delay:0.58s">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;📄 2_Grafico.py<span class="tv-tag-g">página 2</span></div>
+      <div class="tv-li tv-fi fade-item" style="animation-delay:0.7s">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;📄 3_Filtros.py<span class="tv-tag-g">página 3</span></div>
+      <div class="tv-li tv-fi fade-item" style="animation-delay:0.82s">&nbsp;&nbsp;&nbsp;📄 tariffs.csv</div>
+    </div>
+    <div class="box-muted" style="margin-top:0.5em;">💡 Los números <code>1_</code>, <code>2_</code>, <code>3_</code> controlan el orden. El guion bajo se convierte en espacio en el menú.</div>
+  </div>
+  <div>
+    <div style="font-size:0.82em;font-weight:700;color:#fff;margin-bottom:0.4em;">Así se ve la app:</div>
+    <div class="auto-menu">
+      <div class="am-sb" style="width:140px;">
+        <div class="am-logo">🇺🇸 Dashboard</div>
+        <div class="am-sep"></div>
+        <div class="am-nav">Navegación</div>
+        <div id="am0" class="am-pg am-on" onclick="amSw(0)">🏠 app</div>
+        <div id="am1" class="am-pg" onclick="amSw(1)">📊 Datos</div>
+        <div id="am2" class="am-pg" onclick="amSw(2)">📈 Grafico</div>
+        <div id="am3" class="am-pg" onclick="amSw(3)">🔍 Filtros</div>
+      </div>
+      <div class="am-main">
+        <div id="amc0"><div class="am-ttl">🇺🇸 Dashboard</div><div class="am-bod">Bienvenido.</div><div class="am-inf">👈 Selecciona una página</div></div>
+        <div id="amc1" style="display:none"><div class="am-ttl">📊 Tabla de Aranceles</div>
+          <div class="mini-df" style="margin-top:0.3em;">
+            <div class="mini-df-h" style="grid-template-columns:repeat(3,1fr);"><span>date</span><span>country</span><span>tariff_rate_pct</span></div>
+            <div class="mini-df-r" style="grid-template-columns:repeat(3,1fr);"><span>2018-07-06</span><span>China</span><span class="rv">25.0</span></div>
+          </div>
+        </div>
+        <div id="amc2" style="display:none"><div class="am-ttl">📈 Gráfico</div>
+          <svg viewBox="0 0 160 80" style="width:100%;max-width:175px;display:block;margin-top:0.3em;">
+            <rect x="8" y="38" width="24" height="32" fill="#FF4B4B" rx="2" opacity="0.8"/>
+            <rect x="41" y="20" width="24" height="50" fill="#FF4B4B" rx="2" opacity="0.6"/>
+            <rect x="74" y="52" width="24" height="18" fill="#FF4B4B" rx="2" opacity="0.5"/>
+            <rect x="107" y="8" width="24" height="62" fill="#FF4B4B" rx="2" opacity="0.9"/>
+            <line x1="5" y1="5" x2="5" y2="72" stroke="#2a2a2a" stroke-width="1"/>
+            <line x1="5" y1="72" x2="155" y2="72" stroke="#2a2a2a" stroke-width="1"/>
+          </svg>
+        </div>
+        <div id="amc3" style="display:none"><div class="am-ttl">🔍 Filtros</div><div class="am-bod">País, categoría, fecha...</div></div>
+      </div>
+    </div>
+    <div class="am-note">Menú generado automáticamente por Streamlit ✨</div>
+  </div>
+</div>
+<script>
+function amSw(n){
+  for(var i=0;i<=3;i++){
+    var c=document.getElementById('amc'+i);if(c)c.style.display=i===n?'block':'none';
+    var p=document.getElementById('am'+i);if(p)p.className='am-pg'+(i===n?' am-on':'');
+  }
+}
+</script>
+```
+
+::: {.notes}
+Haz clic en las páginas del sidebar simulado. Streamlit genera este menú automáticamente con solo crear los archivos en la carpeta pages. Los números al inicio controlan el orden de aparición.
+:::
+
+## ¿Qué va en cada archivo?
+
+```{=html}
+<div>
+  <div class="file-tabs">
+    <div id="t-app" class="ft-tab ft-on" onclick="ftSw('app')">app.py</div>
+    <div id="t-dat" class="ft-tab" onclick="ftSw('dat')">1_Datos.py</div>
+    <div id="t-gra" class="ft-tab" onclick="ftSw('gra')">2_Grafico.py</div>
+  </div>
+  <div id="fc-app" class="ft-content">
+    <pre><code class="language-python"># app.py — portada
+import streamlit as st
+
+# ⚠️ DEBE ser el PRIMER comando de Streamlit en el archivo
+st.set_page_config(
+    page_title="Dashboard Aranceles",
+    page_icon="🇺🇸",
+    layout="wide"
+)
+
+st.title("🇺🇸 Dashboard — Aranceles USA")
+st.write("Bienvenido. Usa el menú lateral para navegar.")
+st.info("👈 Selecciona una página en el menú de la izquierda")</code></pre>
+  </div>
+  <div id="fc-dat" class="ft-content" style="display:none">
+    <pre><code class="language-python"># pages/1_Datos.py
+import streamlit as st
+import pandas as pd
+
+st.title("📊 Tabla de Aranceles")
+archivo = st.sidebar.file_uploader("Sube el CSV", type=["csv"])
+
+if archivo is None:
+    st.info("Sube el archivo CSV desde el panel lateral.")
+    st.stop()           # ← para aquí si no hay archivo
+
+df = pd.read_csv(archivo)
+col1, col2, col3 = st.columns(3)
+col1.metric("Filas",   len(df))
+col2.metric("Países",  df["country"].nunique())
+col3.metric("Máx %", f"{df['tariff_rate_pct'].max():.1f}%")
+st.dataframe(df, use_container_width=True, height=320)</code></pre>
+  </div>
+  <div id="fc-gra" class="ft-content" style="display:none">
+    <pre><code class="language-python"># pages/2_Grafico.py
+import streamlit as st
+import pandas as pd
+import plotly.express as px
+
+st.title("📈 Gráfico de Aranceles")
+archivo = st.sidebar.file_uploader("Sube el CSV", type=["csv"])
+
+if archivo is None:
+    st.info("Sube el archivo CSV desde el panel lateral.")
+    st.stop()           # ← para aquí si no hay archivo
+
+df = pd.read_csv(archivo)
+resumen = df.groupby("country")["tariff_rate_pct"].mean().reset_index()
+
+fig = px.bar(resumen.sort_values("tariff_rate_pct"),
+    x="tariff_rate_pct", y="country", orientation="h",
+    title="Arancel promedio por país",
+    color="tariff_rate_pct", color_continuous_scale="Reds",
+    labels={"tariff_rate_pct": "Arancel (%)", "country": "País"})
+st.plotly_chart(fig, use_container_width=True)</code></pre>
+  </div>
+</div>
+<script>
+function ftSw(f){
+  ['app','dat','gra'].forEach(function(n){
+    document.getElementById('fc-'+n).style.display=n===f?'block':'none';
+    document.getElementById('t-'+n).className='ft-tab'+(n===f?' ft-on':'');
+  });
+}
+</script>
+```
+
+::: {.notes}
+Haz clic en las pestañas. Cada página es independiente — sus propios imports, su propio file_uploader. En módulo 3 vemos session_state para compartir el DataFrame entre páginas sin pedir el CSV dos veces.
+:::
+
+## `st.stop()` y `st.set_page_config()`
+
+```{=html}
+<div class="stop-demo">
+  <div class="stop-col">
+    <div class="stop-title bad-title">❌ Sin st.stop() — app rota</div>
+    <pre><code class="language-python">archivo = st.file_uploader("CSV")
+
+# archivo es None al arrancar
+df = pd.read_csv(archivo)
+# ↑ ERROR: no se puede leer None
+st.dataframe(df)</code></pre>
+    <div class="stop-res stop-bad">🔴 La app explota al arrancar</div>
+  </div>
+  <div class="stop-col">
+    <div class="stop-title good-title">✅ Con st.stop() — app robusta</div>
+    <pre><code class="language-python">archivo = st.file_uploader("CSV")
+
+if archivo is None:
+    st.info("Sube un archivo 👆")
+    st.stop()   # ← para aquí
+
+# Solo llega aquí si hay archivo
+df = pd.read_csv(archivo)  # seguro ✅
+st.dataframe(df)</code></pre>
+    <div class="stop-res stop-ok">🟢 Espera pacientemente al usuario</div>
+  </div>
+</div>
+```
+
+::: {.fragment .fade-up}
+::: {.box-accent}
+Regla: **siempre que dependas de algo que el usuario aún no hizo** → `st.stop()` antes de usarlo. Y `set_page_config()` siempre va **primero** en el archivo.
+:::
+:::
+
+::: {.notes}
+st.stop es como el portero de la disco — si el usuario no trajo el archivo (el carnet), lo para en la puerta elegantemente. Sin él, la app intenta leer None y da un error feo.
+:::
+
+# Resumen del Módulo 2 🏁 {background-color="#0d0d0d"}
+
+## Todo lo que aprendiste hoy {.center .summary-slide}
+
+```{=html}
+<div class="summary-compact">
+<div class="summary-grid">
+  <div class="sg-card fade-item" style="animation-delay:0.1s">
+    <div class="sgc-icon">📌</div>
+    <div class="sgc-num">01</div>
+    <div class="sgc-title">Sidebar</div>
+    <div class="sgc-desc"><code>with st.sidebar:</code> para organizar controles</div>
+  </div>
+  <div class="sg-card fade-item" style="animation-delay:0.22s">
+    <div class="sgc-icon">📋</div>
+    <div class="sgc-num">02</div>
+    <div class="sgc-title">selectbox</div>
+    <div class="sgc-desc">Lista desplegable — 5+ opciones</div>
+  </div>
+  <div class="sg-card fade-item" style="animation-delay:0.34s">
+    <div class="sgc-icon">📻</div>
+    <div class="sgc-num">03</div>
+    <div class="sgc-title">radio</div>
+    <div class="sgc-desc">Opciones visibles — menú de páginas</div>
+  </div>
+  <div class="sg-card fade-item" style="animation-delay:0.46s">
+    <div class="sgc-icon">📁</div>
+    <div class="sgc-num">04</div>
+    <div class="sgc-title">file_uploader</div>
+    <div class="sgc-desc">Subir CSV · verificar <code>!= None</code></div>
+  </div>
+  <div class="sg-card fade-item" style="animation-delay:0.58s">
+    <div class="sgc-icon">🗺️</div>
+    <div class="sgc-num">05</div>
+    <div class="sgc-title">Navegación</div>
+    <div class="sgc-desc">radio + if/elif = menú de páginas</div>
+  </div>
+  <div class="sg-card fade-item" style="animation-delay:0.7s">
+    <div class="sgc-icon">📂</div>
+    <div class="sgc-num">06</div>
+    <div class="sgc-title">pages/</div>
+    <div class="sgc-desc">Archivos separados · menú automático</div>
+  </div>
+  <div class="sg-card fade-item" style="animation-delay:0.82s">
+    <div class="sgc-icon">📊</div>
+    <div class="sgc-num">07</div>
+    <div class="sgc-title">Plotly básico</div>
+    <div class="sgc-desc"><code>px.bar()</code> + <code>st.plotly_chart()</code></div>
+  </div>
+  <div class="sg-card fade-item" style="animation-delay:0.94s">
+    <div class="sgc-icon">🛑</div>
+    <div class="sgc-num">08</div>
+    <div class="sgc-title">st.stop()</div>
+    <div class="sgc-desc">Para la app elegantemente si falta algo</div>
+  </div>
+  <div class="sg-card fade-item" style="animation-delay:1.06s">
+    <div class="sgc-icon">⚙️</div>
+    <div class="sgc-num">09</div>
+    <div class="sgc-title">set_page_config</div>
+    <div class="sgc-desc">Título + ícono · siempre primero</div>
+  </div>
+</div>
+</div>
+```
+
+::: {.notes}
+9 conceptos en un módulo. Lo más importante: sidebar + radio + if/elif = navegación. Y st.stop() para apps robustas.
+:::
+
+## Tu producto parcial ✔️ {.center}
+
+```{=html}
+<div class="checkpoint">
+  <div class="cp-title">✅ App Multi-página con Dataset Real</div>
+  <div class="cp-checklist">
+    <div class="cp-item fade-item" style="animation-delay:0.1s"><span>✅</span>app.py con set_page_config + mensaje de bienvenida</div>
+    <div class="cp-item fade-item" style="animation-delay:0.22s"><span>✅</span>1_Datos.py con file_uploader + st.dataframe</div>
+    <div class="cp-item fade-item" style="animation-delay:0.34s"><span>✅</span>2_Grafico.py con px.bar + st.plotly_chart</div>
+    <div class="cp-item fade-item" style="animation-delay:0.46s"><span>✅</span>st.stop() en cada página que usa el CSV</div>
+    <div class="cp-item fade-item" style="animation-delay:0.58s"><span>✅</span>Carpeta pages/ con menú automático</div>
+    <div class="cp-item fade-item" style="animation-delay:0.7s"><span>✅</span>Dataset real de Kaggle cargado y visualizado</div>
+  </div>
+  <div class="cp-run fade-item" style="animation-delay:0.9s">
+    <div class="terminal-mini">
+      <span class="t-prompt">$</span>
+      <span class="t-cmd">streamlit run app.py</span>
+    </div>
+    <div class="cp-badge">✅ Módulo 2 Completo</div>
+  </div>
+</div>
+```
+
+::: {.notes}
+El entregable del módulo 2: app multi-página con datos reales, tabla y gráfico. En módulo 3 resolvemos el problema de que el CSV hay que subirlo en cada página — con session_state.
+:::
+
+---
+
+::: {style="text-align:center; padding: 3em 0;"}
+
+::: {.r-fit-text}
+¡A construir! 🗂️
+:::
+
+[**Módulo 2 — Completado**]{style="font-size:1.2em; color:#FF4B4B;"}
+
+[Preguntas antes de cerrar 🙋]{.text-muted}
+
+:::
+
+::: {.notes}
+Tiempo libre para practicar. Objetivo mínimo: correr `streamlit run app.py` con la carpeta pages y el CSV. Si quieren más — agregar filtros por product_category o por rango de tariff_rate_pct.
+:::

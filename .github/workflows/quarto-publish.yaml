@@ -5,8 +5,6 @@ on:
     branches:
       - main
       - master
-    paths:
-      - 'slides/**'
   workflow_dispatch:
 
 permissions:
@@ -32,13 +30,66 @@ jobs:
         uses: quarto-dev/quarto-actions/setup@v2
 
       - name: Render Quarto
-        run: quarto render module-1/slides/streamlit-modulo1.qmd
+        run: |
+          quarto render module-1/streamlit-modulo1.qmd
+          quarto render module-2/streamlit-modulo2.qmd
+          quarto render module-3/streamlit-modulo3.qmd
+          quarto render module-4/streamlit-modulo4.qmd
       - name: Prepare Site
         run: |
           mkdir _site
-          mv module-1/slides/streamlit-modulo1.html _site/index.html
-          if [ -d "module-1/slides/streamlit-modulo1_files" ]; then mv module-1/slides/streamlit-modulo1_files _site/; fi
-          cp module-1/slides/*.png module-1/slides/*.mp4 module-1/slides/*.avif _site/ 2>/dev/null || true
+          
+          # Module 1
+          mkdir _site/module-1
+          mv module-1/streamlit-modulo1.html _site/module-1/index.html
+          if [ -d "module-1/streamlit-modulo1_files" ]; then mv module-1/streamlit-modulo1_files _site/module-1/; fi
+          cp -r module-1/*.png module-1/*.mp4 module-1/*.avif module-1/assets _site/module-1/ 2>/dev/null || true
+          
+          # Module 2
+          mkdir _site/module-2
+          mv module-2/streamlit-modulo2.html _site/module-2/index.html
+          if [ -d "module-2/streamlit-modulo2_files" ]; then mv module-2/streamlit-modulo2_files _site/module-2/; fi
+          cp -r module-2/*.png module-2/*.mp4 module-2/*.avif module-2/assets _site/module-2/ 2>/dev/null || true
+          
+          # Module 3
+          mkdir _site/module-3
+          mv module-3/streamlit-modulo3.html _site/module-3/index.html
+          if [ -d "module-3/streamlit-modulo3_files" ]; then mv module-3/streamlit-modulo3_files _site/module-3/; fi
+          cp -r module-3/*.png module-3/*.mp4 module-3/*.avif module-3/assets _site/module-3/ 2>/dev/null || true
+
+          # Module 4
+          mkdir _site/module-4
+          mv module-4/streamlit-modulo4.html _site/module-4/index.html
+          if [ -d "module-4/streamlit-modulo4_files" ]; then mv module-4/streamlit-modulo4_files _site/module-4/; fi
+          cp -r module-4/*.png module-4/*.mp4 module-4/*.avif module-4/assets _site/module-4/ 2>/dev/null || true
+          
+          # Root index
+          cat <<EOF > _site/index.html
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <meta charset="utf-8">
+            <title>Curso Streamlit Slides</title>
+            <style>
+              body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; padding: 2rem; max-width: 800px; margin: 0 auto; line-height: 1.6; }
+              h1 { color: #333; }
+              ul { list-style-type: none; padding: 0; }
+              li { margin: 10px 0; }
+              a { text-decoration: none; color: #0366d6; font-size: 1.2rem; }
+              a:hover { text-decoration: underline; }
+            </style>
+          </head>
+          <body>
+            <h1>Curso Streamlit Slides</h1>
+            <ul>
+              <li><a href="module-1/">▶ Módulo 1</a></li>
+              <li><a href="module-2/">▶ Módulo 2</a></li>
+              <li><a href="module-3/">▶ Módulo 3</a></li>
+              <li><a href="module-4/">▶ Módulo 4</a></li>
+            </ul>
+          </body>
+          </html>
+          EOF
           
       - name: Setup Pages
         uses: actions/configure-pages@v4

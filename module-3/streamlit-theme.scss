@@ -1,0 +1,604 @@
+/*── streamlit-theme.scss — Módulo 2 Streamlit ──────────────────────────────*/
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;600;700;800;900&display=swap');
+
+/*-- scss:defaults --*/
+$bg:          #0d0d0d;
+$bg2:         #141414;
+$bg3:         #1e1e1e;
+$accent:      #FF4B4B;
+$accent-dim:  rgba(255,75,75,0.10);
+$accent-brd:  rgba(255,75,75,0.30);
+$green:       #21c55d;
+$green-dim:   rgba(33,197,93,0.12);
+$green-brd:   rgba(33,197,93,0.30);
+$blue:        #3b82f6;
+$yellow:      #f59e0b;
+$text:        #e8e8e8;
+$muted:       #666;
+$dim:         #333;
+
+/*-- scss:rules --*/
+
+/* ── Base ───────────────────────────────────────────────────────────────── */
+.reveal {
+  font-family: 'Inter', sans-serif;
+  font-size: 30px;
+  color: $text;
+  background: $bg;
+}
+.reveal .slides { text-align: left; }
+
+/* ── Headings ───────────────────────────────────────────────────────────── */
+.reveal h1 {
+  font-size: 2.6em; font-weight: 900;
+  letter-spacing: -0.03em; line-height: 1.1; color: #fff;
+}
+.reveal h2 {
+  font-size: 1.45em; font-weight: 700;
+  letter-spacing: -0.01em; color: #fff; margin-bottom: 0.5em;
+}
+.reveal .title-slide h1 {
+  background: linear-gradient(130deg, #fff 0%, $accent 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.reveal .title-slide .subtitle { color: $muted; font-size: 1.05em; }
+
+/* ── Code ───────────────────────────────────────────────────────────────── */
+.reveal code {
+  font-family: 'JetBrains Mono', monospace;
+  background: rgba(255,75,75,0.10);
+  color: $accent; padding: 0.1em 0.35em; border-radius: 4px; font-size: 0.82em;
+}
+.reveal pre {
+  background: #0a0e14; border: 1px solid $dim;
+  border-radius: 8px; font-size: 0.72em; margin: 0.4em 0; width: 100%;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+}
+.reveal pre code {
+  font-family: 'JetBrains Mono', monospace;
+  padding: 0.9em 1.1em; background: transparent; color: $text;
+}
+
+/* ── Boxes ───────────────────────────────────────────────────────────────── */
+.box-accent {
+  background: $accent-dim; border: 1px solid $accent-brd;
+  border-left: 3px solid $accent; border-radius: 6px;
+  padding: 0.65em 1em; margin: 0.4em 0; font-size: 0.86em; color: $text;
+}
+.box-muted {
+  background: rgba(255,255,255,0.03); border: 1px solid $dim;
+  border-left: 3px solid $dim; border-radius: 6px;
+  padding: 0.65em 1em; margin: 0.4em 0; font-size: 0.86em; color: $muted;
+}
+.box-yellow {
+  background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.25);
+  border-left: 3px solid $yellow; border-radius: 6px;
+  padding: 0.65em 1em; margin: 0.4em 0; font-size: 0.86em; color: $text;
+}
+.text-muted { color: $muted !important; font-size: 0.85em; }
+
+/* ── Callouts ───────────────────────────────────────────────────────────── */
+.reveal .callout { background: $bg2; border: 1px solid $dim; border-radius: 6px;
+  padding: 0.65em 1em; font-size: 0.82em; margin: 0.4em 0; }
+.reveal .callout-tip  { border-left: 3px solid $green; }
+.reveal .callout-note { border-left: 3px solid $blue; }
+.reveal .callout-title { font-weight: 700; color: #fff; margin-bottom: 0.2em; }
+
+/* ── Controls ───────────────────────────────────────────────────────────── */
+.reveal .progress { background: rgba(255,75,75,0.1); height: 3px; }
+.reveal .progress span { background: $accent; }
+.reveal .slide-number { color: $dim; font-family: 'JetBrains Mono'; font-size: 0.68em; }
+.reveal .footer { color: $dim; font-family: 'JetBrains Mono'; font-size: 0.64em; }
+.reveal .controls { color: $accent; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   KEYFRAMES
+═══════════════════════════════════════════════════════════════════════════ */
+@keyframes fadeSlideUp {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes pulse-glow-red {
+  0%,100% { box-shadow: 0 0 0 0 rgba(255,75,75,0.4); }
+  50%     { box-shadow: 0 0 0 8px rgba(255,75,75,0); }
+}
+@keyframes pulse-glow-green {
+  0%,100% { box-shadow: 0 0 0 0 rgba(33,197,93,0.4); }
+  50%     { box-shadow: 0 0 0 8px rgba(33,197,93,0); }
+}
+
+.fade-item {
+  opacity: 0;
+  animation: fadeSlideUp 0.55s ease forwards;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SHARED BUTTONS
+═══════════════════════════════════════════════════════════════════════════ */
+.btn-row { display: flex; gap: 0.6em; margin-top: 0.6em; }
+.demo-btn {
+  background: $accent; border: none; border-radius: 6px;
+  padding: 0.4em 1.1em; cursor: pointer; font-size: 0.76em;
+  font-family: 'Inter'; font-weight: 700; color: #fff;
+  transition: all 0.2s;
+  &:hover { opacity: 0.88; transform: translateY(-1px); }
+}
+.demo-btn-ghost {
+  background: transparent; border: 1px solid $dim; color: $muted;
+  &:hover { border-color: $accent-brd; color: $accent; background: $accent-dim; }
+}
+
+/* ── Terminal ────────────────────────────────────────────────────────────── */
+.terminal-window {
+  background: #0a0e14; border: 1px solid $dim; border-radius: 10px;
+  overflow: hidden; margin: 0.5em 0;
+}
+.terminal-bar {
+  background: #1c1c1c; padding: 0.4em 0.8em;
+  display: flex; align-items: center; gap: 0.4em;
+}
+.t-dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
+.t-title { font-size: 0.72em; color: $muted; margin-left: 0.5em; }
+.terminal-body { padding: 0.8em 1em; }
+.t-line { font-family: 'JetBrains Mono'; font-size: 0.78em; padding: 0.1em 0; }
+.t-line.dim { color: $muted; }
+.t-line.ok  { color: $green; }
+.t-prompt { color: $accent; margin-right: 0.5em; }
+.t-cmd    { color: $text; }
+.t-output { margin-top: 0.5em; }
+.terminal-mini {
+  background: $bg2; border: 1px solid $dim; border-radius: 6px;
+  padding: 0.4em 0.8em; display: inline-flex; gap: 0.5em;
+  font-family: 'JetBrains Mono'; font-size: 0.78em; margin: 0.4em 0;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   TARGET APP PREVIEW
+═══════════════════════════════════════════════════════════════════════════ */
+.target-app {
+  display: flex; border: 1px solid $dim; border-radius: 10px;
+  overflow: hidden; margin: 0.5em 0;
+}
+.ta-sidebar {
+  width: 170px; background: $bg2; border-right: 1px solid $dim;
+  padding: 0.7em 0.6em; flex-shrink: 0;
+}
+.ta-main { flex: 1; padding: 0.7em; }
+.tas-logo { font-size: 0.75em; font-weight: 700; color: #fff; margin-bottom: 0.3em; }
+.tas-sep  { border-top: 1px solid $dim; margin: 0.25em 0; }
+.tas-item { font-size: 0.7em; color: $muted; padding: 0.25em 0.45em; border-radius: 4px; margin-bottom: 0.12em; }
+.tas-on   { background: $accent-dim; color: $accent; }
+.tas-lbl  { font-size: 0.6em; color: $dim; margin-bottom: 0.1em; }
+.tas-upload { font-size: 0.62em; color: $green; background: $green-dim; border: 1px solid $green-brd; border-radius: 3px; padding: 0.1em 0.35em; }
+.tam-title { font-size: 0.85em; font-weight: 700; color: #fff; margin-bottom: 0.4em; }
+.tam-metrics { display: flex; gap: 0.5em; margin-bottom: 0.4em; }
+.tam-metric {
+  flex: 1; background: $bg3; border: 1px solid $dim; border-radius: 5px;
+  padding: 0.3em 0.5em; text-align: center;
+}
+.tmm-val { font-size: 1.05em; font-weight: 900; color: #fff; }
+.tmm-lbl { font-size: 0.6em; color: $muted; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   MINI DATAFRAME
+═══════════════════════════════════════════════════════════════════════════ */
+.mini-df {
+  background: $bg; border: 1px solid $dim; border-radius: 6px;
+  overflow: hidden; font-family: 'JetBrains Mono';
+}
+.mini-df-h { display: grid; background: $bg2; border-bottom: 1px solid $dim; }
+.mini-df-r { display: grid; border-bottom: 1px solid $bg2; }
+.mini-df-h span { padding: 0.22em 0.45em; font-size: 0.7em; font-weight: 700; color: $accent; }
+.mini-df-r span { padding: 0.22em 0.45em; font-size: 0.7em; color: $text; }
+.mini-df-r span.rv { color: #f87171; }
+.mini-df-r span.yv { color: #fbbf24; }
+.mini-df-r span.gv { color: #4ade80; }
+.mini-df-dim { font-size: 0.62em; color: $dim; text-align: center; padding: 0.18em; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SIDEBAR MOCKUPS
+═══════════════════════════════════════════════════════════════════════════ */
+.concept-split {
+  display: flex; gap: 1.5em; margin: 0.5em 0; align-items: flex-start;
+}
+.cs-col { flex: 1; }
+.cs-label { font-size: 0.78em; font-weight: 700; margin-bottom: 0.4em; }
+.cs-bad  { color: #f87171; }
+.cs-good { color: #4ade80; }
+
+.app-mockup {
+  background: $bg2; border: 1px solid $dim; border-radius: 8px; overflow: hidden;
+}
+.app-mockup-side { display: flex; }
+.mock-bar {
+  background: $bg3; padding: 0.25em 0.65em; font-size: 0.7em;
+  font-weight: 700; color: #fff; border-bottom: 1px solid $dim;
+}
+.mock-body { padding: 0.4em 0.5em; display: flex; flex-direction: column; gap: 0.2em; }
+.mock-widget { padding: 0.15em 0.4em; border-radius: 3px; font-size: 0.65em; }
+.mock-widget-red { background: rgba(239,68,68,0.1); color: #f87171; }
+.mock-content { font-size: 0.62em; color: $muted; margin-top: 0.1em; }
+
+.mock-sb {
+  width: 85px; background: $bg3; border-right: 1px solid $dim; padding: 0.35em 0.3em;
+}
+.mock-sb-title { font-size: 0.6em; font-weight: 700; color: $accent; margin-bottom: 0.15em; }
+.mock-sb-item  { font-size: 0.6em; background: $accent-dim; border: 1px solid $accent-brd; border-radius: 3px; padding: 0.12em 0.25em; color: $accent; margin-bottom: 0.1em; }
+.mock-sb-main  { flex: 1; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   TWO WAYS (sidebar syntax)
+═══════════════════════════════════════════════════════════════════════════ */
+.two-ways { display: flex; gap: 1em; margin: 0.4em 0; align-items: flex-start; }
+.tw-col   { flex: 1; }
+.tw-title { font-size: 0.88em; font-weight: 700; color: $accent; margin-bottom: 0.4em; }
+.tw-note  { font-size: 0.74em; color: $muted; margin-top: 0.25em; font-style: italic; }
+.tw-sep   { display: flex; align-items: center; font-size: 1.5em; font-weight: 900; color: $dim; padding: 0 0.2em; margin-top: 1.5em; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   WIDGET SPLIT (code + live demo) — igual que módulo 1
+═══════════════════════════════════════════════════════════════════════════ */
+.widget-split { display: flex; gap: 1em; align-items: stretch; margin: 0.4em 0; }
+.ws-code    { flex: 1.3; background: #0a0e14; border: 1px solid $dim; border-radius: 8px; overflow: hidden; }
+.ws-preview { flex: 1; background: $bg2; border: 1px solid $dim; border-radius: 8px; overflow: hidden; }
+.ws-bar { background: $bg3; padding: 0.3em 0.8em; font-size: 0.72em; color: $muted; font-family: 'JetBrains Mono'; border-bottom: 1px solid $dim; }
+.ws-pview { padding: 0.8em 1em; display: flex; flex-direction: column; gap: 0.5em; }
+
+.fake-select {
+  background: $bg; border: 1px solid $dim; border-radius: 6px;
+  padding: 0.3em 0.6em; color: $text; font-size: 0.78em; font-family: 'Inter';
+  outline: none; width: 100%;
+  &:focus { border-color: $accent-brd; }
+}
+.wsd-out { font-family: 'JetBrains Mono'; font-size: 0.74em; color: $green; margin-top: 0.35em; min-height: 1.2em; }
+.wsd-tip { font-size: 0.7em; color: $muted; margin-top: 0.4em; line-height: 1.6; }
+
+.fake-radio-g { display: flex; flex-direction: column; gap: 0.3em; }
+.fake-radio   { display: flex; align-items: center; gap: 0.45em; font-size: 0.8em; color: $text; cursor: pointer; }
+.fr-dot { width: 13px; height: 13px; border-radius: 50%; border: 2px solid $muted; flex-shrink: 0; transition: all 0.2s; }
+.fr-on  { border-color: $accent; background: $accent; }
+
+.fake-upload {
+  background: $bg; border: 2px dashed $dim; border-radius: 8px;
+  padding: 1em; text-align: center; cursor: pointer; transition: border-color 0.25s;
+  &:hover { border-color: $accent-brd; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   VS TABLE
+═══════════════════════════════════════════════════════════════════════════ */
+.vs-table { width: 100%; border-collapse: collapse; font-size: 0.84em; margin: 0.4em 0; }
+.vs-table th { background: $bg3; color: #fff; padding: 0.4em 0.65em; border: 1px solid $dim; text-align: left; }
+.vs-table td { padding: 0.35em 0.65em; border: 1px solid $dim; }
+.vs-table .lbl { color: $muted; background: $bg2; font-weight: 600; }
+.vs-table .gd  { background: $green-dim; color: #4ade80; }
+.vs-table .bd  { background: rgba(239,68,68,0.08); color: #f87171; }
+.vs-table .neu { font-size: 0.88em; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   DATASET CARD
+═══════════════════════════════════════════════════════════════════════════ */
+.dataset-card {
+  display: flex; gap: 1em; background: $bg2; border: 1px solid $dim;
+  border-radius: 10px; padding: 0.8em 1em; margin: 0.4em 0;
+}
+.dc-left  { flex: 1.2; }
+.dc-right { flex: 1; }
+.dc-badge { display: inline-block; background: $accent-dim; border: 1px solid $accent-brd; border-radius: 20px; padding: 0.06em 0.55em; font-size: 0.62em; color: $accent; margin-bottom: 0.25em; }
+.dc-title { font-size: 0.9em; font-weight: 700; color: #fff; margin-bottom: 0.08em; }
+.dc-sub   { font-size: 0.68em; color: $muted; margin-bottom: 0.35em; }
+.dc-url   { font-family: 'JetBrains Mono'; font-size: 0.62em; color: $blue; word-break: break-all; line-height: 1.45; }
+.dc-ct    { font-size: 0.74em; font-weight: 700; color: #fff; margin-bottom: 0.3em; }
+.dc-cols  { display: grid; grid-template-columns: 1fr 1fr; gap: 0.22em; }
+.dc-ci    { background: $bg3; border: 1px solid $dim; border-radius: 4px; padding: 0.2em 0.4em; font-size: 0.65em; color: $text; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   DOWNLOAD STEPS
+═══════════════════════════════════════════════════════════════════════════ */
+.dl-steps { display: flex; flex-direction: column; gap: 0.5em; margin: 0.4em 0; }
+.dl-step  {
+  display: flex; gap: 0.8em; align-items: flex-start;
+  background: $bg2; border: 1px solid $dim; border-left: 3px solid $accent;
+  border-radius: 7px; padding: 0.5em 0.8em;
+}
+.dl-num {
+  width: 26px; height: 26px; background: $accent; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 900; font-size: 0.78em; color: #fff; flex-shrink: 0;
+}
+.dl-title { font-size: 0.84em; font-weight: 700; color: #fff; }
+.dl-sub   { font-size: 0.72em; color: $muted; margin-top: 0.08em; }
+.dl-code  { font-family: 'JetBrains Mono'; font-size: 0.68em; color: $green; margin-top: 0.12em; line-height: 1.55; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   CODE + PREVIEW ROW
+═══════════════════════════════════════════════════════════════════════════ */
+.cp-row { display: flex; gap: 1em; align-items: flex-start; margin: 0.4em 0; }
+.cp-row pre  { flex: 1.3; margin: 0; }
+.cp-preview  { flex: 1; }
+.cp-prev-lbl { font-size: 0.72em; color: $muted; margin-bottom: 0.25em; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   NAV IDEA
+═══════════════════════════════════════════════════════════════════════════ */
+.nav-idea { display: flex; flex-direction: column; gap: 0.12em; margin: 0.4em 0; }
+.ni-step  {
+  display: flex; align-items: center; gap: 0.8em;
+  background: $bg2; border: 1px solid $dim; border-radius: 8px; padding: 0.5em 0.8em;
+  font-size: 0.88em; color: $text;
+}
+.ni-ico { font-size: 1.4em; flex-shrink: 0; }
+.ni-arr { text-align: center; font-size: 1.3em; color: $accent; line-height: 0.85; margin: 0.05em 0; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   THREE STEPS CODE
+═══════════════════════════════════════════════════════════════════════════ */
+.three-steps { display: flex; flex-direction: column; gap: 0.4em; margin: 0.4em 0; }
+.ts-item { background: $bg2; border: 1px solid $dim; border-radius: 8px; padding: 0.45em 0.8em; }
+.ts-lbl  { font-size: 0.72em; font-weight: 700; margin-bottom: 0.2em; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   NAV DEMO
+═══════════════════════════════════════════════════════════════════════════ */
+.nav-demo {
+  display: flex; border: 1px solid $dim; border-radius: 10px;
+  overflow: hidden; margin: 0.4em 0;
+}
+.nd-sb {
+  background: $bg2; border-right: 1px solid $dim;
+  padding: 0.65em 0.55em; flex-shrink: 0;
+}
+.nd-title { font-size: 0.78em; font-weight: 700; color: #fff; margin-bottom: 0.35em; }
+.nd-lbl   { font-size: 0.65em; color: $muted; margin-bottom: 0.15em; }
+.nd-opt   { font-size: 0.72em; color: $muted; padding: 0.25em 0.45em; border-radius: 4px; cursor: pointer; margin-bottom: 0.15em; transition: all 0.15s; }
+.nd-opt:hover { background: $bg3; }
+.nd-on    { background: $accent-dim; color: $accent; }
+.nd-sep   { border-top: 1px solid $dim; margin: 0.35em 0; }
+.nd-sel   { width: 100%; background: $bg; border: 1px solid $dim; border-radius: 4px; color: $text; font-size: 0.65em; padding: 0.18em 0.32em; outline: none; }
+.nd-main  { flex: 1; padding: 0.7em; }
+.nd-pg-title { font-size: 0.85em; font-weight: 700; color: #fff; margin-bottom: 0.3em; }
+.nd-badge    { display: inline-block; font-size: 0.62em; background: $accent-dim; border: 1px solid $accent-brd; border-radius: 10px; padding: 0.06em 0.45em; color: $accent; margin-bottom: 0.3em; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   PLOTLY GRID
+═══════════════════════════════════════════════════════════════════════════ */
+.plotly-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.8em; margin: 0.5em 0;
+}
+.pl-card {
+  background: $bg2; border: 1px solid $dim; border-radius: 10px;
+  padding: 0.8em; text-align: center;
+  transition: border-color 0.3s;
+  &:hover { border-color: $accent-brd; }
+}
+.pl-ico  { font-size: 2em; margin-bottom: 0.2em; }
+.pl-t    { font-size: 0.8em; font-weight: 700; color: #fff; margin-bottom: 0.12em; }
+.pl-d    { font-size: 0.68em; color: $muted; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   CHART ROW (code + note)
+═══════════════════════════════════════════════════════════════════════════ */
+.chart-row { display: flex; gap: 1em; align-items: flex-start; margin: 0.4em 0; }
+.chart-row pre { flex: 1.4; margin: 0; }
+.chart-note {
+  flex: 1; background: $bg2; border: 1px solid $dim; border-radius: 8px; padding: 0.7em 0.9em;
+}
+.cn-title { font-size: 0.82em; font-weight: 700; color: #fff; margin-bottom: 0.4em; }
+.cn-item  { display: flex; align-items: center; gap: 0.5em; font-size: 0.76em; color: $text; margin-bottom: 0.25em; }
+.cn-num   { width: 20px; height: 20px; background: $accent; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.72em; font-weight: 900; color: #fff; flex-shrink: 0; }
+.cn-types { display: flex; gap: 0.35em; flex-wrap: wrap; margin-top: 0.5em; }
+.cn-type  { background: $bg3; border: 1px solid $dim; border-radius: 5px; padding: 0.2em 0.5em; font-size: 0.7em; cursor: pointer; color: $text; transition: all 0.18s; }
+.cn-type:hover { border-color: $accent-brd; }
+.cn-active { background: $accent-dim; border-color: $accent; color: $accent; }
+.cn-hint  { font-family: 'JetBrains Mono'; font-size: 0.68em; color: $green; margin-top: 0.4em; min-height: 1.2em; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   FOLDER + AUTO-MENU
+═══════════════════════════════════════════════════════════════════════════ */
+.folder-pair { display: flex; gap: 1em; margin: 0.4em 0; align-items: flex-start; }
+.folder-pair > * { flex: 1; }
+
+.tree-view {
+  background: $bg; border: 1px solid $dim; border-radius: 8px; padding: 0.7em 0.9em;
+  font-family: 'JetBrains Mono';
+}
+.tv-li   { font-size: 0.78em; padding: 0.08em 0; line-height: 1.7; }
+.tv-fo   { color: #fbbf24; }
+.tv-fi   { color: $text; }
+.tv-tag-b { display: inline-block; background: rgba(59,130,246,0.12); color: $blue; border: 1px solid rgba(59,130,246,0.3); border-radius: 20px; padding: 0.03em 0.42em; font-size: 0.8em; margin-left: 0.4em; }
+.tv-tag-r { display: inline-block; background: $accent-dim; color: $accent; border: 1px solid $accent-brd; border-radius: 20px; padding: 0.03em 0.42em; font-size: 0.8em; margin-left: 0.4em; }
+.tv-tag-g { display: inline-block; background: $green-dim; color: $green; border: 1px solid $green-brd; border-radius: 20px; padding: 0.03em 0.42em; font-size: 0.8em; margin-left: 0.4em; }
+
+.auto-menu {
+  display: flex; border: 1px solid $dim; border-radius: 9px;
+  overflow: hidden;
+}
+.am-sb {
+  background: $bg2; border-right: 1px solid $dim;
+  padding: 0.6em 0.5em; flex-shrink: 0;
+}
+.am-logo { font-size: 0.74em; font-weight: 700; color: #fff; margin-bottom: 0.28em; }
+.am-sep  { border-top: 1px solid $dim; margin: 0.22em 0; }
+.am-nav  { font-size: 0.55em; color: $dim; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.12em; }
+.am-pg   { font-size: 0.7em; color: $muted; padding: 0.22em 0.4em; border-radius: 3px; cursor: pointer; margin-bottom: 0.1em; transition: all 0.15s; }
+.am-pg:hover { background: $bg3; }
+.am-on   { background: $accent-dim; color: $accent; }
+.am-main { flex: 1; padding: 0.65em; }
+.am-ttl  { font-size: 0.82em; font-weight: 700; color: #fff; margin-bottom: 0.22em; }
+.am-bod  { font-size: 0.7em; color: $muted; }
+.am-inf  { font-size: 0.66em; color: $blue; margin-top: 0.12em; }
+.am-note { font-size: 0.64em; color: $muted; text-align: center; margin-top: 0.28em; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   FILE TABS
+═══════════════════════════════════════════════════════════════════════════ */
+.file-tabs { display: flex; border-bottom: 1px solid $dim; }
+.ft-tab    {
+  padding: 0.28em 0.78em; font-size: 0.72em; font-family: 'JetBrains Mono';
+  cursor: pointer; color: $muted; background: $bg2;
+  border: 1px solid $dim; border-bottom: none; border-radius: 5px 5px 0 0; margin-right: 0.18em;
+}
+.ft-on { color: $accent; background: $bg; }
+.ft-content pre { border-radius: 0 6px 6px 6px; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   PAGE CONFIG PREVIEW
+═══════════════════════════════════════════════════════════════════════════ */
+.pgc-row { display: flex; gap: 1em; align-items: flex-start; margin: 0.4em 0; }
+.pgc-row pre { flex: 1.4; margin: 0; }
+.pgc-preview { flex: 1; }
+.pgc-browser { background: $bg2; border: 1px solid $dim; border-radius: 8px; overflow: hidden; margin-bottom: 0.4em; }
+.pgc-tab  { background: $bg3; padding: 0.25em 0.7em; font-size: 0.68em; color: $text; border-bottom: 1px solid $dim; }
+.pgc-body { display: flex; min-height: 58px; }
+.pgc-sb   { width: 60px; background: $bg2; border-right: 1px solid $dim; display: flex; align-items: center; justify-content: center; font-size: 0.55em; color: $muted; }
+.pgc-main { flex: 1; display: flex; align-items: center; justify-content: center; font-size: 0.55em; color: $muted; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ST.STOP DEMO
+═══════════════════════════════════════════════════════════════════════════ */
+.stop-demo { display: flex; gap: 1em; margin: 0.4em 0; align-items: flex-start; }
+.stop-col  { flex: 1; }
+.stop-title { font-size: 0.88em; font-weight: 700; margin-bottom: 0.35em; }
+.stop-res   { margin-top: 0.35em; padding: 0.3em 0.7em; border-radius: 5px; font-size: 0.8em; }
+.stop-bad   { background: rgba(239,68,68,0.1); color: #f87171; }
+.stop-ok    { background: $green-dim; color: #4ade80; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SUMMARY GRID (same as mod 1)
+═══════════════════════════════════════════════════════════════════════════ */
+.summary-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.8em; margin: 0.5em 0;
+}
+.sg-card {
+  background: $bg2; border: 1px solid $dim; border-radius: 10px;
+  padding: 0.9em; text-align: center;
+  transition: border-color 0.3s, transform 0.3s;
+  &:hover { border-color: $accent-brd; transform: translateY(-2px); }
+}
+.sgc-icon  { font-size: 1.8em; margin-bottom: 0.2em; }
+.sgc-num   { font-size: 0.7em; font-weight: 900; color: $accent; font-family: 'JetBrains Mono'; }
+.sgc-title { font-size: 0.82em; font-weight: 700; color: #fff; margin: 0.2em 0; }
+.sgc-desc  { font-size: 0.7em; color: $muted; }
+
+.summary-compact {
+  max-width: 92%;
+  margin: 0 auto;
+  transform: scale(0.92);
+  transform-origin: top center;
+
+  .summary-grid {
+    gap: 0.55em;
+    margin: 0.25em 0;
+  }
+
+  .sg-card {
+    padding: 0.65em;
+  }
+
+  .sgc-icon {
+    font-size: 1.55em;
+    margin-bottom: 0.15em;
+  }
+
+  .sgc-num {
+    font-size: 0.62em;
+  }
+
+  .sgc-title {
+    font-size: 0.74em;
+    margin: 0.14em 0;
+  }
+
+  .sgc-desc {
+    font-size: 0.62em;
+    line-height: 1.15;
+  }
+}
+
+.summary-slide {
+  h2 {
+    font-size: 1.2em;
+    margin-bottom: 0.28em;
+  }
+
+  .summary-compact {
+    max-width: 95%;
+    margin-top: -0.1em;
+    transform: scale(0.87);
+  }
+
+  .summary-grid {
+    gap: 0.45em;
+    margin: 0.15em 0 0;
+  }
+
+  .sg-card {
+    padding: 0.52em 0.45em;
+    border-radius: 8px;
+  }
+
+  .sgc-icon {
+    font-size: 1.35em;
+    margin-bottom: 0.08em;
+  }
+
+  .sgc-num {
+    font-size: 0.56em;
+  }
+
+  .sgc-title {
+    font-size: 0.68em;
+    margin: 0.08em 0;
+    line-height: 1.05;
+  }
+
+  .sgc-desc {
+    font-size: 0.56em;
+    line-height: 1.05;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   CHECKPOINT (same as mod 1)
+═══════════════════════════════════════════════════════════════════════════ */
+.checkpoint { margin: 0.5em 0; }
+.cp-title   { font-size: 1.2em; font-weight: 700; color: #fff; margin-bottom: 0.5em; }
+.cp-checklist { display: flex; flex-direction: column; gap: 0.35em; margin-bottom: 0.6em; }
+.cp-item    {
+  display: flex; align-items: center; gap: 0.8em;
+  background: $bg2; border: 1px solid $dim; border-radius: 6px; padding: 0.42em 0.8em;
+  font-size: 0.82em; color: $text;
+}
+.cp-run  { display: flex; align-items: center; gap: 1em; margin-top: 0.6em; }
+.cp-badge {
+  background: $green-dim; border: 1px solid $green-brd; border-radius: 20px;
+  padding: 0.3em 1em; font-size: 0.82em; font-weight: 700; color: $green;
+  animation: pulse-glow-green 2s ease infinite;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   COLOR BOXES
+═══════════════════════════════════════════════════════════════════════════ */
+.box-green {
+  background: $green-dim; border: 1px solid $green-brd;
+  border-left: 3px solid $green; border-radius: 6px;
+  padding: 0.65em 1em; margin: 0.4em 0; font-size: 0.86em; color: $text;
+}
+.box-blue {
+  background: rgba(59,130,246,0.08); border: 1px solid rgba(59,130,246,0.25);
+  border-left: 3px solid $blue; border-radius: 6px;
+  padding: 0.65em 1em; margin: 0.4em 0; font-size: 0.86em; color: $text;
+}
+.box-producto {
+  background: linear-gradient(135deg, rgba(255,75,75,0.15) 0%, rgba(245,158,11,0.10) 100%);
+  border: 1px solid rgba(255,75,75,0.35); border-left: 4px solid $accent;
+  border-radius: 8px; padding: 0.8em 1.2em; margin: 0.6em 0;
+  font-size: 0.9em; font-weight: 600; color: $text;
+}
+
+/* ── Inline function pills ────────────────────────────────────────────────*/
+.tag-r { display: inline-block; background: $accent-dim; color: $accent; border: 1px solid $accent-brd; border-radius: 20px; padding: 0.18em 0.7em; font-family: 'JetBrains Mono'; font-size: 0.78em; margin: 0.12em 0.15em; }
+.tag-g { display: inline-block; background: $green-dim; color: $green; border: 1px solid $green-brd; border-radius: 20px; padding: 0.18em 0.7em; font-family: 'JetBrains Mono'; font-size: 0.78em; margin: 0.12em 0.15em; }
+.tag-b { display: inline-block; background: rgba(59,130,246,0.10); color: $blue; border: 1px solid rgba(59,130,246,0.30); border-radius: 20px; padding: 0.18em 0.7em; font-family: 'JetBrains Mono'; font-size: 0.78em; margin: 0.12em 0.15em; }
+.tag-y { display: inline-block; background: rgba(245,158,11,0.10); color: $yellow; border: 1px solid rgba(245,158,11,0.30); border-radius: 20px; padding: 0.18em 0.7em; font-family: 'JetBrains Mono'; font-size: 0.78em; margin: 0.12em 0.15em; }

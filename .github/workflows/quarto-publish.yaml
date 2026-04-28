@@ -31,39 +31,17 @@ jobs:
 
       - name: Render Quarto
         run: |
-          quarto render module-1/streamlit-modulo1.qmd
-          quarto render module-2/streamlit-modulo2.qmd
-          quarto render module-3/streamlit-modulo3.qmd
-          quarto render module-4/streamlit-modulo4.qmd
+          for qmd in module-*/*.qmd; do
+            if [ -f "$qmd" ]; then
+              quarto render "$qmd"
+            fi
+          done
+
       - name: Prepare Site
         run: |
-          mkdir _site
+          mkdir -p _site
           
-          # Module 1
-          mkdir _site/module-1
-          mv module-1/streamlit-modulo1.html _site/module-1/index.html
-          if [ -d "module-1/streamlit-modulo1_files" ]; then mv module-1/streamlit-modulo1_files _site/module-1/; fi
-          cp -r module-1/*.png module-1/*.mp4 module-1/*.avif module-1/assets _site/module-1/ 2>/dev/null || true
-          
-          # Module 2
-          mkdir _site/module-2
-          mv module-2/streamlit-modulo2.html _site/module-2/index.html
-          if [ -d "module-2/streamlit-modulo2_files" ]; then mv module-2/streamlit-modulo2_files _site/module-2/; fi
-          cp -r module-2/*.png module-2/*.mp4 module-2/*.avif module-2/assets _site/module-2/ 2>/dev/null || true
-          
-          # Module 3
-          mkdir _site/module-3
-          mv module-3/streamlit-modulo3.html _site/module-3/index.html
-          if [ -d "module-3/streamlit-modulo3_files" ]; then mv module-3/streamlit-modulo3_files _site/module-3/; fi
-          cp -r module-3/*.png module-3/*.mp4 module-3/*.avif module-3/assets _site/module-3/ 2>/dev/null || true
-
-          # Module 4
-          mkdir _site/module-4
-          mv module-4/streamlit-modulo4.html _site/module-4/index.html
-          if [ -d "module-4/streamlit-modulo4_files" ]; then mv module-4/streamlit-modulo4_files _site/module-4/; fi
-          cp -r module-4/*.png module-4/*.mp4 module-4/*.avif module-4/assets _site/module-4/ 2>/dev/null || true
-          
-          # Root index
+          # Root index header
           cat <<EOF > _site/index.html
           <!DOCTYPE html>
           <html>
@@ -82,10 +60,40 @@ jobs:
           <body>
             <h1>Curso Streamlit Slides</h1>
             <ul>
-              <li><a href="module-1/">▶ Módulo 1</a></li>
-              <li><a href="module-2/">▶ Módulo 2</a></li>
-              <li><a href="module-3/">▶ Módulo 3</a></li>
-              <li><a href="module-4/">▶ Módulo 4</a></li>
+          EOF
+          
+          # Process each module dynamically
+          for mod_dir in module-*; do
+            if [ -d "$mod_dir" ]; then
+              # Find the generated html (should match the qmd name)
+              for html_file in "$mod_dir"/*.html; do
+                if [ -f "$html_file" ]; then
+                  base_name=$(basename "$html_file" .html)
+                  files_dir="$mod_dir/${base_name}_files"
+                  
+                  mkdir -p "_site/$mod_dir"
+                  mv "$html_file" "_site/$mod_dir/index.html"
+                  
+                  if [ -d "$files_dir" ]; then 
+                    mv "$files_dir" "_site/$mod_dir/"
+                  fi
+                  
+                  # Copy any assets
+                  cp -r "$mod_dir"/*.png "$mod_dir"/*.mp4 "$mod_dir"/*.avif "$mod_dir"/assets "_site/$mod_dir/" 2>/dev/null || true
+                  
+                  # Add link to index.html (Capitalize module name for display)
+                  mod_title=$(echo "$mod_dir" | tr '-' ' ' | awk '{for(i=1;i<=NF;i++)sub(/./,toupper(substr($i,1,1)),$i)}1')
+                  echo "              <li><a href=\"$mod_dir/\">▶ $mod_title</a></li>" >> _site/index.html
+                  
+                  # Only process the first html file found per module
+                  break
+                fi
+              done
+            fi
+          done
+          
+          # Close HTML
+          cat <<EOF >> _site/index.html
             </ul>
           </body>
           </html>

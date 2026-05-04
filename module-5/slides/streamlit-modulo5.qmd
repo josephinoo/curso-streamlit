@@ -1,0 +1,1433 @@
+---
+title: "Streamlit — Módulo 5"
+subtitle: "Proyecto Final · RetailDash · Dashboard de Ventas Retail"
+author: "@josephinoo"
+date: "2026-05-04"
+format:
+  revealjs:
+    theme: [dark, streamlit-theme.scss]
+    transition: fade
+    transition-speed: fast
+    slide-number: c/t
+    progress: true
+    controls: true
+    controls-layout: bottom-right
+    footer: "Módulo 5 · Streamlit · Proyecto Final — RetailDash"
+    width: 1600
+    height: 900
+    margin: 0.05
+    min-scale: 0.1
+    max-scale: 0.9
+    highlight-style: github-dark
+    code-line-numbers: false
+    code-copy: true
+    incremental: false
+    center-title-slide: true
+    auto-animate-easing: ease-in-out
+    auto-animate-unmatched: false
+    auto-animate-duration: 0.8
+title-slide-attributes:
+  data-background-color: "#0d0d0d"
+execute:
+  echo: true
+  eval: false
+include-after-body:
+  text: |
+    <script>
+    (function() {
+      function colorize(block) {
+        var lines = block.innerHTML.split('\n');
+        lines = lines.map(function(line) {
+          var inStr = false, strChar = '', ci = -1;
+          for (var i = 0; i < line.length; i++) {
+            var c = line[i];
+            if (!inStr && (c === '"' || c === "'")) { inStr = true; strChar = c; }
+            else if (inStr && c === strChar && line[i-1] !== '\\') { inStr = false; }
+            else if (!inStr && c === '#') { ci = i; break; }
+          }
+          var code    = ci >= 0 ? line.substring(0, ci) : line;
+          var comment = ci >= 0 ? line.substring(ci)    : '';
+          var P = '\x00';
+          code = code.replace(/("(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')/g, P+'S'+P+'$1'+P+'/S'+P);
+          code = code.replace(/\b(st\.[A-Za-z_]+)/g, P+'F'+P+'$1'+P+'/F'+P);
+          code = code.replace(/\b(True|False|None|def|class|if|elif|else|with|return|import|as|for|in|not|and|or|lambda|raise|async|await)\b/g, P+'K'+P+'$1'+P+'/K'+P);
+          code = code.replace(/\b(\d+(\.\d+)?)\b/g, P+'N'+P+'$1'+P+'/N'+P);
+          code = code.replace(new RegExp(P+'S'+P+'(.*?)'+P+'\\/S'+P,'g'), '<span class="sy-str">$1</span>');
+          code = code.replace(new RegExp(P+'F'+P+'(.*?)'+P+'\\/F'+P,'g'), '<span class="sy-fn">$1</span>');
+          code = code.replace(new RegExp(P+'K'+P+'(.*?)'+P+'\\/K'+P,'g'), '<span class="sy-kw">$1</span>');
+          code = code.replace(new RegExp(P+'N'+P+'(.*?)'+P+'\\/N'+P,'g'), '<span class="sy-num">$1</span>');
+          if (comment) comment = '<span class="sy-cm">' + comment + '</span>';
+          return code + comment;
+        });
+        block.innerHTML = lines.join('\n');
+      }
+      function run() {
+        document.querySelectorAll('.reveal pre code').forEach(colorize);
+      }
+      if (typeof Reveal !== 'undefined') {
+        Reveal.on('ready', run);
+      } else {
+        document.addEventListener('DOMContentLoaded', run);
+      }
+    })();
+    </script>
+---
+
+```{=html}
+<style>
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@300;400;600;700;900&display=swap');
+:root {
+  --red:#FF4B4B; --green:#22c55e; --blue:#3b82f6; --gold:#f59e0b; --purple:#a855f7;
+  --bg:#0d0d0d; --panel:#1a1a1a; --panel2:#222; --border:#2a2a2a;
+  --text:#e8e8e8; --muted:#666; --mono:'JetBrains Mono',monospace;
+}
+.box-accent  { background:rgba(255,75,75,.1);   border:1px solid rgba(255,75,75,.35);  border-radius:7px; padding:.55em 1em; font-size:.78em; color:#e8e8e8; margin:.4em 0; }
+.box-muted   { background:#111; border:1px solid #222; border-radius:7px; padding:.55em 1em; font-size:.75em; color:#777; margin:.4em 0; }
+.box-green   { background:rgba(34,197,94,.08);  border:1px solid rgba(34,197,94,.3);  border-radius:7px; padding:.55em 1em; font-size:.78em; color:#e8e8e8; margin:.4em 0; }
+.box-blue    { background:rgba(59,130,246,.08); border:1px solid rgba(59,130,246,.3); border-radius:7px; padding:.55em 1em; font-size:.78em; color:#e8e8e8; margin:.4em 0; }
+.box-yellow  { background:rgba(245,158,11,.08); border:1px solid rgba(245,158,11,.3); border-radius:7px; padding:.55em 1em; font-size:.78em; color:#e8e8e8; margin:.4em 0; }
+.text-muted  { color:#666; }
+.fade-item   { animation:fadeUp .5s ease both; }
+@keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:none} }
+pre { background:#0f0f0f!important; border:1px solid #1e1e1e; border-radius:7px; font-size:.63em!important; margin:.4em 0; }
+pre code { font-family:var(--mono)!important; padding:.9em 1.1em!important; line-height:1.6; }
+.split2 { display:grid; grid-template-columns:1fr 1fr; gap:1.2em; align-items:start; }
+.split3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:1em; align-items:start; }
+.sy-str { color:#a5d6ff; } .sy-fn { color:#d2a8ff; font-weight:600; }
+.sy-kw  { color:#ff7b72; font-weight:600; } .sy-num { color:#79c0ff; }
+.sy-cm  { color:#8b949e; font-style:italic; }
+
+/* summary grid */
+.summary-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:.7em; }
+.sg-card  { background:var(--panel); border:1px solid var(--border); border-radius:8px; padding:.75em .9em; }
+.sgc-num  { font-size:.55em; color:var(--muted); font-family:var(--mono); margin-bottom:.1em; }
+.sgc-icon { font-size:1.1em; margin-bottom:.15em; }
+.sgc-title{ font-size:.82em; font-weight:700; color:#fff; margin-bottom:.15em; }
+.sgc-desc { font-size:.68em; color:#777; line-height:1.4; }
+.sgc-desc code { color:#f97316; background:rgba(249,115,22,.1); border-radius:3px; padding:.02em .3em; font-size:.9em; }
+
+/* arch diagram */
+.arch-diagram { display:flex; align-items:center; gap:.6em; flex-wrap:wrap; font-size:.82em; justify-content:center; }
+.arch-box { background:var(--panel); border:1px solid var(--border); border-radius:8px; padding:.6em 1em; text-align:center; min-width:110px; }
+.arch-box .ab-icon  { font-size:1.6em; }
+.arch-box .ab-label { font-size:.72em; color:#ccc; margin-top:.2em; font-weight:700; }
+.arch-box .ab-sub   { font-size:.6em; color:#555; font-family:var(--mono); }
+.arch-box.blue  { border-color:rgba(59,130,246,.4);  background:rgba(59,130,246,.06); }
+.arch-box.red   { border-color:rgba(255,75,75,.4);   background:rgba(255,75,75,.06); }
+.arch-box.green { border-color:rgba(34,197,94,.4);   background:rgba(34,197,94,.06); }
+.arch-box.gold  { border-color:rgba(245,158,11,.4);  background:rgba(245,158,11,.06); }
+.arch-box.pur   { border-color:rgba(168,85,247,.4);  background:rgba(168,85,247,.06); }
+.arch-arrow { color:#555; font-size:1.2em; display:flex; flex-direction:column; align-items:center; }
+.arch-arrow span { font-size:.58em; color:#444; font-family:var(--mono); }
+
+/* file tree */
+.file-tree { background:#0a0a0a; border:1px solid #1e1e1e; border-radius:8px; padding:.8em 1.1em; font-family:var(--mono); font-size:.72em; line-height:1.9; }
+.ft-folder { color:#f59e0b; font-weight:700; }
+.ft-file   { color:#bbb; }
+.ft-entry  { color:#FF4B4B; font-weight:700; }
+.ft-comment{ color:#555; font-style:italic; }
+.ft-pages  { color:#a5d6ff; }
+
+/* flow steps */
+.flow-steps { display:flex; flex-direction:column; gap:.4em; font-size:.82em; }
+.fs-step { background:var(--panel); border:1px solid var(--border); border-radius:6px; padding:.5em .9em; display:flex; align-items:center; gap:.7em; }
+.fs-num  { background:#2a2a2a; color:var(--muted); border-radius:50%; width:1.6em; height:1.6em; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:.8em; flex-shrink:0; font-family:var(--mono); }
+.fs-text { font-size:.82em; color:#bbb; flex:1; }
+.fs-code { font-family:var(--mono); color:var(--red); font-size:.78em; }
+.fs-arrow { text-align:center; color:#444; font-size:.8em; padding-left:2.3em; }
+.fs-step.ok  { border-color:rgba(34,197,94,.3);  background:rgba(34,197,94,.04); }
+.fs-step.bad { border-color:rgba(255,75,75,.3);  background:rgba(255,75,75,.04); }
+.fs-step.blu { border-color:rgba(59,130,246,.3); background:rgba(59,130,246,.04); }
+.fs-step.pur { border-color:rgba(168,85,247,.3); background:rgba(168,85,247,.04); }
+
+/* kpi cards */
+.kpi-row { display:grid; grid-template-columns:repeat(3,1fr); gap:.6em; font-size:.8em; }
+.kpi-card { background:var(--panel); border:1px solid var(--border); border-radius:8px; padding:.7em .9em; text-align:center; }
+.kpi-icon  { font-size:1.4em; }
+.kpi-label { font-size:.6em; color:var(--muted); text-transform:uppercase; letter-spacing:.07em; margin:.15em 0; }
+.kpi-val   { font-size:1.4em; font-weight:900; color:var(--red); font-family:var(--mono); }
+
+/* login mock */
+.login-mock { background:#111; border:1px solid #222; border-radius:10px; overflow:hidden; font-size:.82em; max-width:320px; }
+.lm-header { background:#0d0d0d; padding:.7em 1em; border-bottom:1px solid #1a1a1a; text-align:center; }
+.lm-lock   { font-size:2em; }
+.lm-title  { font-size:.9em; font-weight:700; color:#fff; margin-top:.15em; }
+.lm-body   { padding:1em; }
+.lm-label  { font-size:.65em; color:var(--muted); text-transform:uppercase; letter-spacing:.08em; margin-bottom:.2em; }
+.lm-input  { background:#1a1a1a; border:1px solid #2a2a2a; border-radius:5px; padding:.38em .65em; width:100%; color:#ccc; font-size:.78em; font-family:'Inter',sans-serif; box-sizing:border-box; margin-bottom:.5em; }
+.lm-btn    { background:var(--red); color:#fff; border:none; border-radius:5px; padding:.48em; width:100%; font-size:.8em; font-weight:700; cursor:pointer; font-family:'Inter',sans-serif; }
+.lm-btn:hover { background:#ff6666; }
+.lm-hint   { font-size:.62em; color:#555; text-align:center; margin-top:.6em; }
+.lm-ok     { background:rgba(34,197,94,.1); border:1px solid rgba(34,197,94,.3); border-radius:5px; padding:.3em .6em; font-size:.7em; color:#86efac; margin-top:.4em; display:none; }
+.lm-err    { background:rgba(255,75,75,.1);  border:1px solid rgba(255,75,75,.3);  border-radius:5px; padding:.3em .6em; font-size:.7em; color:#fca5a5; margin-top:.4em; display:none; }
+
+/* dataset table */
+.ds-table { width:100%; border-collapse:collapse; font-size:.72em; }
+.ds-table th { background:#111; color:var(--muted); text-transform:uppercase; letter-spacing:.07em; padding:.4em .8em; border-bottom:1px solid #222; text-align:left; font-size:.78em; }
+.ds-table td { padding:.38em .8em; border-bottom:1px solid #181818; color:#bbb; font-family:var(--mono); font-size:.9em; }
+.ds-table td.warn { color:var(--gold); }
+.ds-table td.ok   { color:var(--green); }
+
+/* timeline */
+.timeline { display:flex; flex-direction:column; gap:0; font-size:.8em; position:relative; }
+.tl-item  { display:flex; gap:.8em; padding:.35em 0; }
+.tl-time  { min-width:3.5em; text-align:right; color:var(--muted); font-family:var(--mono); font-size:.78em; padding-top:.12em; }
+.tl-dot   { width:.7em; height:.7em; border-radius:50%; background:var(--red); flex-shrink:0; margin-top:.22em; position:relative; }
+.tl-dot::after { content:''; position:absolute; left:.3em; top:.7em; width:1px; height:calc(100% + .6em); background:#2a2a2a; }
+.tl-item:last-child .tl-dot::after { display:none; }
+.tl-content { flex:1; }
+.tl-title { font-size:.82em; font-weight:700; color:#fff; }
+.tl-desc  { font-size:.7em; color:#666; margin-top:.1em; }
+.tl-item.blu .tl-dot  { background:var(--blue); }
+.tl-item.grn .tl-dot  { background:var(--green); }
+.tl-item.gld .tl-dot  { background:var(--gold); }
+.tl-item.pur .tl-dot  { background:var(--purple); }
+
+/* feat pills */
+.feat-pills { display:flex; flex-wrap:wrap; gap:.35em; margin:.5em 0; }
+.fp       { border-radius:20px; padding:.2em .65em; font-size:.68em; font-weight:600; }
+.fp-green { background:rgba(34,197,94,.12);  border:1px solid rgba(34,197,94,.3);  color:#86efac; }
+.fp-blue  { background:rgba(59,130,246,.12); border:1px solid rgba(59,130,246,.3); color:#93c5fd; }
+.fp-red   { background:rgba(255,75,75,.12);  border:1px solid rgba(255,75,75,.3);  color:#fca5a5; }
+.fp-gold  { background:rgba(245,158,11,.12); border:1px solid rgba(245,158,11,.3); color:#fcd34d; }
+.fp-pur   { background:rgba(168,85,247,.12); border:1px solid rgba(168,85,247,.3); color:#d8b4fe; }
+
+/* checkpoint */
+.checkpoint { background:rgba(34,197,94,.06); border:1px solid rgba(34,197,94,.25); border-radius:10px; padding:1em 1.3em; }
+.cp-title { font-size:.85em; font-weight:700; color:var(--green); margin-bottom:.5em; text-transform:uppercase; letter-spacing:.07em; }
+.cp-item  { font-size:.78em; color:#bbb; margin:.2em 0; }
+.cp-item::before { content:'✓ '; color:var(--green); font-weight:700; }
+</style>
+```
+
+## {background-color="#0d0d0d" .center}
+
+```{=html}
+<div style="text-align:center;margin-top:.8em;">
+  <div style="width:200px;height:200px;margin:0 auto;border-radius:50%;border:3px solid #FF4B4B;background:#1a1a1a;display:flex;align-items:center;justify-content:center;">
+    <span style="font-size:4.5em;">🛒</span>
+  </div>
+  <h2 style="color:#fff;font-size:2em;font-weight:900;margin-top:.7em;letter-spacing:-.02em;">Módulo 5</h2>
+  <p style="color:#FF4B4B;font-size:1.15em;font-weight:600;">Proyecto Final · RetailDash · Dashboard de Ventas Retail</p>
+</div>
+```
+
+::: {.notes}
+Módulo 5 — el proyecto integrador. Hoy aplicamos TODO lo del curso en una app real: login con session_state, múltiples páginas con st.navigation, limpieza de datos con pandas, KPIs con st.metric y gráficas interactivas con Plotly. Al final de la clase tendrán una app funcionando lista para mostrar.
+:::
+
+## Plan de la clase (2 horas) {.center}
+
+```{=html}
+<div class="timeline" style="max-width:680px;margin:1em auto;">
+  <div class="tl-item">
+    <div class="tl-time">0:00</div>
+    <div class="tl-dot"></div>
+    <div class="tl-content">
+      <div class="tl-title">Bloque 1 — El proyecto y el dataset <span style="color:var(--muted);font-weight:400;font-size:.85em">(20 min)</span></div>
+      <div class="tl-desc">¿Qué vamos a construir? · Dataset de Kaggle · Estructura de archivos</div>
+    </div>
+  </div>
+  <div class="tl-item blu">
+    <div class="tl-time">0:20</div>
+    <div class="tl-dot"></div>
+    <div class="tl-content">
+      <div class="tl-title">Bloque 2 — Login y session_state <span style="color:var(--muted);font-weight:400;font-size:.85em">(25 min)</span></div>
+      <div class="tl-desc">app.py · auth.py · st.form · st.navigation · st.rerun()</div>
+    </div>
+  </div>
+  <div class="tl-item grn">
+    <div class="tl-time">0:45</div>
+    <div class="tl-dot"></div>
+    <div class="tl-content">
+      <div class="tl-title">Bloque 3 — Datos y utilidades <span style="color:var(--muted);font-weight:400;font-size:.85em">(25 min)</span></div>
+      <div class="tl-desc">data_loader.py · limpieza del CSV · @st.cache_data · utils.py</div>
+    </div>
+  </div>
+  <div class="tl-item gld">
+    <div class="tl-time">1:10</div>
+    <div class="tl-dot"></div>
+    <div class="tl-content">
+      <div class="tl-title">Bloque 4 — Las 4 páginas del dashboard <span style="color:var(--muted);font-weight:400;font-size:.85em">(30 min)</span></div>
+      <div class="tl-desc">KPIs · gráficas Plotly · mapa geográfico · explorador de datos</div>
+    </div>
+  </div>
+  <div class="tl-item pur">
+    <div class="tl-time">1:40</div>
+    <div class="tl-dot"></div>
+    <div class="tl-content">
+      <div class="tl-title">Bloque 5 — Demo en vivo + cierre <span style="color:var(--muted);font-weight:400;font-size:.85em">(20 min)</span></div>
+      <div class="tl-desc">streamlit run app.py · prueba completa · errores frecuentes</div>
+    </div>
+  </div>
+</div>
+```
+
+::: {.notes}
+Presentar el plan visual. Aclarar: en este módulo NO aprenden cosas nuevas de Streamlit — usan todo lo que ya saben. El desafío es integrarlo todo en un proyecto real con múltiples archivos.
+:::
+
+# Bloque 1 — El Proyecto y el Dataset 🛒 {background-color="#0d0d0d"}
+
+## ¿Qué vamos a construir?
+
+```{=html}
+<div class="summary-grid" style="margin-top:.8em;">
+  <div class="sg-card fade-item" style="animation-delay:.1s">
+    <div class="sgc-icon">🔐</div>
+    <div class="sgc-title">Pantalla de Login</div>
+    <div class="sgc-desc">Usuario y contraseña con <code>st.form</code> · validación · <code>session_state</code> · redirección automática</div>
+  </div>
+  <div class="sg-card fade-item" style="animation-delay:.25s">
+    <div class="sgc-icon">📊</div>
+    <div class="sgc-title">Página 1 — Resumen</div>
+    <div class="sgc-desc">6 KPIs con <code>st.metric</code> · línea de ventas · gráfica de ganancia · barras anuales</div>
+  </div>
+  <div class="sg-card fade-item" style="animation-delay:.4s">
+    <div class="sgc-icon">💰</div>
+    <div class="sgc-title">Página 2 — Ventas</div>
+    <div class="sgc-desc">Barras por categoría · margen % · donut por región · treemap · scatter ventas vs ganancia</div>
+  </div>
+  <div class="sg-card fade-item" style="animation-delay:.55s">
+    <div class="sgc-icon">🗺️</div>
+    <div class="sgc-title">Página 3 — Geográfico</div>
+    <div class="sgc-desc">Mapa de burbujas EE.UU. con <code>Scattergeo</code> · tabla de resumen por región con <code>ProgressColumn</code></div>
+  </div>
+  <div class="sg-card fade-item" style="animation-delay:.7s">
+    <div class="sgc-icon">📁</div>
+    <div class="sgc-title">Página 4 — Datos</div>
+    <div class="sgc-desc">Búsqueda en tiempo real · ordenamiento · <code>st.dataframe</code> · <code>st.download_button</code></div>
+  </div>
+  <div class="sg-card fade-item" style="animation-delay:.85s">
+    <div class="sgc-icon">🔍</div>
+    <div class="sgc-title">Sidebar con Filtros</div>
+    <div class="sgc-desc">Categoría · Región · Año · compartida por todas las páginas · logout integrado</div>
+  </div>
+</div>
+```
+
+::: {.notes}
+Mostrar brevemente la app terminada si es posible. Que vean el destino antes de empezar el viaje.
+:::
+
+## El Dataset — Retail Sales de Kaggle
+
+```{=html}
+<div class="split2" style="gap:1.5em;">
+  <div>
+    <div style="font-size:.75em; color:var(--muted); text-transform:uppercase; letter-spacing:.07em; margin-bottom:.5em;">Columnas del CSV</div>
+    <table class="ds-table">
+      <tr><th>Columna</th><th>Tipo</th><th>Nota</th></tr>
+      <tr><td>Date</td><td class="ok">Fecha</td><td>fecha del registro</td></tr>
+      <tr><td>Category</td><td class="warn">Texto ⚠️</td><td>tiene valores "NaN?"</td></tr>
+      <tr><td>Sales</td><td class="ok">Número</td><td>ingresos en USD</td></tr>
+      <tr><td>Quantity</td><td class="ok">Número</td><td>unidades vendidas</td></tr>
+      <tr><td>Profit</td><td class="ok">Número</td><td>ganancia neta</td></tr>
+      <tr><td>Region</td><td class="ok">Texto</td><td>región geográfica</td></tr>
+    </table>
+    <div class="box-yellow" style="margin-top:.6em;">
+      ⚠️ <strong>Problema real de calidad:</strong> la columna <code>Category</code> tiene entradas <code>"NaN?"</code> — la cadena de texto literal, no un nulo real. Hay que limpiarlas manualmente.
+    </div>
+  </div>
+  <div>
+    <div style="font-size:.75em; color:var(--muted); text-transform:uppercase; letter-spacing:.07em; margin-bottom:.5em;">Descarga</div>
+    <div class="box-blue" style="font-size:.8em;">
+      🔗 <strong>Kaggle:</strong><br>
+      <code style="color:#93c5fd;">kaggle.com/datasets/abbas829/retail-sales-dataset</code><br><br>
+      Guardar como: <code>data/retail_sales.csv</code>
+    </div>
+    <div style="margin-top:.8em;font-size:.75em;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.4em;">Categorías</div>
+    <div class="feat-pills">
+      <span class="fp fp-blue">Electronics</span>
+      <span class="fp fp-green">Furniture</span>
+      <span class="fp fp-gold">Office Supplies</span>
+      <span class="fp fp-red">Clothing</span>
+      <span class="fp fp-pur">Food & Beverages</span>
+    </div>
+    <div style="margin-top:.8em;font-size:.75em;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.4em;">Regiones</div>
+    <div class="feat-pills">
+      <span class="fp fp-blue">North</span>
+      <span class="fp fp-green">South</span>
+      <span class="fp fp-red">East</span>
+      <span class="fp fp-gold">West</span>
+      <span class="fp fp-pur">Central</span>
+    </div>
+  </div>
+</div>
+```
+
+::: {.notes}
+Abrir el CSV en un editor de texto y mostrar en vivo los valores "NaN?" en Category. Que vean el problema real antes de ver la solución.
+:::
+
+## Estructura del Proyecto
+
+```{=html}
+<div class="split2" style="gap:1.5em;align-items:start;">
+  <div>
+    <div class="file-tree">
+      <span class="ft-folder">retaildash/</span><br>
+      │<br>
+      ├── <span class="ft-entry">app.py</span>         <span class="ft-comment"># punto de entrada</span><br>
+      ├── <span class="ft-file">auth.py</span>        <span class="ft-comment"># login y validación</span><br>
+      ├── <span class="ft-file">data_loader.py</span> <span class="ft-comment"># carga y limpieza CSV</span><br>
+      ├── <span class="ft-file">utils.py</span>       <span class="ft-comment"># KPIs, gráficas, sidebar</span><br>
+      ├── <span class="ft-file">requirements.txt</span><br>
+      │<br>
+      ├── <span class="ft-folder">pages/</span><br>
+      │   ├── <span class="ft-pages">1_Resumen.py</span><br>
+      │   ├── <span class="ft-pages">2_Ventas.py</span><br>
+      │   ├── <span class="ft-pages">3_Geografico.py</span><br>
+      │   └── <span class="ft-pages">4_Datos.py</span><br>
+      │<br>
+      └── <span class="ft-folder">data/</span><br>
+          └── <span class="ft-file">retail_sales.csv</span>
+    </div>
+  </div>
+  <div>
+    <div style="font-size:.75em;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.5em;">¿Por qué tantos archivos?</div>
+    <div class="flow-steps">
+      <div class="fs-step red">
+        <div class="fs-num">1</div>
+        <div class="fs-text"><strong style="color:#fff;">app.py</strong> — el director. Decide si mostrar login o dashboard</div>
+      </div>
+      <div class="fs-step blu">
+        <div class="fs-num">2</div>
+        <div class="fs-text"><strong style="color:#fff;">auth.py</strong> — una responsabilidad: autenticar</div>
+      </div>
+      <div class="fs-step grn">
+        <div class="fs-num">3</div>
+        <div class="fs-text"><strong style="color:#fff;">data_loader.py</strong> — una responsabilidad: datos limpios</div>
+      </div>
+      <div class="fs-step pur">
+        <div class="fs-num">4</div>
+        <div class="fs-text"><strong style="color:#fff;">utils.py</strong> — funciones compartidas por las 4 páginas</div>
+      </div>
+      <div class="fs-step">
+        <div class="fs-num">5</div>
+        <div class="fs-text"><strong style="color:#fff;">pages/*.py</strong> — cada página se ocupa solo de su vista</div>
+      </div>
+    </div>
+    <div class="box-accent" style="margin-top:.6em;">
+      💡 Si algo falla, sabes exactamente en qué archivo buscar.
+    </div>
+  </div>
+</div>
+```
+
+::: {.notes}
+Crear la estructura de carpetas en vivo con mkdir. Que los alumnos la repliquen en su máquina.
+:::
+
+# Bloque 2 — Login y session_state 🔐 {background-color="#0d0d0d"}
+
+## app.py — El Director de Orquesta
+
+```{=html}
+<div class="split2">
+  <div>
+    <pre><code class="language-python">import streamlit as st
+from auth import show_login
+
+# 1. Configuracion global — SIEMPRE primero
+st.set_page_config(
+    page_title="RetailDash",
+    page_icon="📈",
+    layout="wide",
+)
+
+# 2. Inicializar session_state (solo la primera vez)
+if "logged_in" not in st.session_state:
+    st.session_state.logged_in = False
+    st.session_state.nombre    = ""
+    st.session_state.rol       = ""
+
+# 3. Definir las paginas del dashboard
+dashboard_pages = [
+    st.Page("pages/1_Resumen.py",
+            title="Resumen", icon="📊", default=True),
+    st.Page("pages/2_Ventas.py",
+            title="Ventas", icon="💰"),
+    st.Page("pages/3_Geografico.py",
+            title="Geografico", icon="🗺️"),
+    st.Page("pages/4_Datos.py",
+            title="Datos", icon="📁"),
+]
+
+# 4. Routing segun el estado
+if not st.session_state.logged_in:
+    pg = st.navigation(
+        [st.Page(show_login, title="Login")],
+        position="hidden",   # sin sidebar en el login
+    )
+else:
+    pg = st.navigation(dashboard_pages)
+
+pg.run()</code></pre>
+  </div>
+  <div>
+    <div style="font-size:.75em;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.5em;">Flujo de ejecución</div>
+    <div class="flow-steps">
+      <div class="fs-step">
+        <div class="fs-num">1</div>
+        <div class="fs-text">Python ejecuta <code>app.py</code> de arriba a abajo</div>
+      </div>
+      <div class="fs-arrow">↓</div>
+      <div class="fs-step blu">
+        <div class="fs-num">2</div>
+        <div class="fs-text"><code>logged_in</code> es <code>False</code> → muestra login</div>
+      </div>
+      <div class="fs-arrow">↓ usuario hace login</div>
+      <div class="fs-step ok">
+        <div class="fs-num">3</div>
+        <div class="fs-text"><code>logged_in = True</code> en <code>session_state</code></div>
+      </div>
+      <div class="fs-arrow">↓ st.rerun()</div>
+      <div class="fs-step ok">
+        <div class="fs-num">4</div>
+        <div class="fs-text">app.py corre otra vez → muestra dashboard</div>
+      </div>
+    </div>
+    <div class="box-accent" style="margin-top:.6em;">
+      📌 <code>set_page_config</code> SOLO va en <code>app.py</code>. Si lo pones en otro archivo, da error.
+    </div>
+  </div>
+</div>
+```
+
+::: {.notes}
+Clave: que entiendan que app.py se re-ejecuta completo en cada interacción. session_state es lo único que "sobrevive" entre ejecuciones.
+:::
+
+## ¿Por qué necesitamos session_state?
+
+```{=html}
+<div class="split2" style="gap:1.5em;">
+  <div>
+    <div style="font-size:.75em;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.5em;">El problema — sin session_state</div>
+    <pre><code class="language-python"># Streamlit re-ejecuta el script COMPLETO
+# con cada interacción del usuario.
+# Una variable normal no sobrevive:
+
+logged_in = True       # ← se guarda
+
+# ... usuario hace click en algo ...
+# ... Python vuelve a ejecutar todo ...
+
+logged_in = False      # ← volvió al inicio :(
+# El usuario tiene que volver a loguearse!</code></pre>
+    <div class="box-accent" style="margin-top:.5em;">
+      🔄 Streamlit no es como un programa normal — <strong>re-ejecuta todo el script</strong> cada vez que el usuario interactúa.
+    </div>
+  </div>
+  <div>
+    <div style="font-size:.75em;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.5em;">La solución — session_state</div>
+    <pre><code class="language-python"># session_state es como una pizarra que
+# NO se borra entre re-ejecuciones.
+# Vive mientras el usuario tiene la app abierta.
+
+# Escribir:
+st.session_state.logged_in = True
+st.session_state.nombre    = "Ana García"
+
+# Leer:
+if st.session_state.logged_in:
+    st.write(f"Hola {st.session_state.nombre}")
+
+# Verificar si existe (inicialización):
+if "logged_in" not in st.session_state:
+    st.session_state.logged_in = False</code></pre>
+    <div class="box-green" style="margin-top:.5em;">
+      ✅ <strong>Analogía:</strong> es una nota adhesiva pegada al navegador del usuario. Persiste aunque el script se vuelva a ejecutar.
+    </div>
+  </div>
+</div>
+```
+
+::: {.notes}
+Esta es la explicación más importante del módulo. Tomarse el tiempo necesario. Abrir la consola del navegador y mostrar las cookies/session si es posible.
+:::
+
+## auth.py — La Pantalla de Login
+
+```{=html}
+<div class="split2">
+  <div>
+    <pre><code class="language-python">import streamlit as st
+
+USUARIOS = {
+    "admin":  {"password": "admin123",
+               "nombre":   "Administrador",
+               "rol":      "Admin"},
+    "ana":    {"password": "ana2024",
+               "nombre":   "Ana Garcia",
+               "rol":      "Analista"},
+}
+
+def verificar_credenciales(usuario, password):
+    if usuario in USUARIOS:
+        return USUARIOS[usuario]["password"] == password
+    return False
+
+def show_login():
+    # Centrar con columnas — truco clasico
+    _, col, _ = st.columns([1, 1.5, 1])
+
+    with col:
+        st.title("🛒 RetailDash")
+        st.subheader("Iniciar sesion")
+        st.divider()
+
+        with st.form("login_form"):
+            usuario  = st.text_input("Usuario")
+            password = st.text_input(
+                "Contrasena", type="password"
+            )
+            submit = st.form_submit_button(
+                "Iniciar sesion",
+                use_container_width=True,
+                type="primary",
+            )
+
+        if submit:
+            u = usuario.strip().lower()
+            if verificar_credenciales(u, password):
+                st.session_state.logged_in = True
+                st.session_state.nombre = USUARIOS[u]["nombre"]
+                st.session_state.rol    = USUARIOS[u]["rol"]
+                st.rerun()  # va al dashboard
+            else:
+                st.error("Usuario o contrasena incorrectos.")</code></pre>
+  </div>
+  <div>
+    <div style="font-size:.75em;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.5em;">Vista del login</div>
+    <div class="login-mock" style="margin:0 auto;">
+      <div class="lm-header">
+        <div class="lm-lock">🛒</div>
+        <div class="lm-title">RetailDash</div>
+      </div>
+      <div class="lm-body">
+        <div class="lm-label">Usuario</div>
+        <input class="lm-input" id="lm-user" placeholder="Ej: admin" oninput="lmCheck()" />
+        <div class="lm-label">Contraseña</div>
+        <input class="lm-input" id="lm-pass" type="password" placeholder="••••••••" oninput="lmCheck()" />
+        <button class="lm-btn" onclick="lmSubmit()">Iniciar sesión →</button>
+        <div class="lm-ok" id="lm-ok">✅ ¡Bienvenido/a! Cargando...</div>
+        <div class="lm-err" id="lm-err">❌ Usuario o contraseña incorrectos.</div>
+        <div class="lm-hint">Demo: admin / admin123</div>
+      </div>
+    </div>
+    <script>
+    function lmSubmit(){
+      var u=document.getElementById('lm-user').value;
+      var p=document.getElementById('lm-pass').value;
+      var ok=document.getElementById('lm-ok');
+      var err=document.getElementById('lm-err');
+      ok.style.display='none'; err.style.display='none';
+      if(u==='admin'&&p==='admin123'){ok.style.display='block';}
+      else{err.style.display='block';}
+    }
+    function lmCheck(){}
+    </script>
+    <div class="box-blue" style="margin-top:.7em;">
+      💡 <code>st.form</code> agrupa usuario + contraseña. La app <strong>no recarga</strong> mientras el usuario escribe — solo al hacer clic en el botón.
+    </div>
+  </div>
+</div>
+```
+
+::: {.notes}
+Demo interactiva: que los alumnos prueben el login mock. Luego codificar auth.py en vivo.
+:::
+
+## st.form vs widgets sueltos
+
+```{=html}
+<div class="split2" style="gap:1.5em;">
+  <div>
+    <div style="font-size:.75em;color:var(--red);font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:.4em;">❌ Sin st.form — problema</div>
+    <pre><code class="language-python"># Cada letra que escribe el usuario
+# dispara una re-ejecucion completa.
+# En login esto no es grave, pero en
+# un formulario con DB queries...
+
+usuario  = st.text_input("Usuario")
+# rerun al escribir 'a'
+# rerun al escribir 'ad'
+# rerun al escribir 'adm'...
+
+password = st.text_input("Password",
+                          type="password")
+# mas reruns...
+
+if st.button("Login"):
+    verificar(usuario, password)</code></pre>
+  </div>
+  <div>
+    <div style="font-size:.75em;color:var(--green);font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:.4em;">✅ Con st.form — solución</div>
+    <pre><code class="language-python"># Todo dentro del form NO dispara reruns
+# mientras el usuario escribe.
+# Solo UN rerun al hacer submit.
+
+with st.form("login_form"):
+    usuario  = st.text_input("Usuario")
+    password = st.text_input("Password",
+                              type="password")
+
+    # Este boton SI dispara el rerun
+    submit = st.form_submit_button(
+        "Iniciar sesion",
+        type="primary"
+    )
+
+if submit:
+    # aqui procesamos
+    verificar(usuario, password)</code></pre>
+    <div class="box-green">
+      ✅ La re-ejecución ocurre <strong>una sola vez</strong>, cuando el usuario presiona el botón.
+    </div>
+  </div>
+</div>
+```
+
+::: {.notes}
+Mostrar el contador de reruns con y sin form. El impacto visual ayuda a que lo interioricen.
+:::
+
+# Bloque 3 — Datos y Utilidades 🗄️ {background-color="#0d0d0d"}
+
+## data_loader.py — Carga y Limpieza
+
+```{=html}
+<div class="split2">
+  <div>
+    <pre><code class="language-python">import pandas as pd
+import numpy as np
+import streamlit as st
+
+REGION_COORDS = {
+    "North":   {"lat": 43.0, "lon": -85.0},
+    "South":   {"lat": 30.0, "lon": -90.0},
+    "East":    {"lat": 40.7, "lon": -74.0},
+    "West":    {"lat": 37.8, "lon": -120.5},
+    "Central": {"lat": 41.8, "lon": -93.0},
+}
+
+@st.cache_data(show_spinner="Cargando datos...")
+def cargar_datos(ruta="data/retail_sales.csv"):
+    try:
+        df = pd.read_csv(ruta, parse_dates=["Date"])
+    except FileNotFoundError:
+        st.warning("CSV no encontrado. Usando demo.")
+        df = _generar_datos_demo()
+
+    # Limpieza 1: eliminar "NaN?" en Category
+    df = df[~df["Category"].astype(str).str.strip()
+              .isin(["NaN?", "nan", "NaN", ""])]
+    df = df.dropna(subset=["Category"])
+
+    # Limpieza 2: nulos en columnas criticas
+    df = df.dropna(
+        subset=["Sales","Profit","Quantity","Date","Region"]
+    )
+
+    # Limpieza 3: negativos (anomalias)
+    df = df[(df["Sales"] >= 0) & (df["Quantity"] >= 0)]
+
+    # Columnas derivadas
+    df["Month"] = df["Date"].dt.to_period("M").astype(str)
+    df["Year"]  = df["Date"].dt.year
+    df["Profit_Margin"] = (
+        df["Profit"] / df["Sales"].replace(0, np.nan)
+    ) * 100
+
+    return df.reset_index(drop=True)</code></pre>
+  </div>
+  <div>
+    <div style="font-size:.75em;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.5em;">Los 3 pasos de limpieza</div>
+    <div class="flow-steps">
+      <div class="fs-step bad">
+        <div class="fs-num">1</div>
+        <div class="fs-text"><strong>Eliminar "NaN?"</strong> — la cadena de texto literal que el dataset tiene en Category. No es un nulo real, hay que buscarlo manualmente</div>
+      </div>
+      <div class="fs-step blu">
+        <div class="fs-num">2</div>
+        <div class="fs-text"><strong>Eliminar nulos</strong> en columnas críticas. Si falta Sales o Date, esa fila no sirve</div>
+      </div>
+      <div class="fs-step grn">
+        <div class="fs-num">3</div>
+        <div class="fs-text"><strong>Eliminar negativos</strong> en Sales y Quantity — son errores de carga de datos</div>
+      </div>
+    </div>
+    <div class="box-accent" style="margin-top:.6em;">
+      🎯 <code>@st.cache_data</code> hace que la limpieza ocurra <strong>una sola vez</strong>. Las siguientes llamadas devuelven el resultado guardado en memoria — instantáneo.
+    </div>
+  </div>
+</div>
+```
+
+::: {.notes}
+Abrir el CSV original y mostrar las filas con "NaN?" en Category. Ejecutar el código de limpieza y mostrar el df.shape antes y después.
+:::
+
+## @st.cache_data — ¿Por qué importa?
+
+```{=html}
+<div class="split2" style="gap:1.5em;">
+  <div>
+    <div style="font-size:.75em;color:var(--red);font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:.4em;">❌ Sin caché</div>
+    <pre><code class="language-python">def cargar_datos():
+    df = pd.read_csv("data/retail_sales.csv")
+    # ... limpieza ...
+    return df
+
+# Cada vez que el usuario mueve un filtro:
+# → Python lee el CSV desde el disco
+# → Aplica toda la limpieza
+# → Calcula las columnas derivadas
+# Eso puede tardar 2-5 segundos cada vez</code></pre>
+    <div style="background:rgba(255,75,75,.06);border:1px solid rgba(255,75,75,.2);border-radius:7px;padding:.6em .9em;font-size:.75em;margin-top:.4em;">
+      Con 1000 interacciones del usuario = 1000 lecturas del disco 💀
+    </div>
+  </div>
+  <div>
+    <div style="font-size:.75em;color:var(--green);font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:.4em;">✅ Con @st.cache_data</div>
+    <pre><code class="language-python">@st.cache_data
+def cargar_datos():
+    df = pd.read_csv("data/retail_sales.csv")
+    # ... limpieza ...
+    return df
+
+# Primera llamada:
+# → Lee CSV, limpia, guarda en memoria
+# Llamadas siguientes:
+# → Devuelve el resultado guardado
+# → INSTANTANEO, sin leer el disco
+
+# Agregar mensaje de carga:
+@st.cache_data(show_spinner="Cargando...")</code></pre>
+    <div class="box-green">
+      ✅ El decorador convierte una función lenta en una función rápida <strong>automáticamente</strong>.
+    </div>
+  </div>
+</div>
+```
+
+::: {.notes}
+Demostrar en vivo: añadir un time.sleep(2) dentro de la función y ver la diferencia con y sin cache_data.
+:::
+
+## utils.py — La Librería Interna
+
+```{=html}
+<div class="split2">
+  <div>
+    <pre><code class="language-python">def sidebar_con_filtros():
+    """Funcion que llaman todas las paginas al inicio.
+    1. Verifica que el usuario este logueado
+    2. Muestra sidebar con logout y filtros
+    3. Devuelve el DataFrame filtrado
+    """
+    # Guard: redirigir si no hay sesion
+    if not st.session_state.get("logged_in", False):
+        st.warning("Debes iniciar sesion.")
+        st.stop()
+
+    with st.sidebar:
+        st.title("🛒 RetailDash")
+        st.write(f"**{st.session_state.nombre}**")
+        st.caption(f"Rol: {st.session_state.rol}")
+        st.divider()
+
+        if st.button("Cerrar sesion",
+                     use_container_width=True):
+            st.session_state.logged_in = False
+            st.rerun()
+
+        st.divider()
+        st.subheader("Filtros")
+        df_raw = cargar_datos()
+
+        categorias = ["Todas"] + sorted(
+            df_raw["Category"].unique().tolist()
+        )
+        cat_sel = st.selectbox(
+            "Categoria", categorias, key="cat_sel"
+        )
+        regiones = ["Todas"] + sorted(
+            df_raw["Region"].unique().tolist()
+        )
+        reg_sel = st.selectbox(
+            "Region", regiones, key="reg_sel"
+        )
+        anos = sorted(df_raw["Year"].unique().tolist())
+        ano_sel = st.multiselect(
+            "Ano", anos, default=anos, key="ano_sel"
+        )
+
+    df = df_raw.copy()
+    if cat_sel != "Todas":
+        df = df[df["Category"] == cat_sel]
+    if reg_sel != "Todas":
+        df = df[df["Region"] == reg_sel]
+    if ano_sel:
+        df = df[df["Year"].isin(ano_sel)]
+
+    if df.empty:
+        st.warning("Sin datos para estos filtros.")
+        st.stop()
+
+    return df</code></pre>
+  </div>
+  <div>
+    <div style="font-size:.75em;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.5em;">¿Por qué centralizar en utils.py?</div>
+    <div class="box-accent" style="margin-bottom:.6em;">
+      Sin utils.py tendrías que copiar la sidebar en las 4 páginas. Si cambias algo, lo cambias 4 veces.
+    </div>
+    <div style="font-size:.75em;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.4em;">Cada página empieza igual</div>
+    <pre><code class="language-python">import streamlit as st
+from utils import sidebar_con_filtros, ...
+
+# Una sola linea inicializa todo:
+df = sidebar_con_filtros()
+
+# Ya tienes:
+# - Sidebar con usuario + logout + filtros
+# - DataFrame filtrado listo para usar
+# - Guard de autenticacion activo
+
+st.title("Mi pagina")
+# ... contenido de la pagina</code></pre>
+    <div class="box-blue" style="margin-top:.5em;">
+      💡 <code>key=</code> en los widgets de la sidebar es obligatorio cuando el mismo widget aparece en múltiples páginas — evita el error "widget ID duplicado".
+    </div>
+  </div>
+</div>
+```
+
+::: {.notes}
+Enfatizar el patrón: sidebar_con_filtros() es la primera llamada de cada página. Como un "middleware" que autentica y filtra antes de que la página haga su trabajo.
+:::
+
+# Bloque 4 — Las 4 Páginas del Dashboard 📊 {background-color="#0d0d0d"}
+
+## Los KPIs — st.metric
+
+```{=html}
+<div class="split2">
+  <div>
+    <pre><code class="language-python">def calcular_kpis(df):
+    total_ventas  = df["Sales"].sum()
+    total_profit  = df["Profit"].sum()
+    total_items   = int(df["Quantity"].sum())
+    num_registros = len(df)
+    margen_prom   = (total_profit / total_ventas
+                     * 100) if total_ventas else 0
+    ticket_prom   = (total_ventas / num_registros
+                     ) if num_registros else 0
+    return {
+        "ventas": total_ventas,
+        "profit": total_profit,
+        "items":  total_items,
+        "registros": num_registros,
+        "margen":  margen_prom,
+        "ticket":  ticket_prom,
+    }
+
+def mostrar_kpis(df):
+    kpis = calcular_kpis(df)
+    k1, k2, k3, k4, k5, k6 = st.columns(6)
+
+    k1.metric("Ventas Totales",
+              fmt_money(kpis["ventas"]))
+    k2.metric("Ganancia Total",
+              fmt_money(kpis["profit"]))
+    k3.metric("Unidades Vendidas",
+              f"{kpis['items']:,}")
+    k4.metric("Registros",
+              f"{kpis['registros']:,}")
+    k5.metric("Margen Promedio",
+              f"{kpis['margen']:.1f}%")
+    k6.metric("Ticket Promedio",
+              fmt_money(kpis["ticket"]))</code></pre>
+  </div>
+  <div>
+    <div style="font-size:.75em;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.5em;">Vista de los KPIs</div>
+    <div class="kpi-row">
+      <div class="kpi-card">
+        <div class="kpi-icon">💰</div>
+        <div class="kpi-label">Ventas Totales</div>
+        <div class="kpi-val">$2.4M</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon">📈</div>
+        <div class="kpi-label">Ganancia Total</div>
+        <div class="kpi-val">$680K</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon">🛍️</div>
+        <div class="kpi-label">Unidades</div>
+        <div class="kpi-val">28,450</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon">📋</div>
+        <div class="kpi-label">Registros</div>
+        <div class="kpi-val">1,200</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon">🎯</div>
+        <div class="kpi-label">Margen %</div>
+        <div class="kpi-val">28.3%</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon">🧾</div>
+        <div class="kpi-label">Ticket Prom.</div>
+        <div class="kpi-val">$2.0K</div>
+      </div>
+    </div>
+    <div class="box-accent" style="margin-top:.6em;">
+      📌 <code>f"{valor:,}"</code> agrega separador de miles: <code>28450</code> → <code>28,450</code><br>
+      📌 <code>:.1f%</code> muestra 1 decimal: <code>28.3%</code>
+    </div>
+  </div>
+</div>
+```
+
+::: {.notes}
+Mostrar que st.metric también acepta el parámetro delta= para mostrar la variación con color verde/rojo automático.
+:::
+
+## Gráficas con Plotly — Patrón Común
+
+```{=html}
+<div class="split2">
+  <div>
+    <div style="font-size:.75em;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.4em;">Todas las gráficas siguen el mismo patrón</div>
+    <pre><code class="language-python">import plotly.graph_objects as go
+import plotly.express as px
+
+# Patron: recibir df, devolver Figure
+def grafico_ventas_tiempo(df):
+    # 1. Agrupar los datos
+    ts = df.groupby("Month")["Sales"].sum().reset_index()
+    ts["Month_dt"] = pd.to_datetime(ts["Month"])
+    ts = ts.sort_values("Month_dt")
+
+    # 2. Crear la figura
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(
+        x=ts["Month_dt"], y=ts["Sales"],
+        mode="lines+markers",
+        line=dict(color="#FF4B4B", width=2.5),
+        fill="tozeroy",
+        fillcolor="rgba(255,75,75,0.10)",
+        name="Ventas",
+    ))
+
+    # 3. Ajustar titulo y ejes
+    fig.update_layout(
+        title="Ventas Mensuales",
+        xaxis_title="",
+        yaxis_title="USD"
+    )
+    return fig
+
+# En la pagina, mostrar con:
+st.plotly_chart(
+    grafico_ventas_tiempo(df),
+    use_container_width=True
+)</code></pre>
+  </div>
+  <div>
+    <div style="font-size:.75em;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.5em;">Gráficas del proyecto</div>
+    <div class="flow-steps">
+      <div class="fs-step blu">
+        <div class="fs-num">📈</div>
+        <div class="fs-text"><code>go.Scatter</code> — línea de ventas y ganancia mensual</div>
+      </div>
+      <div class="fs-step grn">
+        <div class="fs-num">📊</div>
+        <div class="fs-text"><code>px.bar</code> — ventas anuales con color continuo</div>
+      </div>
+      <div class="fs-step">
+        <div class="fs-num">📊</div>
+        <div class="fs-text"><code>go.Bar horizontal</code> — ventas por categoría</div>
+      </div>
+      <div class="fs-step pur">
+        <div class="fs-num">🍩</div>
+        <div class="fs-text"><code>go.Pie(hole=0.45)</code> — donut por región</div>
+      </div>
+      <div class="fs-step gld">
+        <div class="fs-num">🗂️</div>
+        <div class="fs-text"><code>px.treemap</code> — composición Categoría → Región</div>
+      </div>
+      <div class="fs-step bad">
+        <div class="fs-num">🔵</div>
+        <div class="fs-text"><code>px.scatter(trendline="ols")</code> — ventas vs ganancia</div>
+      </div>
+    </div>
+  </div>
+</div>
+```
+
+::: {.notes}
+Mostrar que en las páginas el código es mínimo: df = sidebar_con_filtros() + st.plotly_chart(función(df)). Toda la lógica está en utils.py.
+:::
+
+## El Mapa — go.Scattergeo
+
+```{=html}
+<div class="split2">
+  <div>
+    <pre><code class="language-python">def grafico_mapa_regiones(df):
+    # Agregar ventas y ganancia por region
+    reg = df.groupby("Region").agg(
+        Sales=("Sales",    "sum"),
+        Profit=("Profit",  "sum"),
+        Registros=("Sales","count"),
+    ).reset_index()
+
+    # Asignar coordenadas del diccionario
+    reg["lat"] = reg["Region"].map(
+        lambda r: REGION_COORDS.get(r,{}).get("lat",0)
+    )
+    reg["lon"] = reg["Region"].map(
+        lambda r: REGION_COORDS.get(r,{}).get("lon",0)
+    )
+
+    fig = go.Figure(go.Scattergeo(
+        lat=reg["lat"],
+        lon=reg["lon"],
+        text=reg.apply(
+            lambda r: (
+                f"<b>{r['Region']}</b><br>"
+                f"Ventas: {fmt_money(r['Sales'])}<br>"
+                f"Ganancia: {fmt_money(r['Profit'])}"
+            ), axis=1
+        ),
+        hoverinfo="text",
+        mode="markers",
+        marker=dict(
+            # burbuja proporcional a ventas
+            size=(reg["Sales"]/reg["Sales"].max()*45+15),
+            color=reg["Sales"],
+            colorscale="Reds",
+            showscale=True,
+            line=dict(color="white", width=1),
+        ),
+    ))
+
+    fig.update_geos(scope="usa")
+    fig.update_layout(
+        title="Mapa de Ventas por Region (EE.UU.)",
+        height=480
+    )
+    return fig</code></pre>
+  </div>
+  <div>
+    <div style="font-size:.75em;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.5em;">Conceptos clave del mapa</div>
+    <div class="flow-steps">
+      <div class="fs-step blu">
+        <div class="fs-num">1</div>
+        <div class="fs-text"><strong>Coordenadas manuales</strong> — el dataset no tiene GPS. Las definimos en <code>REGION_COORDS</code> en <code>data_loader.py</code></div>
+      </div>
+      <div class="fs-step grn">
+        <div class="fs-num">2</div>
+        <div class="fs-text"><strong>Tamaño proporcional</strong> — <code>Sales/max*45+15</code> escala el radio entre 15px (mínimo) y 60px (máximo)</div>
+      </div>
+      <div class="fs-step pur">
+        <div class="fs-num">3</div>
+        <div class="fs-text"><strong><code>scope="usa"</code></strong> — limita el mapa a EE.UU. Podría ser <code>"world"</code>, <code>"europe"</code>, etc.</div>
+      </div>
+      <div class="fs-step gld">
+        <div class="fs-num">4</div>
+        <div class="fs-text"><strong>Hover text</strong> con HTML — <code>&lt;b&gt;</code> y <code>&lt;br&gt;</code> funcionan dentro del texto del tooltip</div>
+      </div>
+    </div>
+    <div class="box-accent" style="margin-top:.5em;">
+      🗺️ <code>Scattergeo</code> es la forma más simple de hacer mapas en Plotly. No necesita API keys ni tiles externos.
+    </div>
+  </div>
+</div>
+```
+
+::: {.notes}
+Mostrar el mapa terminado en la app. Pasar el mouse por encima de las burbujas para ver el hover text.
+:::
+
+## Página 4 — Explorador de Datos
+
+```{=html}
+<div class="split2">
+  <div>
+    <pre><code class="language-python">from utils import sidebar_con_filtros, fmt_money, calcular_kpis
+
+df = sidebar_con_filtros()
+
+st.title("📁 Explorador de Datos")
+st.divider()
+
+# Buscador en tiempo real
+col1, col2, col3 = st.columns([2, 1, 1])
+with col1:
+    busqueda = st.text_input(
+        "Buscar en Categoria o Region"
+    )
+with col2:
+    orden = st.selectbox(
+        "Ordenar por",
+        ["Date","Sales","Profit","Quantity"]
+    )
+with col3:
+    direc = st.radio(
+        "Direccion",
+        ["Descendente","Ascendente"],
+        horizontal=True
+    )
+
+df_vista = df.copy()
+if busqueda:
+    mask = (
+        df_vista["Category"].str.contains(
+            busqueda, case=False, na=False) |
+        df_vista["Region"].str.contains(
+            busqueda, case=False, na=False)
+    )
+    df_vista = df_vista[mask]
+
+df_vista = df_vista.sort_values(
+    orden, ascending=(direc == "Ascendente")
+)
+
+st.dataframe(df_vista.head(500),
+             use_container_width=True, height=380)
+
+# Descargar CSV
+csv = df_vista.to_csv(index=False).encode("utf-8")
+st.download_button(
+    label="Descargar CSV filtrado",
+    data=csv,
+    file_name="retaildash_filtrado.csv",
+    mime="text/csv",
+)</code></pre>
+  </div>
+  <div>
+    <div style="font-size:.75em;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.5em;">Componentes de esta página</div>
+    <div class="flow-steps">
+      <div class="fs-step blu">
+        <div class="fs-num">🔎</div>
+        <div class="fs-text"><strong>Búsqueda en tiempo real</strong> — <code>str.contains()</code> filtra Category y Region mientras el usuario escribe</div>
+      </div>
+      <div class="fs-step grn">
+        <div class="fs-num">⬆️</div>
+        <div class="fs-text"><strong>Ordenamiento dinámico</strong> — <code>sort_values()</code> con dirección configurable por el usuario</div>
+      </div>
+      <div class="fs-step pur">
+        <div class="fs-num">📋</div>
+        <div class="fs-text"><strong><code>st.dataframe</code></strong> — tabla interactiva. El usuario puede ordenar columnas haciendo clic en los headers</div>
+      </div>
+      <div class="fs-step gld">
+        <div class="fs-num">⬇️</div>
+        <div class="fs-text"><strong><code>st.download_button</code></strong> — descarga el CSV actual con los filtros aplicados. El botón genera el archivo en el momento del clic</div>
+      </div>
+    </div>
+    <div class="box-blue" style="margin-top:.5em;">
+      💡 <code>.encode("utf-8")</code> es necesario porque <code>download_button</code> espera bytes, no texto.
+    </div>
+  </div>
+</div>
+```
+
+::: {.notes}
+Demo en vivo: escribir "Electronics" en el buscador y ver cómo la tabla se filtra instantáneamente. Luego descargar el CSV.
+:::
+
+# Bloque 5 — Demo en Vivo y Cierre 🚀 {background-color="#0d0d0d"}
+
+## Ejecutar la App
+
+```{=html}
+<div class="split2" style="gap:1.5em;align-items:start;">
+  <div>
+    <div style="font-size:.75em;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.5em;">Comandos de terminal</div>
+    <pre><code class="language-bash"># Ir a la carpeta del proyecto
+cd retaildash
+
+# Instalar dependencias (solo la primera vez)
+pip install -r requirements.txt
+
+# EJECUTAR LA APP
+streamlit run app.py
+
+# La app abre en:
+# http://localhost:8501</code></pre>
+    <div class="box-green" style="margin-top:.6em;">
+      ✅ Streamlit abre el navegador automáticamente. Si no abre, copia la URL de la terminal.
+    </div>
+    <div style="font-size:.75em;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin:.8em 0 .4em;">Credenciales de prueba</div>
+    <table class="ds-table">
+      <tr><th>Usuario</th><th>Contraseña</th><th>Rol</th></tr>
+      <tr><td>admin</td><td class="ok">admin123</td><td>Admin</td></tr>
+      <tr><td>ana</td><td class="ok">ana2024</td><td>Analista</td></tr>
+      <tr><td>carlos</td><td class="ok">carlos2024</td><td>Viewer</td></tr>
+    </table>
+  </div>
+  <div>
+    <div style="font-size:.75em;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.5em;">Flujo completo a probar</div>
+    <div class="flow-steps">
+      <div class="fs-step bad">
+        <div class="fs-num">1</div>
+        <div class="fs-text">Intentar entrar con credenciales incorrectas → debe aparecer error rojo</div>
+      </div>
+      <div class="fs-step ok">
+        <div class="fs-num">2</div>
+        <div class="fs-text">Login con admin/admin123 → debe cargar el dashboard</div>
+      </div>
+      <div class="fs-step blu">
+        <div class="fs-num">3</div>
+        <div class="fs-text">Navegar entre las 4 páginas — los filtros deben persistir</div>
+      </div>
+      <div class="fs-step pur">
+        <div class="fs-num">4</div>
+        <div class="fs-text">Filtrar por "Electronics" + "North" → todos los KPIs y gráficas deben actualizarse</div>
+      </div>
+      <div class="fs-step gld">
+        <div class="fs-num">5</div>
+        <div class="fs-text">Ir a Datos → buscar "Furniture" → descargar CSV</div>
+      </div>
+      <div class="fs-step">
+        <div class="fs-num">6</div>
+        <div class="fs-text">Clic en "Cerrar sesión" → debe volver al login</div>
+      </div>
+    </div>
+  </div>
+</div>
+```
+
+::: {.notes}
+Demo en vivo paso a paso. Que los alumnos sigan en sus máquinas. Ir despacio en cada paso.
+:::
+
+## Errores Frecuentes y Soluciones
+
+```{=html}
+<div class="split2" style="gap:1.2em;align-items:start;">
+  <div>
+    <div class="flow-steps">
+      <div class="fs-step bad">
+        <div class="fs-num">!</div>
+        <div>
+          <div class="fs-text"><strong>ModuleNotFoundError: plotly</strong></div>
+          <div style="font-size:.72em;color:#555;margin-top:.2em;font-family:var(--mono);">pip install plotly</div>
+        </div>
+      </div>
+      <div class="fs-step bad">
+        <div class="fs-num">!</div>
+        <div>
+          <div class="fs-text"><strong>set_page_config() can only be called once</strong></div>
+          <div style="font-size:.72em;color:#555;margin-top:.2em;">Solo en app.py, no en los archivos de pages/</div>
+        </div>
+      </div>
+      <div class="fs-step bad">
+        <div class="fs-num">!</div>
+        <div>
+          <div class="fs-text"><strong>StreamlitDuplicateWidgetId</strong></div>
+          <div style="font-size:.72em;color:#555;margin-top:.2em;">Agregar key= a todos los widgets de la sidebar</div>
+        </div>
+      </div>
+      <div class="fs-step bad">
+        <div class="fs-num">!</div>
+        <div>
+          <div class="fs-text"><strong>FileNotFoundError: retail_sales.csv</strong></div>
+          <div style="font-size:.72em;color:#555;margin-top:.2em;">La app usa datos demo automaticamente. No es un error bloqueante</div>
+        </div>
+      </div>
+      <div class="fs-step bad">
+        <div class="fs-num">!</div>
+        <div>
+          <div class="fs-text"><strong>La app recarga sin parar (loop infinito)</strong></div>
+          <div style="font-size:.72em;color:#555;margin-top:.2em;">st.rerun() solo dentro de un if condicional, nunca en el flujo principal</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div>
+    <div style="font-size:.75em;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.5em;">Checklist antes de ejecutar</div>
+    <div class="checkpoint">
+      <div class="cp-title">✓ Checklist</div>
+      <div class="cp-item">Carpeta <code>pages/</code> existe con los 4 archivos</div>
+      <div class="cp-item">Carpeta <code>data/</code> existe (con o sin el CSV)</div>
+      <div class="cp-item"><code>set_page_config</code> solo en <code>app.py</code></div>
+      <div class="cp-item">Todos los widgets de sidebar tienen <code>key=</code></div>
+      <div class="cp-item">Cada página llama <code>sidebar_con_filtros()</code> primero</div>
+      <div class="cp-item">Dependencias instaladas con <code>pip install -r requirements.txt</code></div>
+    </div>
+    <div class="box-accent" style="margin-top:.6em;">
+      💡 Para detener la app: <code>Ctrl + C</code> en la terminal
+    </div>
+  </div>
+</div>
+```
+
+::: {.notes}
+Ir por cada error uno a uno. Si hay tiempo, provocar el error a propósito y mostrarlo en vivo.
+:::
+
+## Todo lo que aplicamos hoy {.center}
+
+```{=html}
+<div class="summary-grid" style="margin-top:.6em;">
+  <div class="sg-card fade-item" style="animation-delay:.1s">
+    <div class="sgc-num">Módulo 1</div>
+    <div class="sgc-icon">🐍</div>
+    <div class="sgc-title">Scripting Flow y Widgets Básicos</div>
+    <div class="sgc-desc"><code>set_page_config</code> · <code>st.title</code> · <code>st.columns</code> · <code>st.divider</code> · scripting de arriba a abajo</div>
+  </div>
+  <div class="sg-card fade-item" style="animation-delay:.25s">
+    <div class="sgc-num">Módulo 2</div>
+    <div class="sgc-icon">🗂️</div>
+    <div class="sgc-title">session_state y cache</div>
+    <div class="sgc-desc"><code>session_state</code> para el login · <code>@st.cache_data</code> en data_loader · <code>st.selectbox</code> / <code>st.multiselect</code></div>
+  </div>
+  <div class="sg-card fade-item" style="animation-delay:.4s">
+    <div class="sgc-num">Módulo 3</div>
+    <div class="sgc-icon">📈</div>
+    <div class="sgc-title">Visualización con Plotly</div>
+    <div class="sgc-desc"><code>st.plotly_chart</code> · <code>st.metric</code> · <code>st.dataframe</code> · gráficas de línea, barras, donut, scatter, treemap y mapa</div>
+  </div>
+  <div class="sg-card fade-item" style="animation-delay:.55s">
+    <div class="sgc-num">Módulo 4</div>
+    <div class="sgc-icon">🔐</div>
+    <div class="sgc-title">Formularios y Navegación</div>
+    <div class="sgc-desc"><code>st.form</code> · <code>st.form_submit_button</code> · <code>st.navigation</code> · <code>st.Page</code> · <code>st.rerun()</code> · <code>st.stop()</code></div>
+  </div>
+</div>
+```
+
+::: {.fragment .fade-up}
+::: {.box-accent}
+🏆 En este módulo no aprendiste cosas nuevas de Streamlit — aprendiste a **integrarlas todas** en un proyecto real. Eso es exactamente lo que hacen los desarrolladores profesionales.
+:::
+:::
+
+::: {.notes}
+Cerrar con fuerza. Que los alumnos vean que lo que hicieron hoy es un proyecto real, no un ejercicio de clase.
+:::
+
+---
+
+::: {style="text-align:center; padding: 3em 0;"}
+
+::: {.r-fit-text}
+¡Lo construiste! 🛒
+:::
+
+[**Módulo 5 — Proyecto Final Completado**]{style="font-size:1.2em; color:#FF4B4B;"}
+
+[Preguntas antes de cerrar 🙋]{.text-muted}
+
+:::
+
+::: {.notes}
+Dar 10 minutos para preguntas. Si hay tiempo: mostrar cómo desplegar la app en Streamlit Cloud en menos de 5 minutos.
+:::

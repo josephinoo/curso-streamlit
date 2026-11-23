@@ -2,7 +2,7 @@
 title: "Streamlit — Módulo 1"
 subtitle: "Introducción y entorno de trabajo"
 author: "@josephinoo"
-date: "2026-04-13"
+date: "2026-11-23 "
 format:
   revealjs:
     theme: [dark, streamlit-theme.scss]
@@ -274,6 +274,14 @@ Luego verificar: `streamlit --version` → debería mostrar la versión instalad
 
 ::: {.notes}
 "Un solo comando. pip descarga Streamlit y todas sus dependencias automáticamente. El proceso tarda 30-60 segundos dependiendo de la conexión. Después verificamos con `streamlit --version` que todo quedó bien."
+:::
+
+## Playground — Otra forma de aprender {.center}
+
+::: {style="text-align:center;"}
+![](assets/qr-playgraund.svg){width="320px" style="border-radius: 12px;"}
+
+[Escanea el QR para probar Streamlit sin instalar nada]{.text-muted}
 :::
 
 ## Tu primera app — hello.py {auto-animate=true}
